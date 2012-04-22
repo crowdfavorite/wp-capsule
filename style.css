@@ -6,3 +6,42 @@ Author:       Crowd Favorite
 Author URI:   http://crowdfavorite.com/
 Version:      0.1
 */
+
+body {
+	background: #fff;
+	color: #333;
+	font-family: sans-serif;
+	font-size: 13px;
+	margin: 0;
+	padding: 0;
+}
+#wrap {
+	margin: 0 auto;
+	max-width: 900px;
+	min-width: 600px;
+}
+header {
+	margin: 0;
+	padding: 10px 0;
+}
+.date-title {
+	color: #999;
+	font-size: 12px;
+	font-weight: normal;
+	margin: 0;
+	padding: 10px 0 3px;
+	text-transform: uppercase;
+}
+.date-title,
+article {
+	border-bottom: 1px solid #ccc;
+}
+article {
+	font-size: 13px;
+	line-height: 150%;
+	padding: 10px 0;
+}
+footer {
+	margin: 0;
+	padding: 10px 0;
+}

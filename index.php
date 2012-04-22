@@ -15,33 +15,36 @@
 	<meta charset="<?php bloginfo( 'charset' ); ?>" />
 	<meta name="viewport" content="width=device-width" />
 	<title><?php wp_title(); ?></title>
+	<link rel="stylesheet" type="text/css" media="all" href="<?php bloginfo('stylesheet_url'); ?>" />
 </head>
 <body>
 
-<header>
-	<form action="<?php echo esc_url(home_url()); ?>" method="get">
-		<input type="text" name="s" value="" />
-		<input type="submit" name="search_submit" value="<?php _e('Search', 'exhaust'); ?>" />
-	</form>
-</header>
+<div id="wrap">
 
-<div class="body">
+	<header>
+		<form action="<?php echo esc_url(home_url()); ?>" method="get">
+			<input type="text" name="s" value="" />
+			<input type="submit" name="search_submit" value="<?php _e('Search', 'exhaust'); ?>" />
+		</form>
+	</header>
+
+	<div class="body">
 <?php
 
 if (have_posts()) {
 	while (have_posts()) {
 		the_post();
-?>
-	<h2 class="h4"><?php the_date(); ?></h2>
-<?php
+		the_date('F j, Y', '<h2 class="date-title">', '</h2>');
 		include('views/excerpt.php');
 	}
 }
 
 ?>
-</div>
+	</div>
 
-<footer></footer>
+	<footer>FOOTER CONTENT HERE</footer>
+
+</div>
 
 </body>
 </html>

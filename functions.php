@@ -3,7 +3,7 @@
 function cfdd_register_taxonomies() {
 	register_taxonomy(
 		'projects',
-		'projects',
+		'post',
 		array(
 			'hierarchical' => true,
 			'label' => __('Projects'),
@@ -17,7 +17,7 @@ function cfdd_register_taxonomies() {
 	);
 	register_taxonomy(
 		'evergreen',
-		'evergreen',
+		'post',
 		array(
 			'hierarchical' => true,
 			'label' => __('Evergreen'),
