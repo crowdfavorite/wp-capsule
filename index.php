@@ -19,9 +19,9 @@
 <body>
 
 <header>
-	<form action="" method="get">
+	<form action="<?php echo esc_url(home_url()); ?>" method="get">
 		<input type="text" name="s" value="" />
-		<input type="submit" name="search_submit" value="<?php _e('search', 'exhaust'); ?>" />
+		<input type="submit" name="search_submit" value="<?php _e('Search', 'exhaust'); ?>" />
 	</form>
 </header>
 
@@ -34,7 +34,7 @@ if (have_posts()) {
 ?>
 	<h2 class="h4"><?php the_date(); ?></h2>
 <?php
-		include('excerpt.php');
+		include('views/excerpt.php');
 	}
 }
 
