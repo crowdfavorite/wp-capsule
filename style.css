@@ -1,7 +1,7 @@
 /*
-Theme Name:   Exhaust
-Theme URI:    http://crowdfavorite.com/wordpress/themes/exhaust/
-Description:  A kick-ass development diary theme.
+Theme Name:   Rutter
+Theme URI:    http://crowdfavorite.com/wordpress/themes/rutter/
+Description:  A theme to turn WordPress into a kick-ass development diary theme.
 Author:       Crowd Favorite
 Author URI:   http://crowdfavorite.com/
 Version:      0.1
@@ -32,16 +32,47 @@ header {
 	padding: 10px 0 3px;
 	text-transform: uppercase;
 }
-.date-title,
 article {
 	border-bottom: 1px solid #ccc;
-}
-article {
+	clear: both;
 	font-size: 13px;
 	line-height: 150%;
 	padding: 10px 0;
+	width: 100%;
+}
+article .content {
+	float: left;
+	width: 80%;
+}
+article .meta {
+	float: left;
+	width: 20%;
+}
+article .meta * {
+	margin-left: 10px;
 }
 footer {
 	margin: 0;
 	padding: 10px 0;
+}
+
+.clearfix:after {
+	content: ".";
+	display: block;
+	clear: both;
+	visibility: hidden;
+	line-height: 0;
+	height: 0;
+}
+ 
+.clearfix {
+	display: inline-block;
+}
+ 
+html[xmlns] .clearfix {
+	display: block;
+}
+ 
+* html .clearfix {
+	height: 1%;
 }

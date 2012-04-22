@@ -24,7 +24,7 @@
 	<header>
 		<form action="<?php echo esc_url(home_url()); ?>" method="get">
 			<input type="text" name="s" value="" />
-			<input type="submit" name="search_submit" value="<?php _e('Search', 'exhaust'); ?>" />
+			<input type="submit" name="search_submit" value="<?php _e('Search', 'rutter'); ?>" />
 		</form>
 	</header>
 

@@ -1,10 +1,12 @@
-<article id="post-excerpt-<?php the_ID(); ?>" <?php post_class('excerpt'); ?>>
+<article id="post-excerpt-<?php the_ID(); ?>" <?php post_class('excerpt clearfix'); ?>>
 	<div class="content"><?php the_excerpt(); ?></div>
 	<div class="meta">
 <?php
-printf(__('<h4>Projects</h4> %s', 'exhaust'), get_the_term_list($post->ID, 'projects'));
-the_tags(__('<h4>Tags</h4> ', 'exhaust'), ', ', '');
+include('taxonomies.php');
 ?>
 		<a href="<?php the_permalink(); ?>"><?php the_time(); ?></a>
+<?php
+edit_post_link(__('Edit', 'rutter'), '<span class="edit-link">', '</span>');
+?>
 	</div>
 </article>
