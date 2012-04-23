@@ -7,6 +7,10 @@ Author URI:   http://crowdfavorite.com/
 Version:      0.1
 */
 
+.none {
+	color: #999;
+}
+
 body {
 	background: #fff;
 	color: #333;
@@ -19,6 +23,7 @@ body {
 	margin: 0 auto;
 	max-width: 900px;
 	min-width: 600px;
+	padding: 0 20px;
 }
 header {
 	margin: 0;
@@ -48,8 +53,19 @@ article .meta {
 	float: left;
 	width: 20%;
 }
-article .meta * {
-	margin-left: 10px;
+article.excerpt .content {
+	cursor: pointer;
+}
+article.excerpt .content:hover {
+	text-decoration: underline;
+}
+article .meta a,
+article .meta a:visited {
+	color: #666;
+	text-decoration: none;
+}
+article .meta a:hover {
+	text-decoration: underline;
 }
 footer {
 	margin: 0;
