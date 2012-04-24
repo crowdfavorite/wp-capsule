@@ -1,6 +1,6 @@
 <?php
 
-define('RUTTER_TAX_PREFIX_PROJECT', '$');
+define('RUTTER_TAX_PREFIX_PROJECT', '@');
 define('RUTTER_TAX_PREFIX_TAG', '#');
 
 function cfrutter_register_taxonomies() {
