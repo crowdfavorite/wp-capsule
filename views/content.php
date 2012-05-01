@@ -4,6 +4,7 @@
 <?php
 include('taxonomies.php');
 ?>
+		<br />
 		<a href="<?php the_permalink(); ?>"><?php the_time(); ?></a>
 <?php
 edit_post_link(__('Edit', 'rutter'), '<span class="edit-link">', '</span>');

@@ -16,13 +16,16 @@
 	<meta name="viewport" content="width=device-width" />
 	<title><?php wp_title(); ?></title>
 	<link rel="stylesheet" type="text/css" media="all" href="<?php bloginfo('stylesheet_url'); ?>" />
+<?php
+wp_head();
+?>
 </head>
 <body>
 
 <div id="wrap">
 
 	<header>
-		<form action="<?php echo esc_url(home_url()); ?>" method="get">
+		<form action="<?php echo esc_url(home_url('/')); ?>" method="get">
 			<input type="text" name="s" value="" />
 			<input type="submit" name="search_submit" value="<?php _e('Search', 'rutter'); ?>" />
 		</form>
@@ -45,6 +48,10 @@ if (have_posts()) {
 	<footer>FOOTER CONTENT HERE</footer>
 
 </div>
+
+<?php
+wp_footer();
+?>
 
 </body>
 </html>

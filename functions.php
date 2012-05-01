@@ -1,7 +1,37 @@
 <?php
 
+define('RUTTER_URL_VERSION', '1');
 define('RUTTER_TAX_PREFIX_PROJECT', '@');
 define('RUTTER_TAX_PREFIX_TAG', '#');
+
+include('controller.php');
+
+function cfrutter_gatekeeper() {
+	if (!current_user_can('publish_posts')) {
+		$login_page = site_url('wp-login.php');
+		is_ssl() ? $proto = 'https://' : $proto = 'http://';
+		$requested = $proto.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
+		if (substr($requested, 0, strlen($login_page)) != $login_page) {
+			auth_redirect();
+		}
+	}
+}
+add_action('init', 'cfrutter_gatekeeper');	
+
+function cfrutter_resources() {
+	wp_enqueue_script('jquery');
+	wp_enqueue_script(
+		'rutter',
+		trailingslashit(get_bloginfo('template_url')).'js/rutter.js',
+		array('jquery'),
+		RUTTER_URL_VERSION,
+		true
+	);
+	wp_localize_script('rutter', 'rutter', array(
+			'endpointAjax' => home_url('index.php')
+	));
+}
+add_action('wp_enqueue_scripts', 'cfrutter_resources');
 
 function cfrutter_register_taxonomies() {
 	register_taxonomy(
