@@ -27,11 +27,23 @@ function cfrutter_resources() {
 		RUTTER_URL_VERSION,
 		true
 	);
-	wp_localize_script('rutter', 'rutter', array(
-			'endpointAjax' => home_url('index.php')
+	wp_localize_script('rutter', 'rutterL10n', array(
+		'endpointAjax' => home_url('index.php'),
+		'loading' => __('Loading...', 'rutter'),
 	));
 }
 add_action('wp_enqueue_scripts', 'cfrutter_resources');
+
+function cfrutter_wp_head() {
+?>
+<style>
+.spinner {
+	background: #fff url(<?php echo admin_url('images/loading.gif'); ?>) no-repeat center center;
+}
+</style>
+<?php
+}
+add_action('wp_head', 'cfrutter_wp_head');
 
 function cfrutter_register_taxonomies() {
 	register_taxonomy(
@@ -95,3 +107,20 @@ function cfrutter_get_the_terms($terms, $id, $taxonomy) {
 	return $terms;
 }
 add_filter('get_the_terms', 'cfrutter_get_the_terms', 10, 3);
+
+function cfrutter_term_list($post_id, $taxonomy) {
+	if (($tax_terms = get_the_terms($post->ID, $tax)) != false) {
+		return get_the_term_list($post_id, $taxonomy, '<ul><li>', '</li><li>', '</li></ul>'); 
+	}
+	else {
+		return '<ul><li class="none">'.__('(none)', 'rutter').'</li></ul>';
+	}
+}
+
+function cfrutter_parse_content_for_tags() {
+// TODO
+// find projects
+// find tags
+// replace projects and tags with found terms
+}
+// add_filter('save_post', 'cfrutter_parse_content_for_tags');
