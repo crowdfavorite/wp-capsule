@@ -1,97 +1,103 @@
-Rutter = {};
-
-Rutter.spinner = function (text) {
-	if (typeof text == 'undefined') {
-		text = rutterL10n.loading;
-	}
-	return '<div class="spinner"><span>' + text + '</span></div>';
-};
-
-window.editors = {};
-
 (function($) {
+	window.editors = {};
+
+	window.Rutter = {};
+
+	Rutter.spinner = function (text) {
+		if (typeof text == 'undefined') {
+			text = rutterL10n.loading;
+		}
+		return '<div class="spinner"><span>' + text + '</span></div>';
+	};
+	
+	Rutter.loadContent = function($article, postId) {
+		$article.addClass('unstyled').children().addClass('transparent').end()
+			.append(Rutter.spinner());
+		$.get(
+			rutterL10n.endpointAjax,
+			{
+				rutter_action: 'post_content',
+				post_id: postId
+			},
+			function(response) {
+				if (response.html) {
+					$article.replaceWith(response.html);
+				}
+			},
+			'json'
+		);
+	};
+	
+	Rutter.loadExcerpt = function($article, postId) {
+		$article.addClass('unstyled').children().addClass('transparent').end()
+			.append(Rutter.spinner());
+		$.get(
+			rutterL10n.endpointAjax,
+			{
+				rutter_action: 'post_excerpt',
+				post_id: postId
+			},
+			function(response) {
+				if (response.html) {
+					$article.replaceWith(response.html);
+				}
+			},
+			'json'
+		);
+	};
+
+	Rutter.loadEditor = function($article, postId) {
+		$article.addClass('unstyled').children().addClass('transparent').end()
+			.append(Rutter.spinner());
+		$.get(
+			rutterL10n.endpointAjax,
+			{
+				rutter_action: 'post_editor',
+				post_id: postId
+			},
+			function(response) {
+				if (response.html) {
+					$article.replaceWith(response.html);
+					window.editors[postId] = ace.edit('ace-editor-' + postId);
+					window.editors[postId].getSession().setValue(response.content);
+					window.editors[postId].getSession().setUseWrapMode(true);
+				}
+			},
+			'json'
+		);
+	}
+
 	$(function() {
 	
-// load full content on excerpt click
-		$('.body').on('click', 'article.excerpt .content', function() {
-			var $article = $(this).closest('article.excerpt');
-			$article.children().addClass('transparent').end()
-				.append(Rutter.spinner());
-			$.get(
-				rutterL10n.endpointAjax,
-				{
-					rutter_action: 'post_content',
-					post_id: $article.attr('id').replace('post-excerpt-', '')
-				},
-				function(response) {
-					if (response.html) {
-						$article.replaceWith(response.html);
-					}
-				},
-				'json'
-			);
-		});
-
-// load excerpt on full content doubleclick
-		$('.body').on('dblclick', 'article.content .content', function() {
-			var $article = $(this).closest('article.content');
-			$article.children().addClass('transparent').end()
-				.append(Rutter.spinner());
-			$.get(
-				rutterL10n.endpointAjax,
-				{
-					rutter_action: 'post_excerpt',
-					post_id: $article.attr('id').replace('post-content-', '')
-				},
-				function(response) {
-					if (response.html) {
-						$article.replaceWith(response.html);
-					}
-				},
-				'json'
-			);
-		});
-
-// edit post
-		$('.body').on('click', 'article .post-edit-link', function(e) {
+		$('.body').on('click', 'article.excerpt', function() {
+			// load full content on excerpt click
+			var $article = $(this).closest('article.excerpt'),
+				postId = $article.data('post-id');
+			Rutter.loadContent($article, postId);
+		}).on('click', 'article.excerpt header a:not(.post-edit-link)', function(e) {
+			// exception for links in header
+			e.stopPropagation();
+		}).on('dblclick', 'article.content .content', function() {
+			// load excerpt on full content doubleclick
+			var $article = $(this).closest('article.content'),
+				postId = $article.data('post-id');
+			Rutter.loadExcerpt($article, postId);
+		}).on('click', 'article .post-edit-link', function(e) {
+			// load editor
 			var $article = $(this).closest('article'),
-				postId = null;
-			if ($article.attr('id').indexOf('post-content-') != -1) {
-				postId = $article.attr('id').replace('post-content-', '');
-			}
-			else if ($article.attr('id').indexOf('post-excerpt-') != -1) {
-				postId = $article.attr('id').replace('post-excerpt-', '');
-			}
-			else {
-				// no ID found - whoops!
-				return;
-			}
-			$article.children().addClass('transparent').end()
-				.append(Rutter.spinner());
-			$.get(
-				rutterL10n.endpointAjax,
-				{
-					rutter_action: 'edit_post',
-					post_id: postId
-				},
-				function(response) {
-					if (response.html) {
-						$article.replaceWith(response.html);
-// this isn't loading as desired - need to figure out the right way to size the editor
-// 						window.editors[postId] = ace.edit('post-edit-' + postId);
+				postId = $article.data('post-id');
+			Rutter.loadEditor($article, postId);
+			e.preventDefault();
+		}).on('click', 'article .post-close-link', function(e) {
+			// save content and load excerpt
+			var $article = $(this).closest('article'),
+				postId = $article.data('post-id');
 
-// proof of concept
-						window.editors[postId] = ace.edit('ace-editor');
+// TODO - save content
 
-						window.editors[postId].getSession().setValue(response.content);
-						window.editors[postId].getSession().setUseWrapMode(true);
-					}
-				},
-				'json'
-			);
+			Rutter.loadExcerpt($article, postId);
 			e.preventDefault();
 		});
-
 
 	});
 })(jQuery);

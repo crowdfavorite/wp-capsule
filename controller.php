@@ -24,7 +24,7 @@ function cfrutter_controller() {
 					}
 				}
 			break;
-			case 'edit_post':
+			case 'post_editor':
 // required params:
 // - post_id
 				if (isset($_GET['post_id'])) {

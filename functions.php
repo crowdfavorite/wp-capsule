@@ -6,6 +6,8 @@ define('RUTTER_TAX_PREFIX_TAG', '#');
 
 include('controller.php');
 
+show_admin_bar(false);
+
 function cfrutter_gatekeeper() {
 	if (!current_user_can('publish_posts')) {
 		$login_page = site_url('wp-login.php');
