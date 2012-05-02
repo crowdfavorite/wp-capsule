@@ -23,7 +23,7 @@ function cfrutter_resources() {
 	wp_enqueue_script(
 		'rutter',
 		trailingslashit(get_bloginfo('template_url')).'js/rutter.js',
-		array('jquery'),
+		array('jquery', 'ace'),
 		RUTTER_URL_VERSION,
 		true
 	);
@@ -31,6 +31,13 @@ function cfrutter_resources() {
 		'endpointAjax' => home_url('index.php'),
 		'loading' => __('Loading...', 'rutter'),
 	));
+	wp_enqueue_script(
+		'ace',
+		trailingslashit(get_bloginfo('template_url')).'lib/ace/build/src/ace.js',
+		array('jquery'),
+		RUTTER_URL_VERSION,
+		true
+	);
 }
 add_action('wp_enqueue_scripts', 'cfrutter_resources');
 

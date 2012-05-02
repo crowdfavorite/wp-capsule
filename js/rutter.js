@@ -7,9 +7,11 @@ Rutter.spinner = function (text) {
 	return '<div class="spinner"><span>' + text + '</span></div>';
 };
 
+window.editors = {};
+
 (function($) {
 	$(function() {
-
+	
 // load full content on excerpt click
 		$('.body').on('click', 'article.excerpt .content', function() {
 			var $article = $(this).closest('article.excerpt');
@@ -48,6 +50,46 @@ Rutter.spinner = function (text) {
 				},
 				'json'
 			);
+		});
+
+// edit post
+		$('.body').on('click', 'article .post-edit-link', function(e) {
+			var $article = $(this).closest('article'),
+				postId = null;
+			if ($article.attr('id').indexOf('post-content-') != -1) {
+				postId = $article.attr('id').replace('post-content-', '');
+			}
+			else if ($article.attr('id').indexOf('post-excerpt-') != -1) {
+				postId = $article.attr('id').replace('post-excerpt-', '');
+			}
+			else {
+				// no ID found - whoops!
+				return;
+			}
+			$article.children().addClass('transparent').end()
+				.append(Rutter.spinner());
+			$.get(
+				rutterL10n.endpointAjax,
+				{
+					rutter_action: 'edit_post',
+					post_id: postId
+				},
+				function(response) {
+					if (response.html) {
+						$article.replaceWith(response.html);
+// this isn't loading as desired - need to figure out the right way to size the editor
+// 						window.editors[postId] = ace.edit('post-edit-' + postId);
+
+// proof of concept
+						window.editors[postId] = ace.edit('ace-editor');
+
+						window.editors[postId].getSession().setValue(response.content);
+						window.editors[postId].getSession().setUseWrapMode(true);
+					}
+				},
+				'json'
+			);
+			e.preventDefault();
 		});
 
 

@@ -49,6 +49,8 @@ if (have_posts()) {
 
 </div>
 
+<div id="ace-editor" style="height: 400px; width: 600px;"></div>
+
 <?php
 wp_footer();
 ?>
