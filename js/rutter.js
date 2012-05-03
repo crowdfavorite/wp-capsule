@@ -58,19 +58,32 @@
 			function(response) {
 				if (response.html) {
 					$article.replaceWith(response.html);
-					window.editors[postId] = ace.edit('ace-editor-' + postId);
-					window.Rutter.CFMarkdownMode = require("cf/js/syntax/cfmarkdown").Mode;
-					window.editors[postId].getSession().setValue(response.content);
-					window.editors[postId].getSession().setUseWrapMode(true);
-					window.editors[postId].getSession().setMode('cf/js/syntax/cfmarkdown');
-					window.editors[postId].focus();
+					Rutter.initEditor(postId, response.content);
 				}
 			},
 			'json'
 		);
 	};
 	
-	Rutter.savePost = function(postId, content, $article, loadExcerpt) {
+	Rutter.createPost = function($article) {
+		$article.addClass('unstyled').children().addClass('transparent').end()
+			.append(Rutter.spinner());
+		$.post(
+			rutterL10n.endpointAjax,
+			{
+				rutter_action: 'create_post'
+			},
+			function(response) {
+				if (response.html) {
+					$article.replaceWith(response.html);
+					Rutter.initEditor(response.post_id, '');
+				}
+			},
+			'json'
+		);
+	};
+	
+	Rutter.updatePost = function(postId, content, $article, loadExcerpt) {
 		if (typeof loadExcerpt == 'undefined') {
 			loadExcerpt = false;
 		}
@@ -81,18 +94,12 @@
 		$.post(
 			rutterL10n.endpointAjax,
 			{
-				rutter_action: 'save_post',
+				rutter_action: 'update_post',
 				post_id: postId,
 				content: content
 			},
 			function(response) {
-// TODO
-console.log(response);
 				if (response.result == 'success') {
-					if (postId.indexOf('new-') != -1) {
-						postId = response.post_id;
-						$article.data('post-id', postId);
-					}
 					if (loadExcerpt) {
 						Rutter.loadExcerpt($article, postId);
 					}
@@ -100,6 +107,15 @@ console.log(response);
 			},
 			'json'
 		);
+	};
+	
+	Rutter.initEditor = function(postId, content) {
+		window.Rutter.CFMarkdownMode = require("cf/js/syntax/cfmarkdown").Mode;
+		window.editors[postId] = ace.edit('ace-editor-' + postId);
+		window.editors[postId].getSession().setValue(content);
+		window.editors[postId].getSession().setUseWrapMode(true);
+		window.editors[postId].getSession().setMode('cf/js/syntax/cfmarkdown');
+		window.editors[postId].focus();
 	};
 
 	$(function() {
@@ -131,14 +147,20 @@ console.log(response);
 			// save content and load excerpt
 			var $article = $(this).closest('article'),
 				postId = $article.data('post-id');
-			Rutter.savePost(postId, window.editors[postId].getSession().getValue(), $article, true);
+			Rutter.updatePost(postId, window.editors[postId].getSession().getValue(), $article, true);
 			e.preventDefault();
 		});
 		$('#header').on('click', '.post-new-link', function(e) {
-			var postId = 'new-' + Math.random().toString(36).substring(7),
-				$article = $('<article></article>').height('400px').data('post-id', postId);
-			$('.body').prepend($article);
-			Rutter.loadEditor($article, postId);
+			var $article = $('<article></article>').height('400px'),
+				ymd = date('Ymd', (new Date()).getTime() / 1000),
+				$dateTitle = $('.body h2.date-' + ymd);
+			if ($dateTitle.size()) {
+				$dateTitle.after($article);
+			}
+			else {
+				$('.body').prepend($article);
+			}
+			Rutter.createPost($article);
 			e.preventDefault();
 		});
 

@@ -26,34 +26,20 @@ function cfrutter_controller() {
 			break;
 			case 'post_editor':
 // required params:
-// - post_id (if prefixed with "new-", this is for a new, unsaved post
+// - post_id
 				if (isset($_GET['post_id'])) {
-					$post_id = stripslashes($_GET['post_id']);
-					if (substr($post_id, 0, 4) == 'new-') {
+					$post_id = intval($_GET['post_id']);
+					if (!empty($post_id)) {
+						global $post;
+						$post = get_post($post_id);
+						setup_postdata($post);
 						ob_start();
-						include(STYLESHEETPATH.'/views/new.php');
+						include(STYLESHEETPATH.'/views/edit.php');
 						$html = ob_get_clean();
 						$response = array(
 							'html' => $html,
-							'content' => ''
+							'content' => $post->post_content
 						);
-					}
-					else {
-						$post_id = intval($post_id);
-						if (!empty($post_id)) {
-							global $post;
-							$post = get_post($post_id);
-							setup_postdata($post);
-							ob_start();
-							include(STYLESHEETPATH.'/views/edit.php');
-							$html = ob_get_clean();
-							$response = array(
-								'html' => $html,
-								'content' => $post->post_content
-							);
-						}
-					}
-					if (isset($response)) {
 						header('Content-type: application/json');
 						echo json_encode($response);
 					}
@@ -63,52 +49,75 @@ function cfrutter_controller() {
 		}
 	}
 	if (!empty($_POST['rutter_action'])) {
+		if (!current_user_can('edit_posts')) {
+			die();
+		}
 		switch ($_POST['rutter_action']) {
-			case 'save_post':
-// required params:
-// - content
-// optional params:
-// - post_id
-
-// TODO - check post editing permissions
-
-// TODO - parse content for taxonomies
-
-				$post_id = (!empty($_POST['post_id']) ? stripslashes($_POST['post_id']) : 'new-');
-				if (substr($post_id, 0, 4) == 'new-') {
-					// create a new post
-
-// TODO - set title as @Project Name + #tags
-
-					$post_id = wp_insert_post(array(
-						'post_title' => time(),
-						'post_status' => 'publish',
-						'post_content' => $_POST['content']
-					), true);
-					if (is_wp_error($post_id)) {
-						$result = 'error';
-						$msg = $post_id->get_error_message();
-					}
-					else {
-						$result = 'success';
-						$msg = __('Post created.', 'rutter');
-					}
+			case 'create_post':
+				$post_id = wp_insert_post(array(
+					'post_title' => time(),
+					'post_status' => 'draft',
+					'post_content' => ''
+				), true);
+				if (is_wp_error($post_id)) {
+					$result = 'error';
+					$msg = $post_id->get_error_message();
+					$response = compact('result', 'msg');
 				}
 				else {
-					// update an existing post
-
-// TODO
-
+					$result = 'success';
+					$msg = __('Post created.', 'rutter');
+					$post = get_post($post_id);
+					setup_postdata($post);
+					ob_start();
+					include(STYLESHEETPATH.'/views/edit.php');
+					$html = ob_get_clean();
+					$ymd = get_the_time('Ymd', $post);
+					$response = array(
+						'post_id' => $post_id,
+						'result' => $result,
+						'msg' => $msg,
+						'html' => $html,
+						'content' => $post->post_content,
+					);
 				}
-				if ($result == 'success') {
+				header('Content-type: application/json');
+				echo json_encode($response);
+				die();
+			break;
+			case 'update_post':
+// required params:
+// - content
+// - post_id
+
+// TODO - parse content for taxonomies
+// TODO - set title as @Project Name + #tags
+
+				$post_id = intval($_POST['post_id']);
+				$update = wp_update_post(array(
+					'ID' => $post_id,
+					'post_content' => stripslashes($_POST['content']),
+					'post_status' => 'publish',
+				));
+				if ($update) {
 
 // TODO - update taxonomies
 
+					$result = 'success';
+					$msg = 'Post saved.';
+				}
+				else {
+					$result = 'error';
+					$msg = 'Saving post #'.$post_id.' failed.';
 				}
 				$response = compact('post_id', 'result', 'msg');
 				header('Content-type: application/json');
 				echo json_encode($response);
 				die();
+			break;
+			case 'delete_post':
+
+// TODO
 
 			break;
 			case 'split_post':

@@ -47,7 +47,13 @@ function cfrutter_resources() {
 		RUTTER_URL_VERSION,
 		true
 	);
-
+	wp_enqueue_script(
+		'php-date',
+		trailingslashit(get_bloginfo('template_url')).'lib/phpjs/functions/datetime/date.js',
+		array(),
+		RUTTER_URL_VERSION,
+		true
+	);
 }
 add_action('wp_enqueue_scripts', 'cfrutter_resources');
 

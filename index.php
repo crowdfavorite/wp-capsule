@@ -73,7 +73,8 @@ if (is_search() || is_archive()) {
 if (have_posts()) {
 	while (have_posts()) {
 		the_post();
-		the_date('F j, Y', '<h2 class="date-title">', '</h2>');
+		$ymd = get_the_time('Ymd', $post);
+		the_date('F j, Y', '<h2 class="date-title date-'.$ymd.'">', '</h2>');
 		if (is_singular()) {
 			include('views/content.php');
 		}
