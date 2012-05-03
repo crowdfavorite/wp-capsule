@@ -59,8 +59,10 @@
 				if (response.html) {
 					$article.replaceWith(response.html);
 					window.editors[postId] = ace.edit('ace-editor-' + postId);
+					window.Rutter.CFMarkdownMode = require("cf/js/syntax/cfmarkdown").Mode;
 					window.editors[postId].getSession().setValue(response.content);
 					window.editors[postId].getSession().setUseWrapMode(true);
+					window.editors[postId].getSession().setMode('cf/js/syntax/cfmarkdown');
 				}
 			},
 			'json'

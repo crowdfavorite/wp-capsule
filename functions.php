@@ -40,6 +40,14 @@ function cfrutter_resources() {
 		RUTTER_URL_VERSION,
 		true
 	);
+	wp_enqueue_script(
+		'cfmarkdown',
+		trailingslashit(get_bloginfo('template_url')).'js/syntax/cfmarkdown.js',
+		array('jquery', 'ace'),
+		RUTTER_URL_VERSION,
+		true
+	);
+
 }
 add_action('wp_enqueue_scripts', 'cfrutter_resources');
 
