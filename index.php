@@ -22,14 +22,14 @@ wp_head();
 </head>
 <body>
 
-<div id="wrap">
+<header id="header">
+	<form action="<?php echo esc_url(home_url('/')); ?>" method="get">
+		<input type="text" name="s" value="" />
+		<input type="submit" name="search_submit" value="<?php _e('Search', 'rutter'); ?>" />
+	</form>
+</header>
 
-	<header>
-		<form action="<?php echo esc_url(home_url('/')); ?>" method="get">
-			<input type="text" name="s" value="" />
-			<input type="submit" name="search_submit" value="<?php _e('Search', 'rutter'); ?>" />
-		</form>
-	</header>
+<div id="wrap">
 
 	<div class="body">
 <?php
@@ -38,16 +38,21 @@ if (have_posts()) {
 	while (have_posts()) {
 		the_post();
 		the_date('F j, Y', '<h2 class="date-title">', '</h2>');
-		include('views/excerpt.php');
+		if (is_singular()) {
+			include('views/content.php');
+		}
+		else {
+			include('views/excerpt.php');
+		}
 	}
 }
 
 ?>
 	</div>
 
-	<footer>FOOTER CONTENT HERE</footer>
-
 </div>
+
+<footer id="footer"><a href="http://crowdfavorite.com/rutter/">Rutter</a> by <a href="http://crowdfavorite.com">Crowd Favorite</a></footer>
 
 <?php
 wp_footer();

@@ -118,7 +118,7 @@ function cfrutter_get_the_terms($terms, $id, $taxonomy) {
 add_filter('get_the_terms', 'cfrutter_get_the_terms', 10, 3);
 
 function cfrutter_term_list($post_id, $taxonomy) {
-	if (($tax_terms = get_the_terms($post->ID, $tax)) != false) {
+	if (($tax_terms = get_the_terms($post_id, $taxonomy)) != false) {
 		return get_the_term_list($post_id, $taxonomy, '<ul><li>', '</li><li>', '</li></ul>'); 
 	}
 	else {
