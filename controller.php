@@ -26,33 +26,89 @@ function cfrutter_controller() {
 			break;
 			case 'post_editor':
 // required params:
-// - post_id
+// - post_id (if prefixed with "new-", this is for a new, unsaved post
 				if (isset($_GET['post_id'])) {
-					$post_id = intval($_GET['post_id']);
-					if (!empty($post_id)) {
-						global $post;
-						$post = get_post($post_id);
-						setup_postdata($post);
+					$post_id = stripslashes($_GET['post_id']);
+					if (substr($post_id, 0, 4) == 'new-') {
 						ob_start();
-						include(STYLESHEETPATH.'/views/edit.php');
+						include(STYLESHEETPATH.'/views/new.php');
 						$html = ob_get_clean();
 						$response = array(
 							'html' => $html,
-							'content' => $post->post_content
+							'content' => ''
 						);
+					}
+					else {
+						$post_id = intval($post_id);
+						if (!empty($post_id)) {
+							global $post;
+							$post = get_post($post_id);
+							setup_postdata($post);
+							ob_start();
+							include(STYLESHEETPATH.'/views/edit.php');
+							$html = ob_get_clean();
+							$response = array(
+								'html' => $html,
+								'content' => $post->post_content
+							);
+						}
+					}
+					if (isset($response)) {
 						header('Content-type: application/json');
 						echo json_encode($response);
-						die();
 					}
+					die();
 				}
 			break;
+		}
+	}
+	if (!empty($_POST['rutter_action'])) {
+		switch ($_POST['rutter_action']) {
 			case 'save_post':
 // required params:
 // - content
 // optional params:
 // - post_id
 
+// TODO - check post editing permissions
+
+// TODO - parse content for taxonomies
+
+				$post_id = (!empty($_POST['post_id']) ? stripslashes($_POST['post_id']) : 'new-');
+				if (substr($post_id, 0, 4) == 'new-') {
+					// create a new post
+
+// TODO - set title as @Project Name + #tags
+
+					$post_id = wp_insert_post(array(
+						'post_title' => time(),
+						'post_status' => 'publish',
+						'post_content' => $_POST['content']
+					), true);
+					if (is_wp_error($post_id)) {
+						$result = 'error';
+						$msg = $post_id->get_error_message();
+					}
+					else {
+						$result = 'success';
+						$msg = __('Post created.', 'rutter');
+					}
+				}
+				else {
+					// update an existing post
+
 // TODO
+
+				}
+				if ($result == 'success') {
+
+// TODO - update taxonomies
+
+				}
+				$response = compact('post_id', 'result', 'msg');
+				header('Content-type: application/json');
+				echo json_encode($response);
+				die();
 
 			break;
 			case 'split_post':

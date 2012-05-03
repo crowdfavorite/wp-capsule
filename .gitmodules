@@ -1,3 +1,6 @@
 [submodule "lib/ace"]
 	path = lib/ace
 	url = git://github.com/ajaxorg/ace.git
+[submodule "lib/cf-archive-title"]
+	path = lib/cf-archive-title
+	url = git@github.com:crowdfavorite/wp-archive-title.git
