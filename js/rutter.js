@@ -115,6 +115,7 @@
 		window.editors[postId].getSession().setValue(content);
 		window.editors[postId].getSession().setUseWrapMode(true);
 		window.editors[postId].getSession().setMode('cf/js/syntax/cfmarkdown');
+		window.editors[postId].setShowPrintMargin(false);
 		window.editors[postId].focus();
 	};
 
