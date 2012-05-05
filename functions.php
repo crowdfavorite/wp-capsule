@@ -147,3 +147,12 @@ function cfrutter_parse_content_for_tags() {
 // replace projects and tags with found terms
 }
 // add_filter('save_post', 'cfrutter_parse_content_for_tags');
+
+function cfrutter_the_content_markdown($content) {
+	include_once(STYLESHEETPATH.'/lib/php-markdown/markdown_extended.php');
+	return MarkdownExtended($content);
+}
+add_filter('the_content', 'cfrutter_the_content_markdown');
+remove_filter('the_content', 'wpautop');
+remove_filter('the_content', 'wptexturize');
+

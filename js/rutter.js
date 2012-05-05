@@ -153,13 +153,15 @@
 		});
 		$('#header').on('click', '.post-new-link', function(e) {
 			var $article = $('<article></article>').height('400px'),
-				ymd = date('Ymd', (new Date()).getTime() / 1000),
+				timestamp = (new Date()).getTime() / 1000,
+				ymd = date('Ymd', timestamp),
 				$dateTitle = $('.body h2.date-' + ymd);
 			if ($dateTitle.size()) {
 				$dateTitle.after($article);
 			}
 			else {
-				$('.body').prepend($article);
+				$('.body').prepend($article)
+					.prepend('<h2 class="date-title date-' + ymd + '">' + date('F j, Y', timestamp) + '</h2>');
 			}
 			Rutter.createPost($article);
 			e.preventDefault();
