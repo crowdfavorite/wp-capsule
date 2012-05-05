@@ -116,9 +116,15 @@ function cfrutter_controller() {
 				die();
 			break;
 			case 'delete_post':
-
-// TODO
-
+// required params:
+// - post_id
+				$post_id = intval($_POST['post_id']);
+				$delete = wp_delete_post($post_id);
+				$result = ($delete == false ? 'error' : 'success');
+				$response = compact('post_id', 'result');
+				header('Content-type: application/json');
+				echo json_encode($response);
+				die();
 			break;
 			case 'split_post':
 // required params:
