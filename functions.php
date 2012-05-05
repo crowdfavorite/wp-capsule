@@ -74,7 +74,7 @@ function cfrutter_register_taxonomies() {
 		'post',
 		array(
 			'hierarchical' => true,
-			'label' => __('Projects'),
+			'label' => __('Projects', 'rutter'),
 			'sort' => true,
 			'args' => array('orderby' => 'term_order'),
 			'rewrite' => array(
@@ -84,11 +84,25 @@ function cfrutter_register_taxonomies() {
 		)
 	);
 	register_taxonomy(
+		'code',
+		'post',
+		array(
+			'hierarchical' => false,
+			'label' => __('Code', 'rutter'),
+			'sort' => true,
+			'args' => array('orderby' => 'term_order'),
+			'rewrite' => array(
+				'slug' => 'code',
+				'with_front' => false,
+			),
+		)
+	);
+	register_taxonomy(
 		'evergreen',
 		'post',
 		array(
 			'hierarchical' => true,
-			'label' => __('Evergreen'),
+			'label' => __('Evergreen', 'rutter'),
 			'sort' => true,
 			'args' => array('orderby' => 'term_order'),
 			'rewrite' => array(
