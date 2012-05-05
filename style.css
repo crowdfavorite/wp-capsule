@@ -105,6 +105,12 @@ body {
 	font-style: normal;
 	font-weight: bold;
 }
+.body .pagination {
+	display: block;
+}
+.pagination .nav-previous {
+	float: right;
+}
 
 /* Header */
 
