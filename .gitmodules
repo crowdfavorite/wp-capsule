@@ -16,6 +16,3 @@
 [submodule "lib/json-js"]
 	path = lib/json-js
 	url = git@github.com:crowdfavorite/JSON-js.git
-[submodule "lib/jquery-scrollto"]
-	path = lib/jquery-scrollto
-	url = git@github.com:crowdfavorite/jquery-scrollto.git
