@@ -78,7 +78,7 @@ function cfrutter_resources() {
 	);
 	wp_enqueue_script(
 		'jquery-scrollintoview',
-		trailingslashit(get_bloginfo('template_url')).'lib/jquery-scrollintoview/jquery.scrollintoview.js',
+		trailingslashit(get_bloginfo('template_url')).'lib/jquery-scrollintoview/jquery.scrollintoview.min.js',
 		array('jquery'),
 		RUTTER_URL_VERSION,
 		true
