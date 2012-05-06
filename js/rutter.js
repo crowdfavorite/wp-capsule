@@ -130,7 +130,7 @@
 			tag = new RegExp("[a-zA-Z]+", ""),
 			tags = [],
 			matches = content.match(block);
-		if (matches.length) {
+		if (matches != null && matches.length) {
 			$.each(matches, function(i, val) {
 				tags.push(val.match(tag)[0]);
 			});
