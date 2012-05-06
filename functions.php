@@ -54,6 +54,20 @@ function cfrutter_resources() {
 		RUTTER_URL_VERSION,
 		true
 	);
+	wp_enqueue_script(
+		'twitter-text',
+		trailingslashit(get_bloginfo('template_url')).'lib/twitter-text-js/twitter-text.js',
+		array('jquery'),
+		RUTTER_URL_VERSION,
+		true
+	);
+	wp_enqueue_script(
+		'json',
+		trailingslashit(get_bloginfo('template_url')).'lib/json-js/json2.js',
+		array(),
+		RUTTER_URL_VERSION,
+		true
+	);
 }
 add_action('wp_enqueue_scripts', 'cfrutter_resources');
 

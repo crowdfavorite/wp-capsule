@@ -91,12 +91,18 @@
 			$article.addClass('unstyled').children().addClass('transparent').end()
 				.append(Rutter.spinner());
 		}
+		var projects = twttr.txt.extractMentions(content),
+			tags = twttr.txt.extractHashtags(content),
+			code = Rutter.extractCodeLanguages(content);
 		$.post(
 			rutterL10n.endpointAjax,
 			{
 				rutter_action: 'update_post',
 				post_id: postId,
-				content: content
+				content: content,
+				projects: JSON.stringify(projects),
+				tags: JSON.stringify(tags),
+				code: JSON.stringify(code)
 			},
 			function(response) {
 				if (response.result == 'success') {
@@ -117,6 +123,19 @@
 		window.editors[postId].getSession().setMode('cf/js/syntax/cfmarkdown');
 		window.editors[postId].setShowPrintMargin(false);
 		window.editors[postId].focus();
+	};
+	
+	Rutter.extractCodeLanguages = function(content) {
+		var block = new RegExp("^```[a-zA-Z]+\\s*$", "gm"),
+			tag = new RegExp("[a-zA-Z]+", ""),
+			tags = [],
+			matches = content.match(block);
+		if (matches.length) {
+			$.each(matches, function(i, val) {
+				tags.push(val.match(tag)[0]);
+			});
+		}
+		return tags;
 	};
 
 	$(function() {

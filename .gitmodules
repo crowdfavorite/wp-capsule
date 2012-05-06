@@ -10,3 +10,9 @@
 [submodule "lib/php-markdown"]
 	path = lib/php-markdown
 	url = git@github.com:crowdfavorite/php-markdown-extra-extended.git
+[submodule "lib/twitter-text-js"]
+	path = lib/twitter-text-js
+	url = git@github.com:crowdfavorite/twitter-text-js.git
+[submodule "lib/json-js"]
+	path = lib/json-js
+	url = git@github.com:crowdfavorite/JSON-js.git
