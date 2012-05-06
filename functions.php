@@ -76,6 +76,13 @@ function cfrutter_resources() {
 		RUTTER_URL_VERSION,
 		true
 	);
+	wp_enqueue_script(
+		'jquery-scrollintoview',
+		trailingslashit(get_bloginfo('template_url')).'lib/jquery-scrollintoview/jquery.scrollintoview.min.js',
+		array('jquery'),
+		RUTTER_URL_VERSION,
+		true
+	);
 }
 add_action('wp_enqueue_scripts', 'cfrutter_resources');
 

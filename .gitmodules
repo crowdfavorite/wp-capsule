@@ -16,3 +16,6 @@
 [submodule "lib/json-js"]
 	path = lib/json-js
 	url = git@github.com:crowdfavorite/JSON-js.git
+[submodule "lib/jquery-scrollintoview"]
+	path = lib/jquery-scrollintoview
+	url = git@github.com:crowdfavorite/jquery-scrollintoview.git

@@ -22,6 +22,7 @@
 			function(response) {
 				if (response.html) {
 					$article.replaceWith(response.html);
+					$('#post-content-' + postId).scrollintoview({ offset: 10 });
 				}
 			},
 			'json'
@@ -40,6 +41,7 @@
 			function(response) {
 				if (response.html) {
 					$article.replaceWith(response.html);
+					$('#post-content-' + postId).scrollintoview({ offset: 10 });
 				}
 			},
 			'json'
@@ -78,6 +80,8 @@
 			function(response) {
 				if (response.html) {
 					$article.replaceWith(response.html);
+					$.scrollTo('#post-edit-' + response.post_id, {offset: -10});
+					Rutter.sizeEditor();
 					Rutter.initEditor(response.post_id, '');
 				}
 			},
