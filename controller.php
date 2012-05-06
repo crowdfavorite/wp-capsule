@@ -90,19 +90,28 @@ function cfrutter_controller() {
 // - content
 // - post_id
 				$post_id = intval($_POST['post_id']);
+				if (!$post_id) {
+					die();
+				}
+				$post_title = '';
+				$taxonomies = array(
+					'projects' => array(),
+					'post_tag' => array(),
+					'code' => array(),
+				);
+				foreach ($taxonomies as $tax => $terms) {
+					$terms = json_decode(stripslashes($_POST[$tax]));
+					$taxonomies[$tax] = $terms;
+					$post_title .= ' '.implode(' ', $terms);
+				}
 				$update = wp_update_post(array(
 					'ID' => $post_id,
+					'post_title' => trim($post_title),
 					'post_content' => stripslashes($_POST['content']),
 					'post_status' => 'publish',
 				));
 				if ($update) {
-					$taxonomies = array(
-						'projects',
-						'post_tag',
-						'code'
-					);
-					foreach ($taxonomies as $tax) {
-						$terms = json_decode(stripslashes($_POST[$tax]));
+					foreach ($taxonomies as $tax => $terms) {
 						wp_set_post_terms($post_id, $terms, $tax);
 					}
 					$result = 'success';
