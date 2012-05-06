@@ -101,7 +101,7 @@
 				post_id: postId,
 				content: content,
 				projects: JSON.stringify(projects),
-				tags: JSON.stringify(tags),
+				post_tag: JSON.stringify(tags),
 				code: JSON.stringify(code)
 			},
 			function(response) {

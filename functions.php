@@ -3,6 +3,7 @@
 define('RUTTER_URL_VERSION', '1');
 define('RUTTER_TAX_PREFIX_PROJECT', '@');
 define('RUTTER_TAX_PREFIX_TAG', '#');
+define('RUTTER_TAX_PREFIX_CODE', '`');
 
 include('controller.php');
 
@@ -87,8 +88,20 @@ function cfrutter_register_taxonomies() {
 		'projects',
 		'post',
 		array(
-			'hierarchical' => true,
-			'label' => __('Projects', 'rutter'),
+			'hierarchical' => false,
+			'labels' => array(
+				'name' => __('Projects', 'rutter'),
+				'singular_name' => __('Project', 'rutter'),
+				'search_items' => __('Search Projects', 'rutter'),
+				'popular_items' => __('Popular Projects', 'rutter'),
+				'all_items' => __('All Projects', 'rutter'),
+				'parent_item' => __('Parent Project', 'rutter'),
+				'parent_item_colon' => __('Parent Project:', 'rutter'),
+				'edit_item' => __('Edit Project', 'rutter'),
+				'update_item' => __('Update Project', 'rutter'),
+				'add_new_item' => __('Add New Project', 'rutter'),
+				'new_item_name' => __('New Project Name', 'rutter'),
+			),
 			'sort' => true,
 			'args' => array('orderby' => 'term_order'),
 			'rewrite' => array(
@@ -102,7 +115,19 @@ function cfrutter_register_taxonomies() {
 		'post',
 		array(
 			'hierarchical' => false,
-			'label' => __('Code', 'rutter'),
+			'labels' => array(
+				'name' => __('Code Languages', 'rutter'),
+				'singular_name' => __('Code Language', 'rutter'),
+				'search_items' => __('Search Code Languages', 'rutter'),
+				'popular_items' => __('Popular Code Languages', 'rutter'),
+				'all_items' => __('All Code Languages', 'rutter'),
+				'parent_item' => __('Parent Code Language', 'rutter'),
+				'parent_item_colon' => __('Parent Code Language:', 'rutter'),
+				'edit_item' => __('Edit Code Language', 'rutter'),
+				'update_item' => __('Update Code Language', 'rutter'),
+				'add_new_item' => __('Add New Code Language', 'rutter'),
+				'new_item_name' => __('New Code Language Name', 'rutter'),
+			),
 			'sort' => true,
 			'args' => array('orderby' => 'term_order'),
 			'rewrite' => array(
@@ -116,7 +141,19 @@ function cfrutter_register_taxonomies() {
 		'post',
 		array(
 			'hierarchical' => true,
-			'label' => __('Evergreen', 'rutter'),
+			'labels' => array(
+				'name' => __('Evergreen', 'rutter'),
+				'singular_name' => __('Evergreen Status', 'rutter'),
+				'search_items' => __('Search Evergreen Status', 'rutter'),
+				'popular_items' => __('Popular Evergreen Status', 'rutter'),
+				'all_items' => __('All Evergreen Status', 'rutter'),
+				'parent_item' => __('Parent Evergreen Status', 'rutter'),
+				'parent_item_colon' => __('Parent Evergreen Status:', 'rutter'),
+				'edit_item' => __('Edit Evergreen Status', 'rutter'),
+				'update_item' => __('Update Evergreen Status', 'rutter'),
+				'add_new_item' => __('Add New Evergreen Status', 'rutter'),
+				'new_item_name' => __('New Evergreen Status Name', 'rutter'),
+			),
 			'sort' => true,
 			'args' => array('orderby' => 'term_order'),
 			'rewrite' => array(
@@ -149,6 +186,14 @@ function cfrutter_get_the_terms($terms, $id, $taxonomy) {
 				$_terms = array();
 				foreach ($terms as $term_id => $term) {
 					$term->name = RUTTER_TAX_PREFIX_TAG.$term->name;
+					$_terms[$term_id] = $term;
+				}
+				$terms = $_terms;
+				break;
+			case 'code':
+				$_terms = array();
+				foreach ($terms as $term_id => $term) {
+					$term->name = RUTTER_TAX_PREFIX_CODE.$term->name;
 					$_terms[$term_id] = $term;
 				}
 				$terms = $_terms;

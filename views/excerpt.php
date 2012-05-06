@@ -2,7 +2,7 @@
 
 $terms = array();
 
-$taxes = array('projects', 'post_tag');
+$taxes = array('projects', 'post_tag', 'code');
 foreach ($taxes as $tax) {
 	if (($tax_terms = get_the_terms($post->ID, $tax)) != false) {
 		$terms = array_merge($terms, $tax_terms);
@@ -10,9 +10,9 @@ foreach ($taxes as $tax) {
 }
 
 if (count($terms)) {
-	$tags = get_the_term_list($post->ID, 'projects')
-		.' '
-		.get_the_term_list($post->ID, 'post_tag');
+	$tags = get_the_term_list($post->ID, 'projects', '<span class="tag-group">', ', ', '</span>')
+		.get_the_term_list($post->ID, 'post_tag', '<span class="tag-group">', ', ', '</span>')
+		.get_the_term_list($post->ID, 'code', '<span class="tag-group">', ', ', '</span>');
 }
 else {
 	$tags = '<span class="none">'.__('(no tags)', 'rutter').'</span>';

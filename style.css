@@ -265,6 +265,9 @@ article.excerpt header {
 	background: transparent;
 	padding-bottom: 3px;
 }
+article.excerpt header .tag-group {
+	padding-right: 15px;
+}
 article.excerpt header,
 article.excerpt header a,
 article.excerpt header a:visited {

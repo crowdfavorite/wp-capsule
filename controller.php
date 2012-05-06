@@ -89,10 +89,6 @@ function cfrutter_controller() {
 // required params:
 // - content
 // - post_id
-
-// TODO - parse content for taxonomies
-// TODO - set title as @Project Name + #tags
-
 				$post_id = intval($_POST['post_id']);
 				$update = wp_update_post(array(
 					'ID' => $post_id,
@@ -100,9 +96,15 @@ function cfrutter_controller() {
 					'post_status' => 'publish',
 				));
 				if ($update) {
-
-// TODO - update taxonomies
-
+					$taxonomies = array(
+						'projects',
+						'post_tag',
+						'code'
+					);
+					foreach ($taxonomies as $tax) {
+						$terms = json_decode(stripslashes($_POST[$tax]));
+						wp_set_post_terms($post_id, $terms, $tax);
+					}
 					$result = 'success';
 					$msg = 'Post saved.';
 				}
