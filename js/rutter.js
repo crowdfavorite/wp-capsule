@@ -58,6 +58,8 @@
 			function(response) {
 				if (response.html) {
 					$article.replaceWith(response.html);
+					$.scrollTo('#post-edit-' + postId, {offset: -10});
+					Rutter.sizeEditor();
 					Rutter.initEditor(postId, response.content);
 				}
 			},
@@ -125,6 +127,14 @@
 		window.editors[postId].focus();
 	};
 	
+	Rutter.sizeEditor = function() {
+		$('.ace-editor:not(.resized)').each(function() {
+			$(this).height(
+				($(window).height() - $(this).closest('article').find('header').height() - 40) + 'px'
+			);
+		});
+	};
+	
 	Rutter.extractCodeLanguages = function(content) {
 		var block = new RegExp("^```[a-zA-Z]+\\s*$", "gm"),
 			tag = new RegExp("[a-zA-Z]+", ""),
@@ -184,6 +194,9 @@
 			}
 			Rutter.createPost($article);
 			e.preventDefault();
+		});
+		$(window).on('resize', function() {
+			Rutter.sizeEditor();
 		});
 
 	});
