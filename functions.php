@@ -214,14 +214,6 @@ function cfrutter_term_list($post_id, $taxonomy) {
 	}
 }
 
-function cfrutter_parse_content_for_tags() {
-// TODO
-// find projects
-// find tags
-// replace projects and tags with found terms
-}
-// add_filter('save_post', 'cfrutter_parse_content_for_tags');
-
 function cfrutter_the_content_markdown($content) {
 	include_once(STYLESHEETPATH.'/lib/php-markdown/markdown_extended.php');
 	return MarkdownExtended($content);
