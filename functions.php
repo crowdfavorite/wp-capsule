@@ -180,39 +180,26 @@ function cfrutter_register_taxonomies() {
 add_action('init', 'cfrutter_register_taxonomies');
 
 function cfrutter_get_the_terms($terms, $id, $taxonomy) {
-	// this was getting called twice for post_tag, not sure why
-	global $RUTTER_TAX_FILTERED;
-	if (!isset($RUTTER_TAX_FILTERED)) {
-		$RUTTER_TAX_FILTERED = array();
-	}
-	if (is_array($terms) && count($terms) && !in_array($taxonomy, $RUTTER_TAX_FILTERED)) {
-		$RUTTER_TAX_FILTERED[] = $taxonomy;
+	if (is_array($terms) && count($terms)) {
 		switch ($taxonomy) {
 			case 'projects':
-				$_terms = array();
-				foreach ($terms as $term_id => $term) {
-					$term->name = RUTTER_TAX_PREFIX_PROJECT.$term->name;
-					$_terms[$term_id] = $term;
-				}
-				$terms = $_terms;
+				$prefix = RUTTER_TAX_PREFIX_PROJECT;
 				break;
 			case 'post_tag':
-				$_terms = array();
-				foreach ($terms as $term_id => $term) {
-					$term->name = RUTTER_TAX_PREFIX_TAG.$term->name;
-					$_terms[$term_id] = $term;
-				}
-				$terms = $_terms;
+				$prefix = RUTTER_TAX_PREFIX_TAG;
 				break;
 			case 'code':
-				$_terms = array();
-				foreach ($terms as $term_id => $term) {
-					$term->name = RUTTER_TAX_PREFIX_CODE.$term->name;
-					$_terms[$term_id] = $term;
-				}
-				$terms = $_terms;
+				$prefix = RUTTER_TAX_PREFIX_CODE;
 				break;
 		}
+		$_terms = array();
+		foreach ($terms as $term_id => $term) {
+			if (substr($term->name, 0, strlen($prefix)) != $prefix) {
+				$term->name = $prefix.$term->name;
+			}
+			$_terms[$term_id] = $term;
+		}
+		$terms = $_terms;
 	}
 	return $terms;
 }
