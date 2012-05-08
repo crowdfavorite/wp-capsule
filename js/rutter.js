@@ -10,10 +10,35 @@
 		return '<div class="spinner"><span>' + text + '</span></div>';
 	};
 	
+	Rutter.authCheck = function(response) {
+		if (typeof response.result != 'undefined' && response.result == 'unauthorized') {
+			alert(response.msg);
+			location.href = response.login_url + '?redirect_to=' + encodeURIComponent(location.href);
+			return false;
+		}
+		return true;
+	};
+	
+	Rutter.get = function(url, args, callback, type) {
+		$.get(url, args, function(response) {
+			if (Rutter.authCheck(response)) {
+				callback.call(this, response);
+			}
+		}, type);
+	};
+	
+	Rutter.post = function(url, args, callback, type) {
+		$.post(url, args, function(response) {
+			if (Rutter.authCheck(response)) {
+				callback.call(this, response);
+			}
+		}, type);
+	};
+	
 	Rutter.loadContent = function($article, postId) {
 		$article.addClass('unstyled').children().addClass('transparent').end()
 			.append(Rutter.spinner());
-		$.get(
+		Rutter.get(
 			rutterL10n.endpointAjax,
 			{
 				rutter_action: 'post_content',
@@ -32,7 +57,7 @@
 	Rutter.loadExcerpt = function($article, postId) {
 		$article.addClass('unstyled').children().addClass('transparent').end()
 			.append(Rutter.spinner());
-		$.get(
+		Rutter.get(
 			rutterL10n.endpointAjax,
 			{
 				rutter_action: 'post_excerpt',
@@ -51,7 +76,7 @@
 	Rutter.loadEditor = function($article, postId) {
 		$article.addClass('unstyled').children().addClass('transparent').end()
 			.append(Rutter.spinner());
-		$.get(
+		Rutter.get(
 			rutterL10n.endpointAjax,
 			{
 				rutter_action: 'post_editor',
@@ -72,7 +97,7 @@
 	Rutter.createPost = function($article) {
 		$article.addClass('unstyled').children().addClass('transparent').end()
 			.append(Rutter.spinner());
-		$.post(
+		Rutter.post(
 			rutterL10n.endpointAjax,
 			{
 				rutter_action: 'create_post'
@@ -100,7 +125,7 @@
 		var projects = twttr.txt.extractMentions(content),
 			tags = twttr.txt.extractHashtags(content),
 			code = Rutter.extractCodeLanguages(content);
-		$.post(
+		Rutter.post(
 			rutterL10n.endpointAjax,
 			{
 				rutter_action: 'update_post',

@@ -2,6 +2,9 @@
 
 function cfrutter_controller() {
 	if (!empty($_GET['rutter_action'])) {
+		if (!current_user_can('edit_posts')) {
+			cfrutter_unauthorized_json();
+		}
 		switch ($_GET['rutter_action']) {
 			case 'post_excerpt':
 			case 'post_content':
@@ -50,7 +53,7 @@ function cfrutter_controller() {
 	}
 	if (!empty($_POST['rutter_action'])) {
 		if (!current_user_can('edit_posts')) {
-			die();
+			cfrutter_unauthorized_json();
 		}
 		switch ($_POST['rutter_action']) {
 			case 'create_post':

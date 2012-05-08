@@ -19,7 +19,17 @@ function cfrutter_gatekeeper() {
 		}
 	}
 }
-add_action('init', 'cfrutter_gatekeeper');	
+add_action('init', 'cfrutter_gatekeeper', 9999);
+
+function cfrutter_unauthorized_json() {
+	header('Content-type: application/json');
+	echo json_encode(array(
+		'result' => 'unauthorized',
+		'msg' => __('Please log in.', 'rutter'),
+		'login_url' => site_url('wp-login.php'),
+	));
+	die();
+}
 
 function cfrutter_resources() {
 	wp_enqueue_script('jquery');
