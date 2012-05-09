@@ -310,6 +310,9 @@ article.content .meta ul,
 article.content .meta li {
 	display: inline;
 }
+article.content .meta li {
+	padding-right: 5px;
+}
 article .meta a,
 article .meta a:visited {
 	color: #666;

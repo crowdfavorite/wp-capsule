@@ -9,6 +9,9 @@
 		<br>
 		<h3><?php _e('Tags', 'rutter'); ?></h3>
 		<?php echo cfrutter_term_list(get_the_ID(), 'post_tag'); ?>
+		<br>
+		<h3><?php _e('Code', 'rutter'); ?></h3>
+		<?php echo cfrutter_term_list(get_the_ID(), 'code'); ?>
 	</div>
 	<div class="content"><?php the_content(); ?></div>
 </article>
