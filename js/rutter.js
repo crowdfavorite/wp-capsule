@@ -146,6 +146,29 @@
 		);
 	};
 	
+	Rutter.deletePost = function(postId, $article) {
+		$article.addClass('unstyled').children().addClass('transparent').end()
+			.append(Rutter.spinner());
+		Rutter.post(
+			rutterL10n.endpointAjax,
+			{
+				rutter_action: 'delete_post',
+				post_id: postId
+			},
+			function(response) {
+				if (response.result == 'success') {
+					$article.remove();
+				}
+				else {
+					alert(response.msg);
+					$article.removeClass('unstyled').children().removeClass('transparent').end()
+						.find('.spinner').remove();
+				}
+			},
+			'json'
+		);
+	};
+	
 	Rutter.initEditor = function(postId, content) {
 		window.Rutter.CFMarkdownMode = require("cf/js/syntax/cfmarkdown").Mode;
 		window.editors[postId] = ace.edit('ace-editor-' + postId);
@@ -207,6 +230,12 @@
 			var $article = $(this).closest('article'),
 				postId = $article.data('post-id');
 			Rutter.updatePost(postId, window.editors[postId].getSession().getValue(), $article, true);
+			e.preventDefault();
+		}).on('click', 'article .post-delete-link', function(e) {
+			var $article = $(this).closest('article'),
+				postId = $article.data('post-id');
+			Rutter.deletePost(postId, $article);
+			e.stopPropagation();
 			e.preventDefault();
 		});
 		$('#header').on('click', '.post-new-link', function(e) {

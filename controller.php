@@ -134,8 +134,15 @@ function cfrutter_controller() {
 // - post_id
 				$post_id = intval($_POST['post_id']);
 				$delete = wp_delete_post($post_id);
-				$result = ($delete == false ? 'error' : 'success');
-				$response = compact('post_id', 'result');
+				if ($delete != false) {
+					$result = 'success';
+					$msg = __('Post deleted', 'rutter');
+				}
+				else {
+					$result = 'error';
+					$msg = __('Post not deleted, please try again.', 'rutter');
+				}
+				$response = compact('post_id', 'result', 'msg');
 				header('Content-type: application/json');
 				echo json_encode($response);
 				die();

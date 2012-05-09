@@ -28,4 +28,5 @@ edit_post_link(__('Edit', 'rutter'));
 ?>
 	</header>
 	<div class="content"><?php the_excerpt(); ?></div>
+	<a href="<?php echo admin_url('post.php?post='.$post->ID.'&action=trash'); ?>" class="post-delete-link"><?php _e('Delete', 'rutter'); ?></a>
 </article>
