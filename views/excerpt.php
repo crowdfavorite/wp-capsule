@@ -15,7 +15,7 @@ if (count($terms)) {
 		.get_the_term_list($post->ID, 'code', '<span class="tag-group">', ', ', '</span>');
 }
 else {
-	$tags = '<span class="none">'.__('(no tags)', 'rutter').'</span>';
+	$tags = '<span class="none">'.__('(no tags)', 'capsule').'</span>';
 }
 
 ?>
@@ -24,9 +24,9 @@ else {
 		<a href="<?php the_permalink(); ?>" class="post-link"><?php the_time(); ?></a>
 <?php
 echo $tags;
-edit_post_link(__('Edit', 'rutter')); 
+edit_post_link(__('Edit', 'capsule')); 
 ?>
 	</header>
 	<div class="content"><?php the_excerpt(); ?></div>
-	<a href="<?php echo admin_url('post.php?post='.$post->ID.'&action=trash'); ?>" class="post-delete-link"><?php _e('Delete', 'rutter'); ?></a>
+	<a href="<?php echo admin_url('post.php?post='.$post->ID.'&action=trash'); ?>" class="post-delete-link"><?php _e('Delete', 'capsule'); ?></a>
 </article>

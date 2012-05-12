@@ -1,16 +1,16 @@
 (function($) {
 	window.editors = {};
 
-	window.Rutter = {};
+	window.Capsule = {};
 
-	Rutter.spinner = function (text) {
+	Capsule.spinner = function (text) {
 		if (typeof text == 'undefined') {
-			text = rutterL10n.loading;
+			text = capsuleL10n.loading;
 		}
 		return '<div class="spinner"><span>' + text + '</span></div>';
 	};
 	
-	Rutter.authCheck = function(response) {
+	Capsule.authCheck = function(response) {
 		if (typeof response.result != 'undefined' && response.result == 'unauthorized') {
 			alert(response.msg);
 			location.href = response.login_url + '?redirect_to=' + encodeURIComponent(location.href);
@@ -19,29 +19,29 @@
 		return true;
 	};
 	
-	Rutter.get = function(url, args, callback, type) {
+	Capsule.get = function(url, args, callback, type) {
 		$.get(url, args, function(response) {
-			if (Rutter.authCheck(response)) {
+			if (Capsule.authCheck(response)) {
 				callback.call(this, response);
 			}
 		}, type);
 	};
 	
-	Rutter.post = function(url, args, callback, type) {
+	Capsule.post = function(url, args, callback, type) {
 		$.post(url, args, function(response) {
-			if (Rutter.authCheck(response)) {
+			if (Capsule.authCheck(response)) {
 				callback.call(this, response);
 			}
 		}, type);
 	};
 	
-	Rutter.loadContent = function($article, postId) {
+	Capsule.loadContent = function($article, postId) {
 		$article.addClass('unstyled').children().addClass('transparent').end()
-			.append(Rutter.spinner());
-		Rutter.get(
-			rutterL10n.endpointAjax,
+			.append(Capsule.spinner());
+		Capsule.get(
+			capsuleL10n.endpointAjax,
 			{
-				rutter_action: 'post_content',
+				capsule_action: 'post_content',
 				post_id: postId
 			},
 			function(response) {
@@ -54,13 +54,13 @@
 		);
 	};
 	
-	Rutter.loadExcerpt = function($article, postId) {
+	Capsule.loadExcerpt = function($article, postId) {
 		$article.addClass('unstyled').children().addClass('transparent').end()
-			.append(Rutter.spinner());
-		Rutter.get(
-			rutterL10n.endpointAjax,
+			.append(Capsule.spinner());
+		Capsule.get(
+			capsuleL10n.endpointAjax,
 			{
-				rutter_action: 'post_excerpt',
+				capsule_action: 'post_excerpt',
 				post_id: postId
 			},
 			function(response) {
@@ -73,62 +73,62 @@
 		);
 	};
 
-	Rutter.loadEditor = function($article, postId) {
+	Capsule.loadEditor = function($article, postId) {
 		$article.addClass('unstyled').children().addClass('transparent').end()
-			.append(Rutter.spinner());
-		Rutter.get(
-			rutterL10n.endpointAjax,
+			.append(Capsule.spinner());
+		Capsule.get(
+			capsuleL10n.endpointAjax,
 			{
-				rutter_action: 'post_editor',
+				capsule_action: 'post_editor',
 				post_id: postId
 			},
 			function(response) {
 				if (response.html) {
 					$article.replaceWith(response.html);
 					$.scrollTo('#post-edit-' + postId, {offset: -10});
-					Rutter.sizeEditor();
-					Rutter.initEditor(postId, response.content);
+					Capsule.sizeEditor();
+					Capsule.initEditor(postId, response.content);
 				}
 			},
 			'json'
 		);
 	};
 	
-	Rutter.createPost = function($article) {
+	Capsule.createPost = function($article) {
 		$article.addClass('unstyled').children().addClass('transparent').end()
-			.append(Rutter.spinner());
-		Rutter.post(
-			rutterL10n.endpointAjax,
+			.append(Capsule.spinner());
+		Capsule.post(
+			capsuleL10n.endpointAjax,
 			{
-				rutter_action: 'create_post'
+				capsule_action: 'create_post'
 			},
 			function(response) {
 				if (response.html) {
 					$article.replaceWith(response.html);
 					$.scrollTo('#post-edit-' + response.post_id, {offset: -10});
-					Rutter.sizeEditor();
-					Rutter.initEditor(response.post_id, '');
+					Capsule.sizeEditor();
+					Capsule.initEditor(response.post_id, '');
 				}
 			},
 			'json'
 		);
 	};
 	
-	Rutter.updatePost = function(postId, content, $article, loadExcerpt) {
+	Capsule.updatePost = function(postId, content, $article, loadExcerpt) {
 		if (typeof loadExcerpt == 'undefined') {
 			loadExcerpt = false;
 		}
 		if (loadExcerpt) {
 			$article.addClass('unstyled').children().addClass('transparent').end()
-				.append(Rutter.spinner());
+				.append(Capsule.spinner());
 		}
 		var projects = twttr.txt.extractMentions(content),
 			tags = twttr.txt.extractHashtags(content),
-			code = Rutter.extractCodeLanguages(content);
-		Rutter.post(
-			rutterL10n.endpointAjax,
+			code = Capsule.extractCodeLanguages(content);
+		Capsule.post(
+			capsuleL10n.endpointAjax,
 			{
-				rutter_action: 'update_post',
+				capsule_action: 'update_post',
 				post_id: postId,
 				content: content,
 				projects: JSON.stringify(projects),
@@ -138,7 +138,7 @@
 			function(response) {
 				if (response.result == 'success') {
 					if (loadExcerpt) {
-						Rutter.loadExcerpt($article, postId);
+						Capsule.loadExcerpt($article, postId);
 					}
 				}
 			},
@@ -146,13 +146,13 @@
 		);
 	};
 	
-	Rutter.deletePost = function(postId, $article) {
+	Capsule.deletePost = function(postId, $article) {
 		$article.addClass('unstyled').children().addClass('transparent').end()
-			.append(Rutter.spinner());
-		Rutter.post(
-			rutterL10n.endpointAjax,
+			.append(Capsule.spinner());
+		Capsule.post(
+			capsuleL10n.endpointAjax,
 			{
-				rutter_action: 'delete_post',
+				capsule_action: 'delete_post',
 				post_id: postId
 			},
 			function(response) {
@@ -169,8 +169,8 @@
 		);
 	};
 	
-	Rutter.initEditor = function(postId, content) {
-		window.Rutter.CFMarkdownMode = require("cf/js/syntax/cfmarkdown").Mode;
+	Capsule.initEditor = function(postId, content) {
+		window.Capsule.CFMarkdownMode = require("cf/js/syntax/cfmarkdown").Mode;
 		window.editors[postId] = ace.edit('ace-editor-' + postId);
 		window.editors[postId].getSession().setValue(content);
 		window.editors[postId].getSession().setUseWrapMode(true);
@@ -179,7 +179,7 @@
 		window.editors[postId].focus();
 	};
 	
-	Rutter.sizeEditor = function() {
+	Capsule.sizeEditor = function() {
 		$('.ace-editor:not(.resized)').each(function() {
 			$(this).height(
 				($(window).height() - $(this).closest('article').find('header').height() - 40) + 'px'
@@ -187,7 +187,7 @@
 		});
 	};
 	
-	Rutter.extractCodeLanguages = function(content) {
+	Capsule.extractCodeLanguages = function(content) {
 		var block = new RegExp("^```[a-zA-Z]+\\s*$", "gm"),
 			tag = new RegExp("[a-zA-Z]+", ""),
 			tags = [],
@@ -206,7 +206,7 @@
 			// load full content on excerpt click
 			var $article = $(this).closest('article.excerpt'),
 				postId = $article.data('post-id');
-			Rutter.loadContent($article, postId);
+			Capsule.loadContent($article, postId);
 		}).on('click', 'article.excerpt header a:not(.post-edit-link)', function(e) {
 			// exception for links in header
 			e.stopPropagation();
@@ -214,12 +214,12 @@
 			// load excerpt on full content doubleclick
 			var $article = $(this).closest('article.content'),
 				postId = $article.data('post-id');
-			Rutter.loadExcerpt($article, postId);
+			Capsule.loadExcerpt($article, postId);
 		}).on('click', 'article .post-edit-link', function(e) {
 			// load editor
 			var $article = $(this).closest('article'),
 				postId = $article.data('post-id');
-			Rutter.loadEditor($article, postId);
+			Capsule.loadEditor($article, postId);
 			e.preventDefault();
 			// don't allow bubbling to load content
 			if ($article.hasClass('excerpt')) {
@@ -229,12 +229,12 @@
 			// save content and load excerpt
 			var $article = $(this).closest('article'),
 				postId = $article.data('post-id');
-			Rutter.updatePost(postId, window.editors[postId].getSession().getValue(), $article, true);
+			Capsule.updatePost(postId, window.editors[postId].getSession().getValue(), $article, true);
 			e.preventDefault();
 		}).on('click', 'article .post-delete-link', function(e) {
 			var $article = $(this).closest('article'),
 				postId = $article.data('post-id');
-			Rutter.deletePost(postId, $article);
+			Capsule.deletePost(postId, $article);
 			e.stopPropagation();
 			e.preventDefault();
 		});
@@ -250,11 +250,11 @@
 				$('.body').prepend($article)
 					.prepend('<h2 class="date-title date-' + ymd + '">' + date('F j, Y', timestamp) + '</h2>');
 			}
-			Rutter.createPost($article);
+			Capsule.createPost($article);
 			e.preventDefault();
 		});
 		$(window).on('resize', function() {
-			Rutter.sizeEditor();
+			Capsule.sizeEditor();
 		});
 
 	});

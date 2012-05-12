@@ -1,10 +1,10 @@
 <?php
 
 /**
- * @package rutter
+ * @package capsule
  *
- * This file is part of the Rutter Theme for WordPress
- * http://crowdfavorite.com/rutter/
+ * This file is part of the Capsule Theme for WordPress
+ * http://crowdfavorite.com/capsule/
  *
  * Copyright (c) 2012 Crowd Favorite, Ltd. All rights reserved.
  * http://crowdfavorite.com
@@ -54,9 +54,9 @@ wp_head();
 <header id="header">
 	<div class="inner">
 		<form class="clearfix" action="<?php echo esc_url(home_url('/')); ?>" method="get" onsubmit="<?php echo $search_onsubmit; ?>">
-			<input type="text" name="s" value="" placeholder="<?php _e('Search', 'rutter'); ?>" />
-			<input type="submit" name="search_submit" value="<?php _e('Search', 'rutter'); ?>" />
-			<a href="<?php echo esc_url(admin_url('post-new.php')); ?>" class="post-new-link"><?php _e('New', 'rutter'); ?></a>
+			<input type="text" name="s" value="" placeholder="<?php _e('Search', 'capsule'); ?>" />
+			<input type="submit" name="search_submit" value="<?php _e('Search', 'capsule'); ?>" />
+			<a href="<?php echo esc_url(admin_url('post-new.php')); ?>" class="post-new-link"><?php _e('New', 'capsule'); ?></a>
 		</form>
 	</div>
 </header>
@@ -97,7 +97,7 @@ if (have_posts()) {
 	</div>
 </div>
 
-<footer id="footer"><a href="http://crowdfavorite.com/rutter/">Rutter</a> by <a href="http://crowdfavorite.com">Crowd Favorite</a></footer>
+<footer id="footer"><a href="http://crowdfavorite.com/capsule/">Capsule</a> by <a href="http://crowdfavorite.com">Crowd Favorite</a></footer>
 
 <?php
 wp_footer();

@@ -9,7 +9,7 @@ include('controller.php');
 
 show_admin_bar(false);
 
-function cfrutter_gatekeeper() {
+function cfcapsule_gatekeeper() {
 	if (!current_user_can('publish_posts')) {
 		$login_page = site_url('wp-login.php');
 		is_ssl() ? $proto = 'https://' : $proto = 'http://';
@@ -19,30 +19,30 @@ function cfrutter_gatekeeper() {
 		}
 	}
 }
-add_action('init', 'cfrutter_gatekeeper', 9999);
+add_action('init', 'cfcapsule_gatekeeper', 9999);
 
-function cfrutter_unauthorized_json() {
+function cfcapsule_unauthorized_json() {
 	header('Content-type: application/json');
 	echo json_encode(array(
 		'result' => 'unauthorized',
-		'msg' => __('Please log in.', 'rutter'),
+		'msg' => __('Please log in.', 'capsule'),
 		'login_url' => site_url('wp-login.php'),
 	));
 	die();
 }
 
-function cfrutter_resources() {
+function cfcapsule_resources() {
 	wp_enqueue_script('jquery');
 	wp_enqueue_script(
-		'rutter',
-		trailingslashit(get_bloginfo('template_url')).'js/rutter.js',
+		'capsule',
+		trailingslashit(get_bloginfo('template_url')).'js/capsule.js',
 		array('jquery', 'ace'),
 		RUTTER_URL_VERSION,
 		true
 	);
-	wp_localize_script('rutter', 'rutterL10n', array(
+	wp_localize_script('capsule', 'capsuleL10n', array(
 		'endpointAjax' => home_url('index.php'),
-		'loading' => __('Loading...', 'rutter'),
+		'loading' => __('Loading...', 'capsule'),
 	));
 	wp_enqueue_script(
 		'ace',
@@ -94,9 +94,9 @@ function cfrutter_resources() {
 		true
 	);
 }
-add_action('wp_enqueue_scripts', 'cfrutter_resources');
+add_action('wp_enqueue_scripts', 'cfcapsule_resources');
 
-function cfrutter_wp_head() {
+function cfcapsule_wp_head() {
 ?>
 <style>
 .spinner {
@@ -105,26 +105,26 @@ function cfrutter_wp_head() {
 </style>
 <?php
 }
-add_action('wp_head', 'cfrutter_wp_head');
+add_action('wp_head', 'cfcapsule_wp_head');
 
-function cfrutter_register_taxonomies() {
+function cfcapsule_register_taxonomies() {
 	register_taxonomy(
 		'projects',
 		'post',
 		array(
 			'hierarchical' => false,
 			'labels' => array(
-				'name' => __('Projects', 'rutter'),
-				'singular_name' => __('Project', 'rutter'),
-				'search_items' => __('Search Projects', 'rutter'),
-				'popular_items' => __('Popular Projects', 'rutter'),
-				'all_items' => __('All Projects', 'rutter'),
-				'parent_item' => __('Parent Project', 'rutter'),
-				'parent_item_colon' => __('Parent Project:', 'rutter'),
-				'edit_item' => __('Edit Project', 'rutter'),
-				'update_item' => __('Update Project', 'rutter'),
-				'add_new_item' => __('Add New Project', 'rutter'),
-				'new_item_name' => __('New Project Name', 'rutter'),
+				'name' => __('Projects', 'capsule'),
+				'singular_name' => __('Project', 'capsule'),
+				'search_items' => __('Search Projects', 'capsule'),
+				'popular_items' => __('Popular Projects', 'capsule'),
+				'all_items' => __('All Projects', 'capsule'),
+				'parent_item' => __('Parent Project', 'capsule'),
+				'parent_item_colon' => __('Parent Project:', 'capsule'),
+				'edit_item' => __('Edit Project', 'capsule'),
+				'update_item' => __('Update Project', 'capsule'),
+				'add_new_item' => __('Add New Project', 'capsule'),
+				'new_item_name' => __('New Project Name', 'capsule'),
 			),
 			'sort' => true,
 			'args' => array('orderby' => 'term_order'),
@@ -140,17 +140,17 @@ function cfrutter_register_taxonomies() {
 		array(
 			'hierarchical' => false,
 			'labels' => array(
-				'name' => __('Code Languages', 'rutter'),
-				'singular_name' => __('Code Language', 'rutter'),
-				'search_items' => __('Search Code Languages', 'rutter'),
-				'popular_items' => __('Popular Code Languages', 'rutter'),
-				'all_items' => __('All Code Languages', 'rutter'),
-				'parent_item' => __('Parent Code Language', 'rutter'),
-				'parent_item_colon' => __('Parent Code Language:', 'rutter'),
-				'edit_item' => __('Edit Code Language', 'rutter'),
-				'update_item' => __('Update Code Language', 'rutter'),
-				'add_new_item' => __('Add New Code Language', 'rutter'),
-				'new_item_name' => __('New Code Language Name', 'rutter'),
+				'name' => __('Code Languages', 'capsule'),
+				'singular_name' => __('Code Language', 'capsule'),
+				'search_items' => __('Search Code Languages', 'capsule'),
+				'popular_items' => __('Popular Code Languages', 'capsule'),
+				'all_items' => __('All Code Languages', 'capsule'),
+				'parent_item' => __('Parent Code Language', 'capsule'),
+				'parent_item_colon' => __('Parent Code Language:', 'capsule'),
+				'edit_item' => __('Edit Code Language', 'capsule'),
+				'update_item' => __('Update Code Language', 'capsule'),
+				'add_new_item' => __('Add New Code Language', 'capsule'),
+				'new_item_name' => __('New Code Language Name', 'capsule'),
 			),
 			'sort' => true,
 			'args' => array('orderby' => 'term_order'),
@@ -166,17 +166,17 @@ function cfrutter_register_taxonomies() {
 		array(
 			'hierarchical' => true,
 			'labels' => array(
-				'name' => __('Evergreen', 'rutter'),
-				'singular_name' => __('Evergreen Status', 'rutter'),
-				'search_items' => __('Search Evergreen Status', 'rutter'),
-				'popular_items' => __('Popular Evergreen Status', 'rutter'),
-				'all_items' => __('All Evergreen Status', 'rutter'),
-				'parent_item' => __('Parent Evergreen Status', 'rutter'),
-				'parent_item_colon' => __('Parent Evergreen Status:', 'rutter'),
-				'edit_item' => __('Edit Evergreen Status', 'rutter'),
-				'update_item' => __('Update Evergreen Status', 'rutter'),
-				'add_new_item' => __('Add New Evergreen Status', 'rutter'),
-				'new_item_name' => __('New Evergreen Status Name', 'rutter'),
+				'name' => __('Evergreen', 'capsule'),
+				'singular_name' => __('Evergreen Status', 'capsule'),
+				'search_items' => __('Search Evergreen Status', 'capsule'),
+				'popular_items' => __('Popular Evergreen Status', 'capsule'),
+				'all_items' => __('All Evergreen Status', 'capsule'),
+				'parent_item' => __('Parent Evergreen Status', 'capsule'),
+				'parent_item_colon' => __('Parent Evergreen Status:', 'capsule'),
+				'edit_item' => __('Edit Evergreen Status', 'capsule'),
+				'update_item' => __('Update Evergreen Status', 'capsule'),
+				'add_new_item' => __('Add New Evergreen Status', 'capsule'),
+				'new_item_name' => __('New Evergreen Status Name', 'capsule'),
 			),
 			'sort' => true,
 			'args' => array('orderby' => 'term_order'),
@@ -187,9 +187,9 @@ function cfrutter_register_taxonomies() {
 		)
 	);
 }
-add_action('init', 'cfrutter_register_taxonomies');
+add_action('init', 'cfcapsule_register_taxonomies');
 
-function cfrutter_get_the_terms($terms, $id, $taxonomy) {
+function cfcapsule_get_the_terms($terms, $id, $taxonomy) {
 	if (is_array($terms) && count($terms)) {
 		switch ($taxonomy) {
 			case 'projects':
@@ -213,22 +213,22 @@ function cfrutter_get_the_terms($terms, $id, $taxonomy) {
 	}
 	return $terms;
 }
-add_filter('get_the_terms', 'cfrutter_get_the_terms', 10, 3);
+add_filter('get_the_terms', 'cfcapsule_get_the_terms', 10, 3);
 
-function cfrutter_term_list($post_id, $taxonomy) {
+function cfcapsule_term_list($post_id, $taxonomy) {
 	if (($tax_terms = get_the_terms($post_id, $taxonomy)) != false) {
 		return get_the_term_list($post_id, $taxonomy, '<ul><li>', '</li><li>', '</li></ul>'); 
 	}
 	else {
-		return '<ul><li class="none">'.__('(none)', 'rutter').'</li></ul>';
+		return '<ul><li class="none">'.__('(none)', 'capsule').'</li></ul>';
 	}
 }
 
-function cfrutter_the_content_markdown($content) {
+function cfcapsule_the_content_markdown($content) {
 	include_once(STYLESHEETPATH.'/lib/php-markdown/markdown_extended.php');
 	return MarkdownExtended($content);
 }
-add_filter('the_content', 'cfrutter_the_content_markdown');
+add_filter('the_content', 'cfcapsule_the_content_markdown');
 remove_filter('the_content', 'wpautop');
 remove_filter('the_content', 'wptexturize');
 

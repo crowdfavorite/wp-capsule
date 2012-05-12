@@ -1,11 +1,11 @@
 <?php
 
-function cfrutter_controller() {
-	if (!empty($_GET['rutter_action'])) {
+function cfcapsule_controller() {
+	if (!empty($_GET['capsule_action'])) {
 		if (!current_user_can('edit_posts')) {
-			cfrutter_unauthorized_json();
+			cfcapsule_unauthorized_json();
 		}
-		switch ($_GET['rutter_action']) {
+		switch ($_GET['capsule_action']) {
 			case 'post_excerpt':
 			case 'post_content':
 // required params:
@@ -16,7 +16,7 @@ function cfrutter_controller() {
 						global $post;
 						$post = get_post($post_id);
 						setup_postdata($post);
-						$view = str_replace('post_', '', $_GET['rutter_action']);
+						$view = str_replace('post_', '', $_GET['capsule_action']);
 						ob_start();
 						include(STYLESHEETPATH.'/views/'.$view.'.php');
 						$html = ob_get_clean();
@@ -51,11 +51,11 @@ function cfrutter_controller() {
 			break;
 		}
 	}
-	if (!empty($_POST['rutter_action'])) {
+	if (!empty($_POST['capsule_action'])) {
 		if (!current_user_can('edit_posts')) {
-			cfrutter_unauthorized_json();
+			cfcapsule_unauthorized_json();
 		}
-		switch ($_POST['rutter_action']) {
+		switch ($_POST['capsule_action']) {
 			case 'create_post':
 				$post_id = wp_insert_post(array(
 					'post_title' => time(),
@@ -69,7 +69,7 @@ function cfrutter_controller() {
 				}
 				else {
 					$result = 'success';
-					$msg = __('Post created.', 'rutter');
+					$msg = __('Post created.', 'capsule');
 					$post = get_post($post_id);
 					setup_postdata($post);
 					ob_start();
@@ -136,11 +136,11 @@ function cfrutter_controller() {
 				$delete = wp_delete_post($post_id);
 				if ($delete != false) {
 					$result = 'success';
-					$msg = __('Post deleted', 'rutter');
+					$msg = __('Post deleted', 'capsule');
 				}
 				else {
 					$result = 'error';
-					$msg = __('Post not deleted, please try again.', 'rutter');
+					$msg = __('Post not deleted, please try again.', 'capsule');
 				}
 				$response = compact('post_id', 'result', 'msg');
 				header('Content-type: application/json');
@@ -166,4 +166,4 @@ function cfrutter_controller() {
 		}
 	}
 }
-add_action('init', 'cfrutter_controller', 11);
+add_action('init', 'cfcapsule_controller', 11);
