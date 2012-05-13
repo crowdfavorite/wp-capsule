@@ -286,6 +286,7 @@ article.excerpt a.post-delete-link,
 article.excerpt a.post-delete-link:visited {
 	bottom: 5px;
 	color: #900;
+	font-size: 12px;
 	position: absolute;
 	right: 10px;
 	visibility: hidden;
@@ -293,6 +294,30 @@ article.excerpt a.post-delete-link:visited {
 article.excerpt:hover a.post-delete-link,
 article.excerpt:hover a.post-delete-link:visited {
 	visibility: visible;
+}
+
+article.deleted {
+	background: #ccc;
+	border-radius: 5px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	color: #666;
+	padding: 10px;
+}
+article.deleted span.msg {
+	display: inline-block;
+	padding: 3px 5px;
+}
+article.deleted a.post-undelete-link,
+article.deleted a.post-undelete-link:visited {
+	background: #999;
+	border-radius: 3px;
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
+	color: #fff;
+	display: inline-block;
+	float: right;
+	padding: 3px 10px;
 }
 
 /* Content */

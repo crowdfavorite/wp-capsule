@@ -135,14 +135,44 @@ function cfcapsule_controller() {
 				$post_id = intval($_POST['post_id']);
 				$delete = wp_delete_post($post_id);
 				if ($delete != false) {
+					$post = get_post($post_id);
+					setup_postdata($post);
 					$result = 'success';
 					$msg = __('Post deleted', 'capsule');
+					ob_start();
+					include(STYLESHEETPATH.'/views/deleted.php');
+					$html = ob_get_clean();
 				}
 				else {
 					$result = 'error';
 					$msg = __('Post not deleted, please try again.', 'capsule');
+					$html = '';
 				}
-				$response = compact('post_id', 'result', 'msg');
+				$response = compact('post_id', 'result', 'msg', 'html');
+				header('Content-type: application/json');
+				echo json_encode($response);
+				die();
+			break;
+			case 'undelete_post':
+// required params:
+// - post_id
+				$post_id = intval($_POST['post_id']);
+				$post = wp_untrash_post($post_id);
+				if ($post != false) {
+					$post = get_post($post_id);
+					setup_postdata($post);
+					$result = 'success';
+					$msg = __('Post recovered from trash.', 'capsule');
+					ob_start();
+					include(STYLESHEETPATH.'/views/excerpt.php');
+					$html = ob_get_clean();
+				}
+				else {
+					$result = 'error';
+					$msg = __('Post not restored, please try again.', 'capsule');
+					$html = '';
+				}
+				$response = compact('post_id', 'result', 'msg', 'html');
 				header('Content-type: application/json');
 				echo json_encode($response);
 				die();
