@@ -232,3 +232,12 @@ add_filter('the_content', 'cfcapsule_the_content_markdown');
 remove_filter('the_content', 'wpautop');
 remove_filter('the_content', 'wptexturize');
 
+function cfcapsule_trim_excerpt($excerpt) {
+	$max = 500;
+	if (strlen($excerpt) > $max) {
+		$excerpt = substr($excerpt, 0, $max);
+	}
+	return $excerpt;
+}
+add_filter('get_the_excerpt', 'cfcapsule_trim_excerpt');
+
