@@ -59,6 +59,7 @@ autorequire("ace/mode/javascript");
 autorequire("ace/mode/xml");
 autorequire("ace/mode/html");
 autorequire("ace/mode/php");
+autorequire("ace/mode/sql");
 
 define('cf/js/syntax/cfmarkdown', ['require', 'exports', 'module' , 'ace/lib/oop', 'ace/mode/text', 'ace/mode/javascript', 'ace/mode/xml', 'ace/mode/html', 'ace/tokenizer', 'ace/mode/markdown_highlight_rules'],
 function(require, exports, module) {
@@ -70,6 +71,7 @@ var JavaScriptMode = require("ace/mode/javascript").Mode;
 var XmlMode = require("ace/mode/xml").Mode;
 var HtmlMode = require("ace/mode/html").Mode;
 var PhpMode = require("ace/mode/php").Mode;
+var SqlMode = require("ace/mode/sql").Mode;
 var Tokenizer = require("ace/tokenizer").Tokenizer;
 var CFMarkdownHighlightRules = require("./cfmarkdown_highlight_rules").CFMarkdownHighlightRules;
 
@@ -116,6 +118,7 @@ var XmlHighlightRules = require("ace/mode/xml_highlight_rules").XmlHighlightRule
 var HtmlHighlightRules = require("ace/mode/html_highlight_rules").HtmlHighlightRules;
 var CssHighlightRules = require("ace/mode/css_highlight_rules").CssHighlightRules;
 var PhpHighlightRules = require("ace/mode/php_highlight_rules").PhpHighlightRules;
+var SqlHighlightRules = require("ace/mode/sql_highlight_rules").SqlHighlightRules;
 
 function github_embed(tag, prefix) {
     return { // Github style block
@@ -136,11 +139,14 @@ var CFMarkdownHighlightRules = function() {
             regex : '^$'
         }, 
 		{
-			token: ["keyword", "constant"],
+			token: ["constant", "constant"],
 			regex: twttr.txt.regexSupplant("(#{hashSigns})(#{hashtagAlphaNumeric}*#{hashtagAlpha}#{hashtagAlphaNumeric}*)")
 		},
 		{
-			token: ["constant", "keyword"],
+			token: function(first, second) {
+				console.log(first); console.log(second);
+				return ["keyword", "keyword"];
+			},
 			regex: twttr.txt.regexSupplant("(#{atSigns})([a-zA-Z0-9_]{1,20})")
 		},
 		{ // code span `
@@ -165,6 +171,7 @@ var CFMarkdownHighlightRules = function() {
            github_embed("html", "html-"),
            github_embed("css", "css-"),
            github_embed("php", "php-"),
+           github_embed("sql", "sql-"),
         { // Github style block
             token : "support.function",
             regex : "^```[a-zA-Z]+\\s*$",
@@ -269,7 +276,7 @@ var CFMarkdownHighlightRules = function() {
        next  : "start"
     }]);
 
-    this.embedRules(PhpHighlightRules, "php-", [{
+    this.embedRules(SqlHighlightRules, "sql-", [{
        token : "support.function",
        regex : "^```",
        next  : "start"
