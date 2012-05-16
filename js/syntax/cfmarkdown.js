@@ -273,6 +273,12 @@ var CFMarkdownHighlightRules = function() {
        next  : "start"
     }]);
 
+    this.embedRules(PhpHighlightRules, "php-", [{
+       token : "support.function",
+       regex : "^```",
+       next  : "start"
+    }]);
+
     this.embedRules(SqlHighlightRules, "sql-", [{
        token : "support.function",
        regex : "^```",
