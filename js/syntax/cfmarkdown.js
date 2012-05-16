@@ -139,15 +139,12 @@ var CFMarkdownHighlightRules = function() {
             regex : '^$'
         }, 
 		{
-			token: ["constant", "constant"],
-			regex: twttr.txt.regexSupplant("(#{hashSigns})(#{hashtagAlphaNumeric}*#{hashtagAlpha}#{hashtagAlphaNumeric}*)")
+			token: "keyword",
+			regex: twttr.txt.regexSupplant("(?:^|\\s)#{atSigns}[a-zA-Z0-9_]{1,20}")
 		},
 		{
-			token: function(first, second) {
-				console.log(first); console.log(second);
-				return ["keyword", "keyword"];
-			},
-			regex: twttr.txt.regexSupplant("(#{atSigns})([a-zA-Z0-9_]{1,20})")
+			token: ["constant", "constant"],
+			regex: twttr.txt.regexSupplant("(#{hashSigns})(#{hashtagAlphaNumeric}*#{hashtagAlpha}#{hashtagAlphaNumeric}*)")
 		},
 		{ // code span `
             token : ["support.function", "support.function", "support.function"],
@@ -222,7 +219,7 @@ var CFMarkdownHighlightRules = function() {
                     ")(>)"
         }, {
             token : "text",
-            regex : "[^\\*_@%$`\\[#<>]+"
+            regex : "[^\\*_@%$`\\[#<>]+?"
         } ],
         
         "listblock" : [ { // Lists only escape on completely blank lines.
