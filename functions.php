@@ -191,6 +191,7 @@ add_action('init', 'capsule_register_taxonomies');
 
 function capsule_get_the_terms($terms, $id, $taxonomy) {
 	if (is_array($terms) && count($terms)) {
+		$prefix = null;
 		switch ($taxonomy) {
 			case 'projects':
 				$prefix = CAPSULE_TAX_PREFIX_PROJECT;
@@ -204,8 +205,10 @@ function capsule_get_the_terms($terms, $id, $taxonomy) {
 		}
 		$_terms = array();
 		foreach ($terms as $term_id => $term) {
-			if (substr($term->name, 0, strlen($prefix)) != $prefix) {
-				$term->name = $prefix.$term->name;
+			if (!empty($prefix)) {
+				if (substr($term->name, 0, strlen($prefix)) != $prefix) {
+					$term->name = $prefix.$term->name;
+				}
 			}
 			$_terms[$term_id] = $term;
 		}
