@@ -1,9 +1,9 @@
 <?php
 
-function cfcapsule_controller() {
+function capsule_controller() {
 	if (!empty($_GET['capsule_action'])) {
 		if (!current_user_can('edit_posts')) {
-			cfcapsule_unauthorized_json();
+			capsule_unauthorized_json();
 		}
 		switch ($_GET['capsule_action']) {
 			case 'post_excerpt':
@@ -53,7 +53,7 @@ function cfcapsule_controller() {
 	}
 	if (!empty($_POST['capsule_action'])) {
 		if (!current_user_can('edit_posts')) {
-			cfcapsule_unauthorized_json();
+			capsule_unauthorized_json();
 		}
 		switch ($_POST['capsule_action']) {
 			case 'create_post':
@@ -196,4 +196,4 @@ function cfcapsule_controller() {
 		}
 	}
 }
-add_action('init', 'cfcapsule_controller', 11);
+add_action('init', 'capsule_controller', 11);
