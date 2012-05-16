@@ -9,7 +9,7 @@ include('controller.php');
 
 show_admin_bar(false);
 
-function cfcapsule_gatekeeper() {
+function capsule_gatekeeper() {
 	if (!current_user_can('publish_posts')) {
 		$login_page = site_url('wp-login.php');
 		is_ssl() ? $proto = 'https://' : $proto = 'http://';
@@ -19,9 +19,9 @@ function cfcapsule_gatekeeper() {
 		}
 	}
 }
-add_action('init', 'cfcapsule_gatekeeper', 9999);
+add_action('init', 'capsule_gatekeeper', 9999);
 
-function cfcapsule_unauthorized_json() {
+function capsule_unauthorized_json() {
 	header('Content-type: application/json');
 	echo json_encode(array(
 		'result' => 'unauthorized',
@@ -31,7 +31,7 @@ function cfcapsule_unauthorized_json() {
 	die();
 }
 
-function cfcapsule_resources() {
+function capsule_resources() {
 	wp_enqueue_script('jquery');
 	wp_enqueue_script(
 		'capsule',
@@ -94,9 +94,9 @@ function cfcapsule_resources() {
 		true
 	);
 }
-add_action('wp_enqueue_scripts', 'cfcapsule_resources');
+add_action('wp_enqueue_scripts', 'capsule_resources');
 
-function cfcapsule_wp_head() {
+function capsule_wp_head() {
 ?>
 <style>
 .spinner {
@@ -105,9 +105,9 @@ function cfcapsule_wp_head() {
 </style>
 <?php
 }
-add_action('wp_head', 'cfcapsule_wp_head');
+add_action('wp_head', 'capsule_wp_head');
 
-function cfcapsule_register_taxonomies() {
+function capsule_register_taxonomies() {
 	register_taxonomy(
 		'projects',
 		'post',
@@ -187,9 +187,9 @@ function cfcapsule_register_taxonomies() {
 		)
 	);
 }
-add_action('init', 'cfcapsule_register_taxonomies');
+add_action('init', 'capsule_register_taxonomies');
 
-function cfcapsule_get_the_terms($terms, $id, $taxonomy) {
+function capsule_get_the_terms($terms, $id, $taxonomy) {
 	if (is_array($terms) && count($terms)) {
 		switch ($taxonomy) {
 			case 'projects':
@@ -213,9 +213,9 @@ function cfcapsule_get_the_terms($terms, $id, $taxonomy) {
 	}
 	return $terms;
 }
-add_filter('get_the_terms', 'cfcapsule_get_the_terms', 10, 3);
+add_filter('get_the_terms', 'capsule_get_the_terms', 10, 3);
 
-function cfcapsule_term_list($post_id, $taxonomy) {
+function capsule_term_list($post_id, $taxonomy) {
 	if (($tax_terms = get_the_terms($post_id, $taxonomy)) != false) {
 		return get_the_term_list($post_id, $taxonomy, '<ul><li>', '</li><li>', '</li></ul>'); 
 	}
@@ -224,20 +224,20 @@ function cfcapsule_term_list($post_id, $taxonomy) {
 	}
 }
 
-function cfcapsule_the_content_markdown($content) {
+function capsule_the_content_markdown($content) {
 	include_once(STYLESHEETPATH.'/lib/php-markdown/markdown_extended.php');
 	return MarkdownExtended($content);
 }
-add_filter('the_content', 'cfcapsule_the_content_markdown');
+add_filter('the_content', 'capsule_the_content_markdown');
 remove_filter('the_content', 'wpautop');
 remove_filter('the_content', 'wptexturize');
 
-function cfcapsule_trim_excerpt($excerpt) {
+function capsule_trim_excerpt($excerpt) {
 	$max = 500;
 	if (strlen($excerpt) > $max) {
 		$excerpt = substr($excerpt, 0, $max);
 	}
 	return $excerpt;
 }
-add_filter('get_the_excerpt', 'cfcapsule_trim_excerpt');
+add_filter('get_the_excerpt', 'capsule_trim_excerpt');
 
