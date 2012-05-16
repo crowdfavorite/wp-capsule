@@ -120,9 +120,15 @@
 		if (typeof loadExcerpt == 'undefined') {
 			loadExcerpt = false;
 		}
+		if (typeof $article == 'undefined') {
+			$article = $('#post-edit-' + postId);
+		}
 		if (loadExcerpt) {
 			$article.addClass('unstyled').children().addClass('transparent').end()
 				.append(Capsule.spinner());
+		}
+		else {
+			$article.addClass('saving');
 		}
 		var projects = twttr.txt.extractMentions(content),
 			tags = twttr.txt.extractHashtags(content),
@@ -141,6 +147,9 @@
 				if (response.result == 'success') {
 					if (loadExcerpt) {
 						Capsule.loadExcerpt($article, postId);
+					}
+					else {
+						$article.removeClass('saving');
 					}
 				}
 			},
