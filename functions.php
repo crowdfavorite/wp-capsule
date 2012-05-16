@@ -51,13 +51,7 @@ function capsule_resources() {
 		CAPSULE_URL_VERSION,
 		true
 	);
-	wp_enqueue_script(
-		'cfmarkdown',
-		trailingslashit(get_bloginfo('template_url')).'js/syntax/cfmarkdown.js',
-		array('jquery', 'ace'),
-		CAPSULE_URL_VERSION,
-		true
-	);
+
 	wp_enqueue_script(
 		'php-date',
 		trailingslashit(get_bloginfo('template_url')).'lib/phpjs/functions/datetime/date.js',
@@ -69,6 +63,13 @@ function capsule_resources() {
 		'twitter-text',
 		trailingslashit(get_bloginfo('template_url')).'lib/twitter-text-js/twitter-text.js',
 		array('jquery'),
+		CAPSULE_URL_VERSION,
+		true
+	);
+	wp_enqueue_script(
+		'cfmarkdown',
+		trailingslashit(get_bloginfo('template_url')).'js/syntax/cfmarkdown.js',
+		array('jquery', 'ace', 'twitter-text'),
 		CAPSULE_URL_VERSION,
 		true
 	);

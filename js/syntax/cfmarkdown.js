@@ -134,7 +134,16 @@ var CFMarkdownHighlightRules = function() {
         "start" : [ {
             token : "empty_line",
             regex : '^$'
-        }, { // code span `
+        }, 
+		{
+			token: ["keyword", "constant"],
+			regex: twttr.txt.regexSupplant("(#{hashSigns})(#{hashtagAlphaNumeric}*#{hashtagAlpha}#{hashtagAlphaNumeric}*)")
+		},
+		{
+			token: ["constant", "keyword"],
+			regex: twttr.txt.regexSupplant("(#{atSigns})([a-zA-Z0-9_]{1,20})")
+		},
+		{ // code span `
             token : ["support.function", "support.function", "support.function"],
             regex : "(`+)([^\\r]*?[^`])(\\1)"
         }, { // code block
@@ -206,7 +215,7 @@ var CFMarkdownHighlightRules = function() {
                     ")(>)"
         }, {
             token : "text",
-            regex : "[^\\*_%$`\\[#<>]+"
+            regex : "[^\\*_@%$`\\[#<>]+"
         } ],
         
         "listblock" : [ { // Lists only escape on completely blank lines.
@@ -236,7 +245,6 @@ var CFMarkdownHighlightRules = function() {
             regex : ".+"
         } ]
     };
-    
     this.embedRules(JavaScriptHighlightRules, "js-", [{
        token : "support.function",
        regex : "^```",
