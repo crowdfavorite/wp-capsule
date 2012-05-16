@@ -1,7 +1,8 @@
 (function($) {
-	window.editors = {};
 
-	window.Capsule = {};
+	window.editors = {},
+	window.Capsule = {},
+	Capsule.autoSave = {};
 
 	Capsule.spinner = function (text) {
 		if (typeof text == 'undefined') {
@@ -88,6 +89,7 @@
 					$.scrollTo('#post-edit-' + postId, {offset: -10});
 					Capsule.sizeEditor();
 					Capsule.initEditor(postId, response.content);
+					Capsule.autoSaveStart(postId);
 				}
 			},
 			'json'
@@ -222,6 +224,16 @@
 		}
 		return tags;
 	};
+	
+	Capsule.autoSaveStart = function(postId) {
+		Capsule.autoSave[postId] = setInterval(function() {
+			Capsule.updatePost(postId, window.editors[postId].getSession().getValue());
+		}, 60000);
+	};
+	
+	Capsule.autoSaveStop = function(postId) {
+		Capsule.autoSave[postId] = clearInterval(Capsule.autoSave[postId]);
+	};
 
 	$(function() {
 	
@@ -252,6 +264,7 @@
 			// save content and load excerpt
 			var $article = $(this).closest('article'),
 				postId = $article.data('post-id');
+			Capsule.autoSaveStop(postId);
 			Capsule.updatePost(postId, window.editors[postId].getSession().getValue(), $article, true);
 			e.preventDefault();
 		}).on('click', 'article .post-delete-link', function(e) {
