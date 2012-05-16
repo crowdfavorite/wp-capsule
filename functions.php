@@ -1,9 +1,9 @@
 <?php
 
-define('RUTTER_URL_VERSION', '1');
-define('RUTTER_TAX_PREFIX_PROJECT', '@');
-define('RUTTER_TAX_PREFIX_TAG', '#');
-define('RUTTER_TAX_PREFIX_CODE', '`');
+define('CAPSULE_URL_VERSION', '1');
+define('CAPSULE_TAX_PREFIX_PROJECT', '@');
+define('CAPSULE_TAX_PREFIX_TAG', '#');
+define('CAPSULE_TAX_PREFIX_CODE', '`');
 
 include('controller.php');
 
@@ -37,7 +37,7 @@ function cfcapsule_resources() {
 		'capsule',
 		trailingslashit(get_bloginfo('template_url')).'js/capsule.js',
 		array('jquery', 'ace'),
-		RUTTER_URL_VERSION,
+		CAPSULE_URL_VERSION,
 		true
 	);
 	wp_localize_script('capsule', 'capsuleL10n', array(
@@ -48,49 +48,49 @@ function cfcapsule_resources() {
 		'ace',
 		trailingslashit(get_bloginfo('template_url')).'lib/ace/build/src/ace.js',
 		array('jquery'),
-		RUTTER_URL_VERSION,
+		CAPSULE_URL_VERSION,
 		true
 	);
 	wp_enqueue_script(
 		'cfmarkdown',
 		trailingslashit(get_bloginfo('template_url')).'js/syntax/cfmarkdown.js',
 		array('jquery', 'ace'),
-		RUTTER_URL_VERSION,
+		CAPSULE_URL_VERSION,
 		true
 	);
 	wp_enqueue_script(
 		'php-date',
 		trailingslashit(get_bloginfo('template_url')).'lib/phpjs/functions/datetime/date.js',
 		array(),
-		RUTTER_URL_VERSION,
+		CAPSULE_URL_VERSION,
 		true
 	);
 	wp_enqueue_script(
 		'twitter-text',
 		trailingslashit(get_bloginfo('template_url')).'lib/twitter-text-js/twitter-text.js',
 		array('jquery'),
-		RUTTER_URL_VERSION,
+		CAPSULE_URL_VERSION,
 		true
 	);
 	wp_enqueue_script(
 		'json',
 		trailingslashit(get_bloginfo('template_url')).'lib/json-js/json2.js',
 		array(),
-		RUTTER_URL_VERSION,
+		CAPSULE_URL_VERSION,
 		true
 	);
 	wp_enqueue_script(
 		'jquery-scrollto',
 		trailingslashit(get_bloginfo('template_url')).'js/jquery.scrollTo-1.4.2-min.js',
 		array('jquery'),
-		RUTTER_URL_VERSION,
+		CAPSULE_URL_VERSION,
 		true
 	);
 	wp_enqueue_script(
 		'jquery-scrollintoview',
 		trailingslashit(get_bloginfo('template_url')).'lib/jquery-scrollintoview/jquery.scrollintoview.min.js',
 		array('jquery'),
-		RUTTER_URL_VERSION,
+		CAPSULE_URL_VERSION,
 		true
 	);
 }
@@ -193,13 +193,13 @@ function cfcapsule_get_the_terms($terms, $id, $taxonomy) {
 	if (is_array($terms) && count($terms)) {
 		switch ($taxonomy) {
 			case 'projects':
-				$prefix = RUTTER_TAX_PREFIX_PROJECT;
+				$prefix = CAPSULE_TAX_PREFIX_PROJECT;
 				break;
 			case 'post_tag':
-				$prefix = RUTTER_TAX_PREFIX_TAG;
+				$prefix = CAPSULE_TAX_PREFIX_TAG;
 				break;
 			case 'code':
-				$prefix = RUTTER_TAX_PREFIX_CODE;
+				$prefix = CAPSULE_TAX_PREFIX_CODE;
 				break;
 		}
 		$_terms = array();
