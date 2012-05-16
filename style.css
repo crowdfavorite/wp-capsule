@@ -276,6 +276,7 @@ article.excerpt header a:visited {
 }
 
 article.excerpt .content {
+	overflow: auto;
 	padding: 0 115px 10px;
 }
 article.excerpt .content p {
