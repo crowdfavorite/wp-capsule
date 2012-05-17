@@ -32,10 +32,12 @@ function capsule_unauthorized_json() {
 }
 
 function capsule_resources() {
+	$template_url = trailingslashit(get_template_directory_uri());
+	
 	wp_enqueue_script('jquery');
 	wp_enqueue_script(
 		'capsule',
-		trailingslashit(get_bloginfo('template_url')).'js/capsule.js',
+		$template_url.'js/capsule.js',
 		array('jquery', 'ace'),
 		CAPSULE_URL_VERSION,
 		true
@@ -46,7 +48,7 @@ function capsule_resources() {
 	));
 	wp_enqueue_script(
 		'ace',
-		trailingslashit(get_bloginfo('template_url')).'lib/ace/build/src/ace.js',
+		$template_url.'lib/ace/build/src/ace.js',
 		array('jquery'),
 		CAPSULE_URL_VERSION,
 		true
@@ -54,42 +56,42 @@ function capsule_resources() {
 
 	wp_enqueue_script(
 		'php-date',
-		trailingslashit(get_bloginfo('template_url')).'lib/phpjs/functions/datetime/date.js',
+		$template_url.'lib/phpjs/functions/datetime/date.js',
 		array(),
 		CAPSULE_URL_VERSION,
 		true
 	);
 	wp_enqueue_script(
 		'twitter-text',
-		trailingslashit(get_bloginfo('template_url')).'lib/twitter-text-js/twitter-text.js',
+		$template_url.'lib/twitter-text-js/twitter-text.js',
 		array('jquery'),
 		CAPSULE_URL_VERSION,
 		true
 	);
 	wp_enqueue_script(
 		'cfmarkdown',
-		trailingslashit(get_bloginfo('template_url')).'js/syntax/cfmarkdown.js',
+		$template_url.'js/syntax/cfmarkdown.js',
 		array('jquery', 'ace', 'twitter-text'),
 		CAPSULE_URL_VERSION,
 		true
 	);
 	wp_enqueue_script(
 		'json',
-		trailingslashit(get_bloginfo('template_url')).'lib/json-js/json2.js',
+		$template_url.'lib/json-js/json2.js',
 		array(),
 		CAPSULE_URL_VERSION,
 		true
 	);
 	wp_enqueue_script(
 		'jquery-scrollto',
-		trailingslashit(get_bloginfo('template_url')).'js/jquery.scrollTo-1.4.2-min.js',
+		$template_url.'js/jquery.scrollTo-1.4.2-min.js',
 		array('jquery'),
 		CAPSULE_URL_VERSION,
 		true
 	);
 	wp_enqueue_script(
 		'jquery-scrollintoview',
-		trailingslashit(get_bloginfo('template_url')).'lib/jquery-scrollintoview/jquery.scrollintoview.min.js',
+		$template_url.'lib/jquery-scrollintoview/jquery.scrollintoview.min.js',
 		array('jquery'),
 		CAPSULE_URL_VERSION,
 		true
