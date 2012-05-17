@@ -244,7 +244,6 @@
 	Capsule.initEditor = function(postId, content) {
 		window.Capsule.CFMarkdownMode = require("cf/js/syntax/cfmarkdown").Mode;
 		window.editors[postId] = ace.edit('ace-editor-' + postId);
-		console.log("cntent", content);
 		window.editors[postId].getSession().setUseWrapMode(true);
 		window.editors[postId].getSession().setMode('cf/js/syntax/cfmarkdown');
 		window.editors[postId].setShowPrintMargin(false);
