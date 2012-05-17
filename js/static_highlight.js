@@ -52,7 +52,7 @@ var baseStyles = require("../requirejs/text!./static.css");
 * @returns {object} An object containing: html, css
 */
 
-exports.render = function(input, mode, theme, lineStart) {
+exports.render = function(input, mode, theme, lineStart, language) {
     lineStart = parseInt(lineStart || 1, 10);
     
     var session = new EditSession("");
@@ -86,9 +86,11 @@ exports.render = function(input, mode, theme, lineStart) {
     }
     // let's prepare the whole html
     var html = "<div class=':cssClass static_container'>\
+		<span class='code_language'>:language</span>\
 		<pre class='static_code'><ol :olStyle>:code</ol></pre>\
     </div>"
 		.replace(/:cssClass/, theme.cssClass)
+		.replace(/:language/, language)
 		.replace(/:olStyle/, olStyle)
 		.replace(/:gutter/, gutterBuilder.join(""))
 		.replace(/:code/, stringBuilder.join(""));

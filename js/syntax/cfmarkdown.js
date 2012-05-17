@@ -83,7 +83,9 @@ var Mode = function() {
     this.createModeDelegates({
       "js-": JavaScriptMode,
       "xml-": XmlMode,
-      "html-": HtmlMode
+      "html-": HtmlMode,
+      "php-": PhpMode,
+      "sql-": SqlMode
     });
 };
 oop.inherits(Mode, TextMode);
@@ -163,12 +165,14 @@ var CFMarkdownHighlightRules = function() {
                 return "markup.heading." + value.length;
             },
             regex : "^#{1,6}"
-        }, github_embed("javascript", "js-"),
-           github_embed("xml", "xml-"),
-           github_embed("html", "html-"),
-           github_embed("css", "css-"),
-           github_embed("php", "php-"),
-           github_embed("sql", "sql-"),
+        }, 
+		github_embed("javascript", "js-"),
+		github_embed("js", "js-"),
+		github_embed("xml", "xml-"),
+		github_embed("html", "html-"),
+		github_embed("css", "css-"),
+		github_embed("php", "php-"),
+		github_embed("sql", "sql-"),
         { // Github style block
             token : "support.function",
             regex : "^```[a-zA-Z]+\\s*$",

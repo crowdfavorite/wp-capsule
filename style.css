@@ -374,10 +374,27 @@ article .ace-editor {
 
 .ace-tm.static_container {
 	overflow-x: scroll;
+	border: 1px solid #333;
+	background-color: #eee;
+	margin-top: 5px;
+	margin-bottom: 5px;
+
+	-webkit-border-radius: 4px;
+	-moz-border-radius: 4px;
+	border-radius: 4px;
 }
 
 pre.static_code {
 	white-space: pre-wrap;
+}
+
+.static_container .code_language {
+	padding: 5px;
+	background-color: #ccc;
+	font-size: 80%;
+	-webkit-border-radius: 0 0 4px 0;
+	-moz-border-radius: 0 0 4px 0;
+	border-radius: 0 0 4px 0;
 }
 
 /* Clearfix */

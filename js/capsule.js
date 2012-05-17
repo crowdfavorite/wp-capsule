@@ -56,9 +56,15 @@
 						}
 						var data = this.childNodes[0].nodeValue;
 						
-						var lang = el.attr('class').match(/language-([-_a-z0-9]+)/i);
+						var lang = el.attr('class')
 						if (lang) {
-							lang = lang[1];
+							lang = lang.match(/language-([-_a-z0-9]+)/i);
+						}
+						if (lang) {
+							lang = lang[1].toLowerCase();
+							if ("js" === lang) {
+								lang = "javascript";
+							}
 							try {
 								var highlighter = require("ace/ext/static_highlight");
 								var theme = require("ace/theme/textmate");
@@ -66,10 +72,8 @@
 								var dom = require("ace/lib/dom");
 								if (mode) {
 									mode = mode.Mode;
-									var highlighted = highlighter.render(data, new mode(), theme);
+									var highlighted = highlighter.render(data, new mode(), theme, 1, lang);
 									el.closest("pre").replaceWith(highlighted.html);
-									console.log("theme", theme);
-									console.log("high", highlighter);
 
 
 
@@ -77,7 +81,6 @@
 							}
 							catch (er) {console.log(er); throw(er);}
 
-							console.log(lang);
 						}
 						
 
