@@ -47,7 +47,42 @@
 			},
 			function(response) {
 				if (response.html) {
-					$article.replaceWith(response.html);
+
+					var block = $(response.html);
+					block.find("pre>code").each(function(i) {
+						var el = $(this);
+						if (this.childNodes.length === 0) {
+							return;
+						}
+						var data = this.childNodes[0].nodeValue;
+						
+						var lang = el.attr('class').match(/language-([-_a-z0-9]+)/i);
+						if (lang) {
+							lang = lang[1];
+							try {
+								var highlighter = require("ace/ext/static_highlight");
+								var theme = require("ace/theme/textmate");
+								var mode = require("ace/mode/" + lang);
+								var dom = require("ace/lib/dom");
+								if (mode) {
+									mode = mode.Mode;
+									var highlighted = highlighter.render(data, new mode(), theme);
+									el.closest("pre").replaceWith(highlighted.html);
+									console.log("theme", theme);
+									console.log("high", highlighter);
+
+
+
+								}
+							}
+							catch (er) {console.log(er); throw(er);}
+
+							console.log(lang);
+						}
+						
+
+					});
+					$article.replaceWith(block);
 					$('#post-content-' + postId).scrollintoview({ offset: 10 });
 				}
 			},
@@ -206,10 +241,11 @@
 	Capsule.initEditor = function(postId, content) {
 		window.Capsule.CFMarkdownMode = require("cf/js/syntax/cfmarkdown").Mode;
 		window.editors[postId] = ace.edit('ace-editor-' + postId);
-		window.editors[postId].getSession().setValue(content);
+		console.log("cntent", content);
 		window.editors[postId].getSession().setUseWrapMode(true);
 		window.editors[postId].getSession().setMode('cf/js/syntax/cfmarkdown');
 		window.editors[postId].setShowPrintMargin(false);
+		window.editors[postId].getSession().setValue(content);
 		window.editors[postId].focus();
 	};
 	
@@ -309,4 +345,5 @@
 		});
 
 	});
+
 })(jQuery);

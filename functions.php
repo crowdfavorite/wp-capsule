@@ -38,7 +38,7 @@ function capsule_resources() {
 	wp_enqueue_script(
 		'capsule',
 		$template_url.'js/capsule.js',
-		array('jquery', 'ace'),
+		array('jquery', 'ace', 'statichighlight', 'cfmarkdown'),
 		CAPSULE_URL_VERSION,
 		true
 	);
@@ -53,7 +53,13 @@ function capsule_resources() {
 		CAPSULE_URL_VERSION,
 		true
 	);
-
+	wp_enqueue_script(
+		'statichighlight',
+		$template_url.'js/static_highlight.js',
+		array('ace'),
+		CAPSULE_URL_VERSION,
+		true
+	);
 	wp_enqueue_script(
 		'php-date',
 		$template_url.'lib/phpjs/functions/datetime/date.js',
