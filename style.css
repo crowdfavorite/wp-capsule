@@ -372,8 +372,9 @@ article .ace-editor {
 
 /* Static code */
 
-.ace-tm.static_container {
-	overflow-x: scroll;
+.static_container {
+	position: relative;
+
 	border: 1px solid #333;
 	background-color: #eee;
 	margin-top: 5px;
@@ -383,20 +384,53 @@ article .ace-editor {
 	-moz-border-radius: 4px;
 	border-radius: 4px;
 }
+.static_container .ace-tm {
+	position: relative;
+	overflow-x: hidden;
+}
 
 pre.static_code {
 	white-space: pre-wrap;
+	margin: 2px;
+}
+
+.static_code ol {
+	margin: 2px;
+	overflow-x: scroll;
+}
+
+.static_code ol li {
+	padding-right: 40px;
 }
 
 .static_container .code_language {
-	padding: 5px;
+	position: absolute;
+	top: 0px;
+	right: 0px;
+	padding: 1px 5px;
+	height: 1.9em;
 	background-color: #ccc;
 	font-size: 80%;
-	-webkit-border-radius: 0 0 4px 0;
-	-moz-border-radius: 0 0 4px 0;
-	border-radius: 0 0 4px 0;
+	-webkit-border-radius: 0 4px 0 4px;
+	-moz-border-radius: 0 4px 0 4px;
+	border-radius: 0 4px 0 4px;
+	z-index: 100;
+
+	-webkit-transition: all .1s ease-in-out;
+	-moz-transition: all .1s ease-in-out;
+	-o-transition: all .1s ease-in-out;
+	-ms-transition: all .1s ease-in-out;
 }
 
+.static_container:hover .code_language {
+	-webkit-transform: translate(0,-2em);
+	-moz-transform: translate(0,-2em);
+	-o-transform: translate(0,-2em);
+	-ms-transform: translate(0,-2em);
+	-webkit-border-radius: 4px;
+	-moz-border-radius: 4px;
+	border-radius: 4px;
+}
 /* Clearfix */
 
 .clearfix:after {

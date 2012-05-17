@@ -85,10 +85,12 @@ exports.render = function(input, mode, theme, lineStart, language) {
     	olStyle = " style='counter-reset: item " + lineStart + ";' ";
     }
     // let's prepare the whole html
-    var html = "<div class=':cssClass static_container'>\
-		<span class='code_language'>:language</span>\
-		<pre class='static_code'><ol :olStyle>:code</ol></pre>\
-    </div>"
+    var html = "<div class='static_container'>\
+			<span class='code_language'>:language</span>\
+				<div class=':cssClass'>\
+					<pre class='static_code'><ol :olStyle>:code</ol></pre>\
+				</div>\
+			</div>"
 		.replace(/:cssClass/, theme.cssClass)
 		.replace(/:language/, language)
 		.replace(/:olStyle/, olStyle)
