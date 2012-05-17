@@ -295,7 +295,7 @@
 		}).on('click', 'article.excerpt header a:not(.post-edit-link)', function(e) {
 			// exception for links in header
 			e.stopPropagation();
-		}).on('dblclick', 'article.content .content', function() {
+		}).on('dblclick', 'article.content header', function() {
 			// load excerpt on full content doubleclick
 			var $article = $(this).closest('article.content'),
 				postId = $article.data('post-id');
