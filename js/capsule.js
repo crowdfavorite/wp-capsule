@@ -267,7 +267,7 @@
 			matches = content.match(block);
 		if (matches != null && matches.length) {
 			$.each(matches, function(i, val) {
-				tags.push(val.match(tag)[0]);
+				tags.push(val.match(tag)[0].replace(/^js$/i, "javascript"));
 			});
 		}
 		return tags;
