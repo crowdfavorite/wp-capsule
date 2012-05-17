@@ -51,15 +51,21 @@
 					var block = $(response.html);
 					block.find("pre>code").each(function(i) {
 						var el = $(this), 
+							data, lang,
 							newlines = [""];
 						// markdown uses <br> for leading blank
 						// lines; replace with real newlines for Ace
 						el.find("br").each(function(i) {
 							newlines.push("");
 						});
-						var data = newlines.join("\n") + el.text();
+						data = newlines.join("\n") + el.text();
+
+						// remove markdown's trailing newline
+						if (data.substr(-1) === "\n") {
+							data = data.substr(0, data.length - 1);
+						}
 						
-						var lang = el.attr('class')
+						lang = el.attr('class');
 						if (lang) {
 							lang = lang.match(/language-([-_a-z0-9]+)/i);
 							if (lang) {
