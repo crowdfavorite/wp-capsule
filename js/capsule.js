@@ -50,40 +50,43 @@
 
 					var block = $(response.html);
 					block.find("pre>code").each(function(i) {
-						var el = $(this);
-						if (this.childNodes.length === 0) {
-							return;
-						}
-						var data = this.childNodes[0].nodeValue;
+						var el = $(this), 
+							newlines = [""];
+						// markdown uses <br> for leading blank
+						// lines; replace with real newlines for Ace
+						el.find("br").each(function(i) {
+							newlines.push("");
+						});
+						var data = newlines.join("\n") + el.text();
 						
 						var lang = el.attr('class')
 						if (lang) {
 							lang = lang.match(/language-([-_a-z0-9]+)/i);
-						}
-						if (lang) {
-							lang = lang[1].toLowerCase();
+							if (lang) {
+								lang = lang[1].toLowerCase();
+							}
 							if ("js" === lang) {
 								lang = "javascript";
 							}
-							try {
-								var highlighter = require("ace/ext/static_highlight");
-								var theme = require("ace/theme/textmate");
-								var mode = require("ace/mode/" + lang);
-								var dom = require("ace/lib/dom");
-								if (mode) {
-									mode = mode.Mode;
-									var highlighted = highlighter.render(data, new mode(), theme, 1, lang);
-									el.closest("pre").replaceWith(highlighted.html);
-
-
-
-								}
-							}
-							catch (er) {console.log(er); throw(er);}
-
 						}
-						
-
+						else {
+							lang = "code";
+						}
+						try {
+							var highlighter = require("ace/ext/static_highlight");
+							var theme = require("ace/theme/textmate");
+							var mode = require("ace/mode/" + lang);
+							var dom = require("ace/lib/dom");
+							if (!mode) {
+								mode = require("ace/mode/text");
+							}
+							if (mode) {
+								mode = mode.Mode;
+								var highlighted = highlighter.render(data, new mode(), theme, 1, lang);
+								el.closest("pre").replaceWith(highlighted.html);
+							}
+						}
+						catch (er) {console.log(er); throw(er);}
 					});
 					$article.replaceWith(block);
 					$('#post-content-' + postId).scrollintoview({ offset: 10 });
