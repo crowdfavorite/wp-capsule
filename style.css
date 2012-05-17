@@ -370,6 +370,16 @@ article .ace-editor {
 	width: 100%;
 }
 
+/* Static code */
+
+.ace-tm.static_container {
+	overflow-x: scroll;
+}
+
+pre.static_code {
+	white-space: pre-wrap;
+}
+
 /* Clearfix */
 
 .clearfix:after {
