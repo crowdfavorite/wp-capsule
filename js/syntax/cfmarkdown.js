@@ -60,6 +60,7 @@ autorequire("ace/mode/xml");
 autorequire("ace/mode/html");
 autorequire("ace/mode/php");
 autorequire("ace/mode/sql");
+autorequire("ace/mode/json");
 
 define('cf/js/syntax/cfmarkdown', ['require', 'exports', 'module' , 'ace/lib/oop', 'ace/mode/text', 'ace/mode/javascript', 'ace/mode/xml', 'ace/mode/html', 'ace/tokenizer', 'ace/mode/markdown_highlight_rules'],
 function(require, exports, module) {
@@ -72,6 +73,7 @@ var XmlMode = require("ace/mode/xml").Mode;
 var HtmlMode = require("ace/mode/html").Mode;
 var PhpMode = require("ace/mode/php").Mode;
 var SqlMode = require("ace/mode/sql").Mode;
+var JsonMode = require("ace/mode/json").Mode;
 var Tokenizer = require("ace/tokenizer").Tokenizer;
 var CFMarkdownHighlightRules = require("./cfmarkdown_highlight_rules").CFMarkdownHighlightRules;
 
@@ -85,7 +87,8 @@ var Mode = function() {
       "xml-": XmlMode,
       "html-": HtmlMode,
       "php-": PhpMode,
-      "sql-": SqlMode
+      "sql-": SqlMode,
+      "json-": JsonMode
     });
 };
 oop.inherits(Mode, TextMode);
@@ -121,6 +124,7 @@ var HtmlHighlightRules = require("ace/mode/html_highlight_rules").HtmlHighlightR
 var CssHighlightRules = require("ace/mode/css_highlight_rules").CssHighlightRules;
 var PhpHighlightRules = require("ace/mode/php_highlight_rules").PhpHighlightRules;
 var SqlHighlightRules = require("ace/mode/sql_highlight_rules").SqlHighlightRules;
+var JsonHighlightRules = require("ace/mode/json_highlight_rules").JsonHighlightRules;
 
 function github_embed(tag, prefix) {
     return { // Github style block
@@ -173,6 +177,7 @@ var CFMarkdownHighlightRules = function() {
 		github_embed("css", "css-"),
 		github_embed("php", "php-"),
 		github_embed("sql", "sql-"),
+		github_embed("json", "json-"),
         { // Github style block
             token : "support.function",
             regex : "^```[a-zA-Z]+\\s*$",
@@ -284,6 +289,12 @@ var CFMarkdownHighlightRules = function() {
     }]);
 
     this.embedRules(SqlHighlightRules, "sql-", [{
+       token : "support.function",
+       regex : "^```",
+       next  : "start"
+    }]);
+
+    this.embedRules(SqlHighlightRules, "json-", [{
        token : "support.function",
        regex : "^```",
        next  : "start"
