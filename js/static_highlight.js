@@ -70,29 +70,28 @@ exports.render = function(input, mode, theme, lineStart) {
             
     var gutterBuilder = [];
     var stringBuilder = [];
+    var olStyle = "";
     var length =  session.getLength();
     var tokens = session.getTokens(0, length - 1);
     
     for(var ix = 0; ix < length; ix++) {
         var lineTokens = tokens[ix].tokens;
-        stringBuilder.push("<div class='ace_line'>");
-        gutterBuilder.push("<div class='ace_line'>");
-        gutterBuilder.push("<div class='ace_gutter-cell' unselectable='on'>" + (ix + lineStart) + "</div>");
+        stringBuilder.push("<li class='ace_line'>");
         textLayer.$renderLine(stringBuilder, 0, lineTokens, true);
-        stringBuilder.push("</div>");
-        gutterBuilder.push("</div>");
+        stringBuilder.push("</li>");
     }
     
+    if (1 !== lineStart) {
+    	olStyle = " style='counter-reset: item " + lineStart + ";' ";
+    }
     // let's prepare the whole html
-    var html = "<div class=':cssClass'>\
-        <div class='ace_editor ace-editor' style='overflow-y: scroll;'>\
-			<div class='ace_gutter ace_gutter-layer' style='overflow-y: visible;'>\
-				:gutter\
-			</div>\
-			<div class='ace_scroller ace_content ace_text-layer' style='left: 40px; width: inherit;'>\
-				:code\
-			</div>\
-    </div>".replace(/:cssClass/, theme.cssClass).replace(/:gutter/, gutterBuilder.join("")).replace(/:code/, stringBuilder.join(""));
+    var html = "<div class=':cssClass static_container'>\
+		<pre class='static_code'><ol :olStyle>:code</ol></pre>\
+    </div>"
+		.replace(/:cssClass/, theme.cssClass)
+		.replace(/:olStyle/, olStyle)
+		.replace(/:gutter/, gutterBuilder.join(""))
+		.replace(/:code/, stringBuilder.join(""));
         
     textLayer.destroy();
             
