@@ -11,7 +11,7 @@ show_admin_bar(false);
 
 function capsule_gatekeeper() {
 	if (!current_user_can('publish_posts')) {
-		$login_page = site_url('wp-login.php');
+		$login_page = wp_login_url();
 		is_ssl() ? $proto = 'https://' : $proto = 'http://';
 		$requested = $proto.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
 		if (substr($requested, 0, strlen($login_page)) != $login_page) {
@@ -26,7 +26,7 @@ function capsule_unauthorized_json() {
 	echo json_encode(array(
 		'result' => 'unauthorized',
 		'msg' => __('Please log in.', 'capsule'),
-		'login_url' => site_url('wp-login.php'),
+		'login_url' => wp_login_url(),
 	));
 	die();
 }
