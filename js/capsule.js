@@ -2,7 +2,7 @@
 
 	window.editors = {},
 	window.Capsule = {},
-	Capsule.autoSave = {};
+	Capsule.delaySave = {};
 
 	Capsule.spinner = function (text) {
 		if (typeof text == 'undefined') {
@@ -136,7 +136,6 @@
 					$.scrollTo('#post-edit-' + postId, {offset: -10});
 					Capsule.sizeEditor();
 					Capsule.initEditor(postId, response.content);
-					Capsule.autoSaveStart(postId);
 				}
 			},
 			'json'
@@ -163,6 +162,40 @@
 		);
 	};
 	
+	Capsule.watchForEditorChanges = function(postId, $article, suppress_time_display) {
+		if (typeof $article == 'undefined') {
+			$article = $('#post-edit-' + postId);
+		}
+		if (typeof suppress_time_display == 'undefined') {
+			suppress_time_display = false;
+		}
+
+		var timestamp = (new Date()).getTime() / 1000,
+		ymd = date('g:i a', timestamp),
+		save_cb = function() {
+			Capsule.delaySave[postId] = null;
+			Capsule.updatePost(postId, window.editors[postId].getSession().getValue());
+		}
+		change_cb = function() {
+			$article.clearQueue().addClass('dirty');
+			if (Capsule.delaySave[postId]) {
+				clearTimeout(Capsule.delaySave[postId]);
+			}
+			Capsule.delaySave[postId] = setTimeout(save_cb, 10000);
+			window.editors[postId].getSession().removeEventListener('change', change_cb);
+			return true;
+		};
+		if (!suppress_time_display) {
+			$article.find('span.post-last-saved').html("Last saved: " + ymd);
+		}
+		window.editors[postId].getSession().on('change', change_cb);
+
+		// Debounce clearing the dirty flag slightly
+		$article.delay(50).queue(function() {
+			$(this).removeClass('dirty').dequeue();
+		});
+	};
+
 	Capsule.updatePost = function(postId, content, $article, loadExcerpt) {
 		if (typeof loadExcerpt == 'undefined') {
 			loadExcerpt = false;
@@ -197,6 +230,7 @@
 					}
 					else {
 						$article.removeClass('saving');
+						Capsule.watchForEditorChanges(postId, $article);
 					}
 				}
 			},
@@ -257,6 +291,18 @@
 		window.editors[postId].getSession().setMode('cf/js/syntax/cfmarkdown');
 		window.editors[postId].setShowPrintMargin(false);
 		window.editors[postId].getSession().setValue(content);
+		window.editors[postId].commands.addCommand({
+			name: 'save',
+			bindKey: {
+				win: 'Ctrl-S',
+				mac: 'Command-S'
+			},
+			exec: function(editor) {
+				Capsule.updatePost(postId, editor.getSession().getValue());
+			}
+		});
+
+		Capsule.watchForEditorChanges(postId, undefined, true);
 		window.editors[postId].focus();
 	};
 	
@@ -267,6 +313,16 @@
 			);
 		});
 	};
+
+	Capsule.saveAllEditors = function() {
+		$('.ace-editor').each(function() {
+			var $article = $(this).closest('article'),
+				postId = $article.data('post-id');
+			if ($article.hasClass('dirty')) {
+				Capsule.updatePost(postId, window.editors[postId].getSession().getValue());
+			}
+		});
+	}
 	
 	Capsule.extractCodeLanguages = function(content) {
 		var block = new RegExp("^```[a-zA-Z]+\\s*$", "gm"),
@@ -281,16 +337,6 @@
 		return tags;
 	};
 	
-	Capsule.autoSaveStart = function(postId) {
-		Capsule.autoSave[postId] = setInterval(function() {
-			Capsule.updatePost(postId, window.editors[postId].getSession().getValue());
-		}, 60000);
-	};
-	
-	Capsule.autoSaveStop = function(postId) {
-		Capsule.autoSave[postId] = clearInterval(Capsule.autoSave[postId]);
-	};
-
 	$(function() {
 	
 		$('.body').on('click', 'article.excerpt:not(a.post-edit-link)', function(e) {
@@ -320,8 +366,13 @@
 			// save content and load excerpt
 			var $article = $(this).closest('article'),
 				postId = $article.data('post-id');
-			Capsule.autoSaveStop(postId);
 			Capsule.updatePost(postId, window.editors[postId].getSession().getValue(), $article, true);
+			e.preventDefault();
+		}).on('click', 'article .post-save-link', function(e) {
+			var $article = $(this).closest('article'),
+				postId = $article.data('post-id');
+			Capsule.updatePost(postId, window.editors[postId].getSession().getValue());
+			window.editors[postId].focus();
 			e.preventDefault();
 		}).on('click', 'article .post-delete-link', function(e) {
 			var $article = $(this).closest('article'),
@@ -354,6 +405,9 @@
 		$(window).on('resize', function() {
 			Capsule.sizeEditor();
 		});
+		$(window).on('blur', function() {
+			Capsule.saveAllEditors();
+		})
 
 	});
 

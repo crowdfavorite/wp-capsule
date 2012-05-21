@@ -247,15 +247,35 @@ article header a.post-link {
 	width: 100px;
 }
 article header a.post-edit-link,
+article header a.post-save-link,
 article header a.post-close-link {
 	float: right;
+	margin-left: 5px;
+	padding-left: 2px;
+	padding-right: 2px;
+	height: 100%;
 }
+
 article img.save-indicator {
 	visibility: hidden;
 	float: right;
 	margin: 2px 10px 0 0;
 }
 article.saving img.save-indicator {
+	visibility: visible;
+}
+article header .post-last-saved {
+	color: #999;
+	margin-left: 5px;
+}
+article header .post-last-saved:hover {
+	color: #fff;
+}
+article header .post-dirty {
+	color: #baa;
+	visibility: hidden;
+}
+article.dirty header .post-dirty {
 	visibility: visible;
 }
 
