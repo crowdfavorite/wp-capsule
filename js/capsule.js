@@ -386,6 +386,8 @@
 			Capsule.undeletePost(postId, $article);
 			e.stopPropagation();
 			e.preventDefault();
+		}).on('mousewheel', 'article.edit', function(e) {
+			e.preventDefault();
 		});
 		$('#header').on('click', '.post-new-link', function(e) {
 			var $article = $('<article></article>').height('400px'),
