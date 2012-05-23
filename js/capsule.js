@@ -121,6 +121,10 @@
 		);
 	};
 
+	Capsule.centerEditor = function(postId) {
+		$.scrollTo('#post-edit-' + postId, {offset: -10});
+	};
+
 	Capsule.loadEditor = function($article, postId) {
 		$article.addClass('unstyled').children().addClass('transparent').end()
 			.append(Capsule.spinner());
@@ -133,7 +137,7 @@
 			function(response) {
 				if (response.html) {
 					$article.replaceWith(response.html);
-					$.scrollTo('#post-edit-' + postId, {offset: -10});
+					Capsule.centerEditor(postId);
 					Capsule.sizeEditor();
 					Capsule.initEditor(postId, response.content);
 				}
@@ -153,7 +157,7 @@
 			function(response) {
 				if (response.html) {
 					$article.replaceWith(response.html);
-					$.scrollTo('#post-edit-' + response.post_id, {offset: -10});
+					Capsule.centerEditor(response.post_id);
 					Capsule.sizeEditor();
 					Capsule.initEditor(response.post_id, '');
 				}
@@ -299,6 +303,16 @@
 			},
 			exec: function(editor) {
 				Capsule.updatePost(postId, editor.getSession().getValue());
+			}
+		});
+		window.editors[postId].commands.addCommand({
+			name: 'recenter',
+			bindKey: {
+				mac: 'Command-Shift-0',
+				win: 'Ctrl-Shift-0'
+			},
+			exec: function(editor) {
+				Capsule.centerEditor(postId);
 			}
 		});
 
