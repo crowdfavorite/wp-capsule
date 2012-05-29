@@ -288,6 +288,88 @@
 		);
 	};
 	
+	Capsule.stickPost = function(postId, $article) {
+		$article.addClass('unstyled').children().addClass('transparent').end()
+			.append(Capsule.spinner());
+		Capsule.post(
+			capsuleL10n.endpointAjax,
+			{
+				capsule_action: 'stick_post',
+				post_id: postId
+			},
+			function(response) {
+				var article_datebar,
+					sticky_datebar,
+					datebar_classes;
+
+				if (response.result == 'success') {
+					article_datebar = $($article.prevAll('.date-title')[0]);
+					datebar_classes = article_datebar.attr('class').split(' ');
+
+					sticky_datebar = $('.body').find('.'+datebar_classes.join('.')+'.date-title-sticky');
+					if (sticky_datebar.length <= 0) {
+						sticky_datebar = article_datebar.clone().addClass('date-title-sticky').prependTo('div.body');
+					}
+					$article.addClass('sticky');
+					sticky_datebar.after($article.detach());
+					// If there are no other articles (that is, if the next element
+					// after the datebar is also a date-title element), remove it
+					if (article_datebar.next().hasClass('date-title')) {
+						article_datebar.remove();
+					}
+				}
+				else {
+					alert(response.msg);
+				}
+				$article.removeClass('unstyled').children().removeClass('transparent').end()
+					.find('.spinner').remove();
+				$article.scrollintoview({ offset: 10 });
+			},
+			'json'
+		);
+	};
+	
+	Capsule.unstickPost = function(postId, $article) {
+		$article.addClass('unstyled').children().addClass('transparent').end()
+			.append(Capsule.spinner());
+		Capsule.post(
+			capsuleL10n.endpointAjax,
+			{
+				capsule_action: 'unstick_post',
+				post_id: postId
+			},
+			function(response) {
+				var article_datebar,
+					sticky_datebar,
+					datebar_classes;
+
+				if (response.result == 'success') {
+					sticky_datebar = $($article.prevAll('.date-title')[0]);
+					datebar_classes = sticky_datebar.attr('class').split(' ');
+
+					article_datebar = $('.body').find('.'+datebar_classes.join('.').replace('.date-title-sticky', ':not(.date-title-sticky)'));
+					if (article_datebar.length <= 0) {
+						article_datebar = sticky_datebar.clone().removeClass('date-title-sticky').appendTo('div.body');
+					}
+					$article.removeClass('sticky');
+					article_datebar.after($article.detach());
+					// If there are no other articles (that is, if the next element
+					// after the datebar is also a date-title element), remove it
+					if (sticky_datebar.next().hasClass('date-title')) {
+						sticky_datebar.remove();
+					}
+				}
+				else {
+					alert(response.msg);
+				}
+				$article.removeClass('unstyled').children().removeClass('transparent').end()
+					.find('.spinner').remove();
+				$article.scrollintoview({ offset: 10 });
+			},
+			'json'
+		);
+	};
+	
 	Capsule.initEditor = function(postId, content) {
 		window.Capsule.CFMarkdownMode = require("cf/js/syntax/cfmarkdown").Mode;
 		window.editors[postId] = ace.edit('ace-editor-' + postId);
@@ -398,6 +480,18 @@
 			var $article = $(this).closest('article'),
 				postId = $article.data('post-id');
 			Capsule.undeletePost(postId, $article);
+			e.stopPropagation();
+			e.preventDefault();
+		}).on('click', 'article:not(.sticky) .post-stick-link', function(e) {
+			var $article = $(this).closest('article'),
+				postId = $article.data('post-id');
+			Capsule.stickPost(postId, $article);
+			e.stopPropagation();
+			e.preventDefault();
+		}).on('click', 'article.sticky .post-stick-link', function(e) {
+			var $article = $(this).closest('article'),
+				postId = $article.data('post-id');
+			Capsule.unstickPost(postId, $article);
 			e.stopPropagation();
 			e.preventDefault();
 		}).on('mousewheel', 'article.edit', function(e) {

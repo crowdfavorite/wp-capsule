@@ -248,12 +248,46 @@ article header a.post-link {
 }
 article header a.post-edit-link,
 article header a.post-save-link,
-article header a.post-close-link {
+article header a.post-close-link,
+article header a.post-stick-link {
 	float: right;
 	margin-left: 5px;
 	padding-left: 2px;
 	padding-right: 2px;
 	height: 100%;
+}
+
+article header a.post-stick-link {
+	padding: 2px;
+	margin: 0px;
+	width: 15px;
+	height: 16px;
+	text-color: transparent;
+}
+article header a.post-stick-link span {
+	display: none;
+}
+
+article header a.post-stick-link:hover {
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+	border-radius: 5px;
+	text-decoration: none;
+	background-color: #ccc;
+}
+
+article header a.post-stick-link {
+    filter: alpha(opacity=25);
+    opacity: 0.25;
+	background-image: url(img/anchor.png);
+	background-repeat: no-repeat;
+	background-position: center;
+	vertical-align:middle;
+}
+
+article.sticky header a.post-stick-link {
+    filter: alpha(opacity=100);
+    opacity: 1;
 }
 
 article img.save-indicator {
