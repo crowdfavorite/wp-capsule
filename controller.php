@@ -177,6 +177,41 @@ function capsule_controller() {
 				echo json_encode($response);
 				die();
 			break;
+			case 'stick_post':
+				// required params:
+				// - post_id
+				$post_id = intval($_POST['post_id']);
+				$post = get_post($post_id);
+				if (!$post) {
+					die();
+				}
+				stick_post($post_id);
+				$response = array('post_id' => $post_id,
+					'result' => 'success',
+					'msg' => __('Post stuck.', 'capsule'),
+					'html' => '',
+				);
+				header('Content-type: application/json');
+				echo json_encode($response);
+				die();
+			break;
+			case 'unstick_post':
+				// required params:
+				// - post_id
+				$post_id = intval($_POST['post_id']);
+				if (!$post_id) {
+					die();
+				}
+				unstick_post($post_id);
+				$response = array('post_id' => $post_id,
+					'result' => 'success',
+					'msg' => __('Post unstuck.', 'capsule'),
+					'html' => '',
+				);
+				header('Content-type: application/json');
+				echo json_encode($response);
+				die();
+			break;
 			case 'split_post':
 // required params:
 // - post_id
