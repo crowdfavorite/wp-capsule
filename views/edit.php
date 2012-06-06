@@ -1,4 +1,4 @@
-<article id="post-edit-<?php echo $post->ID; ?>" data-post-id="<?php echo $post->ID; ?>" <?php post_class('edit clearfix'.(is_sticky() ? ' sticky' : ''), $post->ID); ?>>
+<article id="post-edit-<?php echo $post->ID; ?>" data-post-id="<?php echo $post->ID; ?>" <?php post_class('edit clearfix'.(is_sticky($post->ID) ? ' sticky' : ''), $post->ID); ?>>
 	<header>
 		<a href="<?php echo get_permalink($post->ID); ?>" class="post-link"><?php echo get_the_time('', $post); ?></a>
 		<span class="post-dirty">&#9733;</span>
