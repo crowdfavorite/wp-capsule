@@ -82,6 +82,13 @@ function capsule_resources() {
 		true
 	);
 	wp_enqueue_script(
+		'cf_php_highlight_rules',
+		$template_url.'js/syntax/cf_php_highlight_rules.js',
+		array('ace'),
+		CAPSULE_URL_VERSION,
+		true
+	);
+	wp_enqueue_script(
 		'json',
 		$template_url.'lib/json-js/json2.js',
 		array(),
