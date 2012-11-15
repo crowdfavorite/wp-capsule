@@ -87,8 +87,15 @@
 								mode = require("ace/mode/text");
 							}
 							if (mode) {
+
 								mode = mode.Mode;
-								var highlighted = highlighter.render(data, new mode(), theme, 1, lang);
+								mode = new mode();
+								if ('php' === lang) {
+									var Tokenizer = require("ace/tokenizer").Tokenizer;
+									var PhpLangHighlightRules = require("cf/js/syntax/cf_php_highlight_rules").PhpLangHighlightRules;
+									mode.$tokenizer = new Tokenizer(new PhpLangHighlightRules().getRules());
+								}
+								highlighted = highlighter.render(data, mode, theme, 1, lang);
 								el.closest("pre").replaceWith(highlighted.html);
 							}
 						}
