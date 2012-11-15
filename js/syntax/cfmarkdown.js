@@ -61,8 +61,9 @@ autorequire("ace/mode/html");
 autorequire("ace/mode/php");
 autorequire("ace/mode/sql");
 autorequire("ace/mode/json");
+autorequire("ace/mode/folding/markdown");
 
-define('cf/js/syntax/cfmarkdown', ['require', 'exports', 'module' , 'ace/lib/oop', 'ace/mode/text', 'ace/mode/javascript', 'ace/mode/xml', 'ace/mode/html', 'ace/tokenizer', 'ace/mode/markdown_highlight_rules'],
+define('cf/js/syntax/cfmarkdown', ['require', 'exports', 'module' , 'ace/lib/oop', 'ace/mode/text', 'ace/mode/javascript', 'ace/mode/xml', 'ace/mode/html', 'ace/tokenizer', 'ace/mode/markdown_highlight_rules', 'ace/mode/folding/markdown'],
 function(require, exports, module) {
 "use strict";
 
@@ -76,6 +77,7 @@ var SqlMode = require("ace/mode/sql").Mode;
 var JsonMode = require("ace/mode/json").Mode;
 var Tokenizer = require("ace/tokenizer").Tokenizer;
 var CFMarkdownHighlightRules = require("./cfmarkdown_highlight_rules").CFMarkdownHighlightRules;
+var MarkdownFoldMode = require("ace/mode/folding/markdown").FoldMode;
 
 var Mode = function() {
     var highlighter = new CFMarkdownHighlightRules();
@@ -90,6 +92,8 @@ var Mode = function() {
       "sql-": SqlMode,
       "json-": JsonMode
     });
+
+    this.foldingRules = new MarkdownFoldMode();
 };
 oop.inherits(Mode, TextMode);
 
@@ -110,7 +114,6 @@ oop.inherits(Mode, TextMode);
 
 exports.Mode = Mode;
 });
-
 
 define('cf/js/syntax/cfmarkdown_highlight_rules', ['require', 'exports', 'module' , 'ace/lib/oop', 'ace/mode/text_highlight_rules', 'ace/mode/javascript_highlight_rules', 'ace/mode/xml_highlight_rules', 'ace/mode/html_highlight_rules', 'ace/mode/css_highlight_rules'],
 function(require, exports, module) {

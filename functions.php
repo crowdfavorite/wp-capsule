@@ -1,6 +1,6 @@
 <?php
 
-define('CAPSULE_URL_VERSION', '1');
+define('CAPSULE_URL_VERSION', '2');
 define('CAPSULE_TAX_PREFIX_PROJECT', '@');
 define('CAPSULE_TAX_PREFIX_TAG', '#');
 define('CAPSULE_TAX_PREFIX_CODE', '`');

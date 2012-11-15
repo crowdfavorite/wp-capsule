@@ -72,12 +72,10 @@ exports.render = function(input, mode, theme, lineStart, language) {
     var stringBuilder = [];
     var olStyle = "";
     var length =  session.getLength();
-    var tokens = session.getTokens(0, length - 1);
     
     for(var ix = 0; ix < length; ix++) {
-        var lineTokens = tokens[ix].tokens;
         stringBuilder.push("<li class='ace_line'>");
-        textLayer.$renderLine(stringBuilder, 0, lineTokens, true);
+        textLayer.$renderLine(stringBuilder, ix, true, false);
         stringBuilder.push("</li>");
     }
     

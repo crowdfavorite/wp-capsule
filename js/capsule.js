@@ -376,6 +376,7 @@
 		window.editors[postId].getSession().setUseWrapMode(true);
 		window.editors[postId].getSession().setMode('cf/js/syntax/cfmarkdown');
 		window.editors[postId].setShowPrintMargin(false);
+		window.editors[postId].setTheme('ace/theme/textmate')
 		window.editors[postId].getSession().setValue(content);
 		window.editors[postId].commands.addCommand({
 			name: 'save',
