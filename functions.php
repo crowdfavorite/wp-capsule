@@ -1,6 +1,6 @@
 <?php
 
-define('CAPSULE_URL_VERSION', '1');
+define('CAPSULE_URL_VERSION', '2');
 define('CAPSULE_TAX_PREFIX_PROJECT', '@');
 define('CAPSULE_TAX_PREFIX_TAG', '#');
 define('CAPSULE_TAX_PREFIX_CODE', '`');
@@ -78,6 +78,13 @@ function capsule_resources() {
 		'cfmarkdown',
 		$template_url.'js/syntax/cfmarkdown.js',
 		array('jquery', 'ace', 'twitter-text'),
+		CAPSULE_URL_VERSION,
+		true
+	);
+	wp_enqueue_script(
+		'cf_php_highlight_rules',
+		$template_url.'js/syntax/cf_php_highlight_rules.js',
+		array('ace'),
 		CAPSULE_URL_VERSION,
 		true
 	);

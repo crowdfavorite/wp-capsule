@@ -52,7 +52,7 @@ var baseStyles = require("../requirejs/text!./static.css");
 * @returns {object} An object containing: html, css
 */
 
-exports.render = function(input, mode, theme, lineStart) {
+exports.render = function(input, mode, theme, lineStart, language) {
     lineStart = parseInt(lineStart || 1, 10);
     
     var session = new EditSession("");
@@ -72,12 +72,10 @@ exports.render = function(input, mode, theme, lineStart) {
     var stringBuilder = [];
     var olStyle = "";
     var length =  session.getLength();
-    var tokens = session.getTokens(0, length - 1);
     
     for(var ix = 0; ix < length; ix++) {
-        var lineTokens = tokens[ix].tokens;
         stringBuilder.push("<li class='ace_line'>");
-        textLayer.$renderLine(stringBuilder, 0, lineTokens, true);
+        textLayer.$renderLine(stringBuilder, ix, true, false);
         stringBuilder.push("</li>");
     }
     
@@ -85,10 +83,14 @@ exports.render = function(input, mode, theme, lineStart) {
     	olStyle = " style='counter-reset: item " + lineStart + ";' ";
     }
     // let's prepare the whole html
-    var html = "<div class=':cssClass static_container'>\
-		<pre class='static_code'><ol :olStyle>:code</ol></pre>\
-    </div>"
+    var html = "<div class='static_container'>\
+			<span class='code_language'>:language</span>\
+				<div class=':cssClass'>\
+					<pre class='static_code'><ol :olStyle>:code</ol></pre>\
+				</div>\
+			</div>"
 		.replace(/:cssClass/, theme.cssClass)
+		.replace(/:language/, language)
 		.replace(/:olStyle/, olStyle)
 		.replace(/:gutter/, gutterBuilder.join(""))
 		.replace(/:code/, stringBuilder.join(""));

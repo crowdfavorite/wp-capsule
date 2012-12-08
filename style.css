@@ -247,15 +247,69 @@ article header a.post-link {
 	width: 100px;
 }
 article header a.post-edit-link,
-article header a.post-close-link {
+article header a.post-save-link,
+article header a.post-close-link,
+article header a.post-stick-link {
 	float: right;
+	margin-left: 5px;
+	padding-left: 2px;
+	padding-right: 2px;
+	height: 100%;
 }
+
+article header a.post-stick-link {
+	padding: 2px;
+	margin: 0px;
+	width: 15px;
+	height: 16px;
+	text-color: transparent;
+}
+article header a.post-stick-link span {
+	display: none;
+}
+
+article header a.post-stick-link:hover {
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+	border-radius: 5px;
+	text-decoration: none;
+	background-color: #ccc;
+}
+
+article header a.post-stick-link {
+    filter: alpha(opacity=25);
+    opacity: 0.25;
+	background-image: url(img/anchor.png);
+	background-repeat: no-repeat;
+	background-position: center;
+	vertical-align:middle;
+}
+
+article.sticky header a.post-stick-link {
+    filter: alpha(opacity=100);
+    opacity: 1;
+}
+
 article img.save-indicator {
 	visibility: hidden;
 	float: right;
 	margin: 2px 10px 0 0;
 }
 article.saving img.save-indicator {
+	visibility: visible;
+}
+article header .post-last-saved {
+	color: #999;
+	margin-left: 5px;
+}
+article header .post-last-saved:hover {
+	color: #fff;
+}
+article header .post-dirty {
+	color: #baa;
+	visibility: hidden;
+}
+article.dirty header .post-dirty {
 	visibility: visible;
 }
 
@@ -372,14 +426,65 @@ article .ace-editor {
 
 /* Static code */
 
-.ace-tm.static_container {
-	overflow-x: scroll;
+.static_container {
+	position: relative;
+
+	border: 1px solid #333;
+	background-color: #eee;
+	margin-top: 5px;
+	margin-bottom: 5px;
+
+	-webkit-border-radius: 4px;
+	-moz-border-radius: 4px;
+	border-radius: 4px;
+}
+.static_container .ace-tm {
+	position: relative;
+	overflow-x: hidden;
 }
 
 pre.static_code {
 	white-space: pre-wrap;
+	margin: 2px;
 }
 
+.static_code ol {
+	margin: 2px;
+	overflow-x: scroll;
+}
+
+.static_code ol li {
+	padding-right: 40px;
+}
+
+.static_container .code_language {
+	position: absolute;
+	top: 0px;
+	right: 0px;
+	padding: 1px 5px;
+	height: 1.9em;
+	background-color: #ccc;
+	font-size: 80%;
+	-webkit-border-radius: 0 4px 0 4px;
+	-moz-border-radius: 0 4px 0 4px;
+	border-radius: 0 4px 0 4px;
+	z-index: 100;
+
+	-webkit-transition: all .1s ease-in-out;
+	-moz-transition: all .1s ease-in-out;
+	-o-transition: all .1s ease-in-out;
+	-ms-transition: all .1s ease-in-out;
+}
+
+.static_container:hover .code_language {
+	-webkit-transform: translate(0,-2em);
+	-moz-transform: translate(0,-2em);
+	-o-transform: translate(0,-2em);
+	-ms-transform: translate(0,-2em);
+	-webkit-border-radius: 4px;
+	-moz-border-radius: 4px;
+	border-radius: 4px;
+}
 /* Clearfix */
 
 .clearfix:after {

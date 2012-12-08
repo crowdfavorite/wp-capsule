@@ -60,8 +60,10 @@ autorequire("ace/mode/xml");
 autorequire("ace/mode/html");
 autorequire("ace/mode/php");
 autorequire("ace/mode/sql");
+autorequire("ace/mode/json");
+autorequire("ace/mode/folding/markdown");
 
-define('cf/js/syntax/cfmarkdown', ['require', 'exports', 'module' , 'ace/lib/oop', 'ace/mode/text', 'ace/mode/javascript', 'ace/mode/xml', 'ace/mode/html', 'ace/tokenizer', 'ace/mode/markdown_highlight_rules'],
+define('cf/js/syntax/cfmarkdown', ['require', 'exports', 'module' , 'ace/lib/oop', 'ace/mode/text', 'ace/mode/javascript', 'ace/mode/xml', 'ace/mode/html', 'ace/tokenizer', 'ace/mode/markdown_highlight_rules', 'ace/mode/folding/markdown', 'cf/js/syntax/cf_php_highlight_rules'],
 function(require, exports, module) {
 "use strict";
 
@@ -71,9 +73,13 @@ var JavaScriptMode = require("ace/mode/javascript").Mode;
 var XmlMode = require("ace/mode/xml").Mode;
 var HtmlMode = require("ace/mode/html").Mode;
 var PhpMode = require("ace/mode/php").Mode;
+var PhpLangHighlightRules = require("cf/js/syntax/cf_php_highlight_rules").PhpLangHighlightRules;
 var SqlMode = require("ace/mode/sql").Mode;
+var JsonMode = require("ace/mode/json").Mode;
 var Tokenizer = require("ace/tokenizer").Tokenizer;
 var CFMarkdownHighlightRules = require("./cfmarkdown_highlight_rules").CFMarkdownHighlightRules;
+var MarkdownFoldMode = require("ace/mode/folding/markdown").FoldMode;
+PhpMode.$tokenizer = new Tokenizer(new PhpLangHighlightRules().getRules());
 
 var Mode = function() {
     var highlighter = new CFMarkdownHighlightRules();
@@ -83,8 +89,13 @@ var Mode = function() {
     this.createModeDelegates({
       "js-": JavaScriptMode,
       "xml-": XmlMode,
-      "html-": HtmlMode
+      "html-": HtmlMode,
+      "php-": PhpMode,
+      "sql-": SqlMode,
+      "json-": JsonMode
     });
+
+    this.foldingRules = new MarkdownFoldMode();
 };
 oop.inherits(Mode, TextMode);
 
@@ -106,7 +117,6 @@ oop.inherits(Mode, TextMode);
 exports.Mode = Mode;
 });
 
-
 define('cf/js/syntax/cfmarkdown_highlight_rules', ['require', 'exports', 'module' , 'ace/lib/oop', 'ace/mode/text_highlight_rules', 'ace/mode/javascript_highlight_rules', 'ace/mode/xml_highlight_rules', 'ace/mode/html_highlight_rules', 'ace/mode/css_highlight_rules'],
 function(require, exports, module) {
 "use strict";
@@ -117,8 +127,10 @@ var JavaScriptHighlightRules = require("ace/mode/javascript_highlight_rules").Ja
 var XmlHighlightRules = require("ace/mode/xml_highlight_rules").XmlHighlightRules;
 var HtmlHighlightRules = require("ace/mode/html_highlight_rules").HtmlHighlightRules;
 var CssHighlightRules = require("ace/mode/css_highlight_rules").CssHighlightRules;
-var PhpHighlightRules = require("ace/mode/php_highlight_rules").PhpHighlightRules;
+var PhpHighlightRules = require("cf/js/syntax/cf_php_highlight_rules").PhpHighlightRules;
+var PhpLangHighlightRules = require("cf/js/syntax/cf_php_highlight_rules").PhpLangHighlightRules;
 var SqlHighlightRules = require("ace/mode/sql_highlight_rules").SqlHighlightRules;
+var JsonHighlightRules = require("ace/mode/json_highlight_rules").JsonHighlightRules;
 
 function github_embed(tag, prefix) {
     return { // Github style block
@@ -163,12 +175,15 @@ var CFMarkdownHighlightRules = function() {
                 return "markup.heading." + value.length;
             },
             regex : "^#{1,6}"
-        }, github_embed("javascript", "js-"),
-           github_embed("xml", "xml-"),
-           github_embed("html", "html-"),
-           github_embed("css", "css-"),
-           github_embed("php", "php-"),
-           github_embed("sql", "sql-"),
+        }, 
+		github_embed("javascript", "js-"),
+		github_embed("js", "js-"),
+		github_embed("xml", "xml-"),
+		github_embed("html", "html-"),
+		github_embed("css", "css-"),
+		github_embed("php", "php-"),
+		github_embed("sql", "sql-"),
+		github_embed("json", "json-"),
         { // Github style block
             token : "support.function",
             regex : "^```[a-zA-Z]+\\s*$",
@@ -255,7 +270,7 @@ var CFMarkdownHighlightRules = function() {
        next  : "start"
     }]);
     
-    this.embedRules(HtmlHighlightRules, "html-", [{
+    this.embedRules(PhpHighlightRules, "html-", [{
        token : "support.function",
        regex : "^```",
        next  : "start"
@@ -273,13 +288,19 @@ var CFMarkdownHighlightRules = function() {
        next  : "start"
     }]);
 
-    this.embedRules(PhpHighlightRules, "php-", [{
+    this.embedRules(PhpLangHighlightRules, "php-", [{
        token : "support.function",
        regex : "^```",
        next  : "start"
     }]);
 
     this.embedRules(SqlHighlightRules, "sql-", [{
+       token : "support.function",
+       regex : "^```",
+       next  : "start"
+    }]);
+
+    this.embedRules(SqlHighlightRules, "json-", [{
        token : "support.function",
        regex : "^```",
        next  : "start"

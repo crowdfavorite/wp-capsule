@@ -19,13 +19,14 @@ else {
 }
 
 ?>
-<article id="post-excerpt-<?php echo $post->ID; ?>" data-post-id="<?php echo $post->ID; ?>" <?php post_class('excerpt clearfix', $post->ID); ?>>
+<article id="post-excerpt-<?php echo $post->ID; ?>" data-post-id="<?php echo $post->ID; ?>" <?php post_class('excerpt clearfix' . (is_sticky() ? ' sticky' : ''), $post->ID); ?>>
 	<header>
 		<a href="<?php get_permalink($post->ID); ?>" class="post-link"><?php echo get_the_time('', $post); ?></a>
 <?php
 echo $tags;
 ?>
 		<a href="<?php echo esc_url(admin_url('post.php?post='.$post->ID.'&action=edit')); ?>" class="post-edit-link"><?php _e('Edit', 'capsule'); ?></a>
+		<a href="#" class="post-stick-link"><span><?php _e('Sticky', 'capsule'); ?></span></a>
 	</header>
 	<div class="content"><?php the_excerpt(); ?></div>
 	<a href="<?php echo esc_url(admin_url('post.php?post='.$post->ID.'&action=trash')); ?>" class="post-delete-link"><?php _e('Delete', 'capsule'); ?></a>

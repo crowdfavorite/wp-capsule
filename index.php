@@ -74,7 +74,8 @@ if (have_posts()) {
 	while (have_posts()) {
 		the_post();
 		$ymd = get_the_time('Ymd', $post);
-		the_date('F j, Y', '<h2 class="date-title date-'.$ymd.'">', '</h2>');
+		$sticky_class = is_sticky() ? "date-title-sticky" : "";
+		the_date('F j, Y', '<h2 class="date-title date-'.$ymd.' '.$sticky_class.'">', '</h2>');
 		if (is_singular()) {
 			include('views/content.php');
 		}

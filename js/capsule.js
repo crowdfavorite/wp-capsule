@@ -2,7 +2,7 @@
 
 	window.editors = {},
 	window.Capsule = {},
-	Capsule.autoSave = {};
+	Capsule.delaySave = {};
 
 	Capsule.spinner = function (text) {
 		if (typeof text == 'undefined') {
@@ -50,37 +50,56 @@
 
 					var block = $(response.html);
 					block.find("pre>code").each(function(i) {
-						var el = $(this);
-						if (this.childNodes.length === 0) {
-							return;
+						var el = $(this), 
+							data, lang,
+							newlines = [""];
+						// markdown uses <br> for leading blank
+						// lines; replace with real newlines for Ace
+						el.find("br").each(function(i) {
+							newlines.push("");
+						});
+						data = newlines.join("\n") + el.text();
+
+						// remove markdown's trailing newline
+						if (data.substr(-1) === "\n") {
+							data = data.substr(0, data.length - 1);
 						}
-						var data = this.childNodes[0].nodeValue;
 						
-						var lang = el.attr('class').match(/language-([-_a-z0-9]+)/i);
+						lang = el.attr('class');
 						if (lang) {
-							lang = lang[1];
-							try {
-								var highlighter = require("ace/ext/static_highlight");
-								var theme = require("ace/theme/textmate");
-								var mode = require("ace/mode/" + lang);
-								var dom = require("ace/lib/dom");
-								if (mode) {
-									mode = mode.Mode;
-									var highlighted = highlighter.render(data, new mode(), theme);
-									el.closest("pre").replaceWith(highlighted.html);
-									console.log("theme", theme);
-									console.log("high", highlighter);
-
-
-
-								}
+							lang = lang.match(/language-([-_a-z0-9]+)/i);
+							if (lang) {
+								lang = lang[1].toLowerCase();
 							}
-							catch (er) {console.log(er); throw(er);}
-
-							console.log(lang);
+							if ("js" === lang) {
+								lang = "javascript";
+							}
 						}
-						
+						else {
+							lang = "code";
+						}
+						try {
+							var highlighter = require("ace/ext/static_highlight");
+							var theme = require("ace/theme/textmate");
+							var mode = require("ace/mode/" + lang);
+							var dom = require("ace/lib/dom");
+							if (!mode) {
+								mode = require("ace/mode/text");
+							}
+							if (mode) {
 
+								mode = mode.Mode;
+								mode = new mode();
+								if ('php' === lang) {
+									var Tokenizer = require("ace/tokenizer").Tokenizer;
+									var PhpLangHighlightRules = require("cf/js/syntax/cf_php_highlight_rules").PhpLangHighlightRules;
+									mode.$tokenizer = new Tokenizer(new PhpLangHighlightRules().getRules());
+								}
+								highlighted = highlighter.render(data, mode, theme, 1, lang);
+								el.closest("pre").replaceWith(highlighted.html);
+							}
+						}
+						catch (er) {console.log(er); throw(er);}
 					});
 					$article.replaceWith(block);
 					$('#post-content-' + postId).scrollintoview({ offset: 10 });
@@ -109,6 +128,10 @@
 		);
 	};
 
+	Capsule.centerEditor = function(postId) {
+		$.scrollTo('#post-edit-' + postId, {offset: -10});
+	};
+
 	Capsule.loadEditor = function($article, postId) {
 		$article.addClass('unstyled').children().addClass('transparent').end()
 			.append(Capsule.spinner());
@@ -121,10 +144,9 @@
 			function(response) {
 				if (response.html) {
 					$article.replaceWith(response.html);
-					$.scrollTo('#post-edit-' + postId, {offset: -10});
+					Capsule.centerEditor(postId);
 					Capsule.sizeEditor();
 					Capsule.initEditor(postId, response.content);
-					Capsule.autoSaveStart(postId);
 				}
 			},
 			'json'
@@ -142,7 +164,7 @@
 			function(response) {
 				if (response.html) {
 					$article.replaceWith(response.html);
-					$.scrollTo('#post-edit-' + response.post_id, {offset: -10});
+					Capsule.centerEditor(response.post_id);
 					Capsule.sizeEditor();
 					Capsule.initEditor(response.post_id, '');
 				}
@@ -151,6 +173,40 @@
 		);
 	};
 	
+	Capsule.watchForEditorChanges = function(postId, $article, suppress_time_display) {
+		if (typeof $article == 'undefined') {
+			$article = $('#post-edit-' + postId);
+		}
+		if (typeof suppress_time_display == 'undefined') {
+			suppress_time_display = false;
+		}
+
+		var timestamp = (new Date()).getTime() / 1000,
+		ymd = date('g:i a', timestamp),
+		save_cb = function() {
+			Capsule.delaySave[postId] = null;
+			Capsule.updatePost(postId, window.editors[postId].getSession().getValue());
+		}
+		change_cb = function() {
+			$article.clearQueue().addClass('dirty');
+			if (Capsule.delaySave[postId]) {
+				clearTimeout(Capsule.delaySave[postId]);
+			}
+			Capsule.delaySave[postId] = setTimeout(save_cb, 10000);
+			window.editors[postId].getSession().removeEventListener('change', change_cb);
+			return true;
+		};
+		if (!suppress_time_display) {
+			$article.find('span.post-last-saved').html("Last saved: " + ymd);
+		}
+		window.editors[postId].getSession().on('change', change_cb);
+
+		// Debounce clearing the dirty flag slightly
+		$article.delay(50).queue(function() {
+			$(this).removeClass('dirty').dequeue();
+		});
+	};
+
 	Capsule.updatePost = function(postId, content, $article, loadExcerpt) {
 		if (typeof loadExcerpt == 'undefined') {
 			loadExcerpt = false;
@@ -185,6 +241,7 @@
 					}
 					else {
 						$article.removeClass('saving');
+						Capsule.watchForEditorChanges(postId, $article);
 					}
 				}
 			},
@@ -238,14 +295,118 @@
 		);
 	};
 	
+	Capsule.stickPost = function(postId, $article) {
+		$article.addClass('unstyled').children().addClass('transparent').end()
+			.append(Capsule.spinner());
+		Capsule.post(
+			capsuleL10n.endpointAjax,
+			{
+				capsule_action: 'stick_post',
+				post_id: postId
+			},
+			function(response) {
+				var article_datebar,
+					sticky_datebar,
+					datebar_classes;
+
+				if (response.result == 'success') {
+					article_datebar = $($article.prevAll('.date-title')[0]);
+					datebar_classes = article_datebar.attr('class').split(' ');
+
+					sticky_datebar = $('.body').find('.'+datebar_classes.join('.')+'.date-title-sticky');
+					if (sticky_datebar.length <= 0) {
+						sticky_datebar = article_datebar.clone().addClass('date-title-sticky').prependTo('div.body');
+					}
+					$article.addClass('sticky');
+					sticky_datebar.after($article.detach());
+					// If there are no other articles (that is, if the next element
+					// after the datebar is also a date-title element), remove it
+					if (article_datebar.next().hasClass('date-title')) {
+						article_datebar.remove();
+					}
+				}
+				else {
+					alert(response.msg);
+				}
+				$article.removeClass('unstyled').children().removeClass('transparent').end()
+					.find('.spinner').remove();
+				$article.scrollintoview({ offset: 10 });
+			},
+			'json'
+		);
+	};
+	
+	Capsule.unstickPost = function(postId, $article) {
+		$article.addClass('unstyled').children().addClass('transparent').end()
+			.append(Capsule.spinner());
+		Capsule.post(
+			capsuleL10n.endpointAjax,
+			{
+				capsule_action: 'unstick_post',
+				post_id: postId
+			},
+			function(response) {
+				var article_datebar,
+					sticky_datebar,
+					datebar_classes;
+
+				if (response.result == 'success') {
+					sticky_datebar = $($article.prevAll('.date-title')[0]);
+					datebar_classes = sticky_datebar.attr('class').split(' ');
+
+					article_datebar = $('.body').find('.'+datebar_classes.join('.').replace('.date-title-sticky', ':not(.date-title-sticky)'));
+					if (article_datebar.length <= 0) {
+						article_datebar = sticky_datebar.clone().removeClass('date-title-sticky').appendTo('div.body');
+					}
+					$article.removeClass('sticky');
+					article_datebar.after($article.detach());
+					// If there are no other articles (that is, if the next element
+					// after the datebar is also a date-title element), remove it
+					if (sticky_datebar.next().hasClass('date-title')) {
+						sticky_datebar.remove();
+					}
+				}
+				else {
+					alert(response.msg);
+				}
+				$article.removeClass('unstyled').children().removeClass('transparent').end()
+					.find('.spinner').remove();
+				$article.scrollintoview({ offset: 10 });
+			},
+			'json'
+		);
+	};
+	
 	Capsule.initEditor = function(postId, content) {
 		window.Capsule.CFMarkdownMode = require("cf/js/syntax/cfmarkdown").Mode;
 		window.editors[postId] = ace.edit('ace-editor-' + postId);
-		console.log("cntent", content);
 		window.editors[postId].getSession().setUseWrapMode(true);
 		window.editors[postId].getSession().setMode('cf/js/syntax/cfmarkdown');
 		window.editors[postId].setShowPrintMargin(false);
+		window.editors[postId].setTheme('ace/theme/textmate')
 		window.editors[postId].getSession().setValue(content);
+		window.editors[postId].commands.addCommand({
+			name: 'save',
+			bindKey: {
+				win: 'Ctrl-S',
+				mac: 'Command-S'
+			},
+			exec: function(editor) {
+				Capsule.updatePost(postId, editor.getSession().getValue());
+			}
+		});
+		window.editors[postId].commands.addCommand({
+			name: 'recenter',
+			bindKey: {
+				mac: 'Command-Shift-0',
+				win: 'Ctrl-Shift-0'
+			},
+			exec: function(editor) {
+				Capsule.centerEditor(postId);
+			}
+		});
+
+		Capsule.watchForEditorChanges(postId, undefined, true);
 		window.editors[postId].focus();
 	};
 	
@@ -256,6 +417,16 @@
 			);
 		});
 	};
+
+	Capsule.saveAllEditors = function() {
+		$('.ace-editor').each(function() {
+			var $article = $(this).closest('article'),
+				postId = $article.data('post-id');
+			if ($article.hasClass('dirty')) {
+				Capsule.updatePost(postId, window.editors[postId].getSession().getValue());
+			}
+		});
+	}
 	
 	Capsule.extractCodeLanguages = function(content) {
 		var block = new RegExp("^```[a-zA-Z]+\\s*$", "gm"),
@@ -264,22 +435,12 @@
 			matches = content.match(block);
 		if (matches != null && matches.length) {
 			$.each(matches, function(i, val) {
-				tags.push(val.match(tag)[0]);
+				tags.push(val.match(tag)[0].replace(/^js$/i, "javascript"));
 			});
 		}
 		return tags;
 	};
 	
-	Capsule.autoSaveStart = function(postId) {
-		Capsule.autoSave[postId] = setInterval(function() {
-			Capsule.updatePost(postId, window.editors[postId].getSession().getValue());
-		}, 60000);
-	};
-	
-	Capsule.autoSaveStop = function(postId) {
-		Capsule.autoSave[postId] = clearInterval(Capsule.autoSave[postId]);
-	};
-
 	$(function() {
 	
 		$('.body').on('click', 'article.excerpt:not(a.post-edit-link)', function(e) {
@@ -290,7 +451,7 @@
 		}).on('click', 'article.excerpt header a:not(.post-edit-link)', function(e) {
 			// exception for links in header
 			e.stopPropagation();
-		}).on('dblclick', 'article.content .content', function() {
+		}).on('dblclick', 'article.content header', function() {
 			// load excerpt on full content doubleclick
 			var $article = $(this).closest('article.content'),
 				postId = $article.data('post-id');
@@ -309,8 +470,13 @@
 			// save content and load excerpt
 			var $article = $(this).closest('article'),
 				postId = $article.data('post-id');
-			Capsule.autoSaveStop(postId);
 			Capsule.updatePost(postId, window.editors[postId].getSession().getValue(), $article, true);
+			e.preventDefault();
+		}).on('click', 'article .post-save-link', function(e) {
+			var $article = $(this).closest('article'),
+				postId = $article.data('post-id');
+			Capsule.updatePost(postId, window.editors[postId].getSession().getValue());
+			window.editors[postId].focus();
 			e.preventDefault();
 		}).on('click', 'article .post-delete-link', function(e) {
 			var $article = $(this).closest('article'),
@@ -323,6 +489,20 @@
 				postId = $article.data('post-id');
 			Capsule.undeletePost(postId, $article);
 			e.stopPropagation();
+			e.preventDefault();
+		}).on('click', 'article:not(.sticky) .post-stick-link', function(e) {
+			var $article = $(this).closest('article'),
+				postId = $article.data('post-id');
+			Capsule.stickPost(postId, $article);
+			e.stopPropagation();
+			e.preventDefault();
+		}).on('click', 'article.sticky .post-stick-link', function(e) {
+			var $article = $(this).closest('article'),
+				postId = $article.data('post-id');
+			Capsule.unstickPost(postId, $article);
+			e.stopPropagation();
+			e.preventDefault();
+		}).on('mousewheel', 'article.edit', function(e) {
 			e.preventDefault();
 		});
 		$('#header').on('click', '.post-new-link', function(e) {
@@ -343,6 +523,9 @@
 		$(window).on('resize', function() {
 			Capsule.sizeEditor();
 		});
+		$(window).on('blur', function() {
+			Capsule.saveAllEditors();
+		})
 
 	});
 

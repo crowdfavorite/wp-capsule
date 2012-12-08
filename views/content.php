@@ -1,7 +1,8 @@
-<article id="post-content-<?php the_ID(); ?>" data-post-id="<?php the_ID(); ?>" <?php post_class('content clearfix'); ?>>
+<article id="post-content-<?php the_ID(); ?>" data-post-id="<?php the_ID(); ?>" <?php post_class('content clearfix' . (is_sticky() ? ' sticky' : '')); ?>>
 	<header>
 		<a href="<?php the_permalink(); ?>" class="post-link"><?php the_time(); ?></a>
 		<?php edit_post_link(__('Edit', 'capsule'), '', ''); ?>
+		<a href="#" class="post-stick-link"><span><?php _e('Sticky', 'capsule'); ?></span></a>
 	</header>
 	<div class="meta">
 		<h3><?php _e('Projects', 'capsule'); ?></h3>
