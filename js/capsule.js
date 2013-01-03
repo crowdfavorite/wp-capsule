@@ -223,9 +223,9 @@
 			$article.addClass('saving');
 		}
 		// strip code blocks before extracting projects and tags
-		var prose = content.replace(/```([^]+?)```/g, '')
-				.replace(/<pre>([^]+?)<\/pre>/g, '')
-				.replace(/<code>([^]+?)<\/code>/g, ''),
+		var prose = content.replace(/^```([^]+?)^```/mg, '')
+				.replace(/<pre>([^]+?)<\/pre>/mg, '')
+				.replace(/<code>([^]+?)<\/code>/mg, ''),
 			projects = twttr.txt.extractMentions(prose),
 			tags = twttr.txt.extractHashtags(prose),
 			code = Capsule.extractCodeLanguages(content);
