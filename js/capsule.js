@@ -215,14 +215,19 @@
 			$article = $('#post-edit-' + postId);
 		}
 		if (loadExcerpt) {
-			$article.addClass('unstyled').children().addClass('transparent').end()
+			$article.addClass('unstyled')
+				.children().addClass('transparent').end()
 				.append(Capsule.spinner());
 		}
 		else {
 			$article.addClass('saving');
 		}
-		var projects = twttr.txt.extractMentions(content),
-			tags = twttr.txt.extractHashtags(content),
+		// strip code blocks before extracting projects and tags
+		var prose = content.replace(/```([^]+?)```/g, '')
+				.replace(/<pre>([^]+?)<\/pre>/g, '')
+				.replace(/<code>([^]+?)<\/code>/g, ''),
+			projects = twttr.txt.extractMentions(prose),
+			tags = twttr.txt.extractHashtags(prose),
 			code = Capsule.extractCodeLanguages(content);
 		Capsule.post(
 			capsuleL10n.endpointAjax,
@@ -443,19 +448,16 @@
 	
 	$(function() {
 	
-		$('.body').on('click', 'article.excerpt:not(a.post-edit-link)', function(e) {
+		$(document).on('click', 'article.excerpt:not(a.post-edit-link)', function(e) {
 			// load full content on excerpt click
-			var $article = $(this).closest('article.excerpt'),
-				postId = $article.data('post-id');
-			Capsule.loadContent($article, postId);
+			$(this).closest('article.excerpt').removeClass('excerpt')
 		}).on('click', 'article.excerpt header a:not(.post-edit-link)', function(e) {
 			// exception for links in header
 			e.stopPropagation();
-		}).on('dblclick', 'article.content header', function() {
+		}).on('dblclick', 'article.content header', function(e) {
+			e.preventDefault();
 			// load excerpt on full content doubleclick
-			var $article = $(this).closest('article.content'),
-				postId = $article.data('post-id');
-			Capsule.loadExcerpt($article, postId);
+			$(this).closest('article.content').addClass('excerpt')
 		}).on('click', 'article .post-edit-link', function(e) {
 			// load editor
 			var $article = $(this).closest('article'),
@@ -467,45 +469,45 @@
 				e.stopPropagation();
 			}
 		}).on('click', 'article .post-close-link', function(e) {
+			e.preventDefault();
 			// save content and load excerpt
 			var $article = $(this).closest('article'),
 				postId = $article.data('post-id');
 			Capsule.updatePost(postId, window.editors[postId].getSession().getValue(), $article, true);
-			e.preventDefault();
 		}).on('click', 'article .post-save-link', function(e) {
+			e.preventDefault();
 			var $article = $(this).closest('article'),
 				postId = $article.data('post-id');
 			Capsule.updatePost(postId, window.editors[postId].getSession().getValue());
 			window.editors[postId].focus();
-			e.preventDefault();
 		}).on('click', 'article .post-delete-link', function(e) {
+			e.stopPropagation();
+			e.preventDefault();
 			var $article = $(this).closest('article'),
 				postId = $article.data('post-id');
 			Capsule.deletePost(postId, $article);
+		}).on('click', 'article .post-undelete-link', function(e) {
 			e.stopPropagation();
 			e.preventDefault();
-		}).on('click', 'article .post-undelete-link', function(e) {
 			var $article = $(this).closest('article'),
 				postId = $article.data('post-id');
 			Capsule.undeletePost(postId, $article);
+		}).on('click', 'article:not(.sticky) .post-stick-link', function(e) {
 			e.stopPropagation();
 			e.preventDefault();
-		}).on('click', 'article:not(.sticky) .post-stick-link', function(e) {
 			var $article = $(this).closest('article'),
 				postId = $article.data('post-id');
 			Capsule.stickPost(postId, $article);
+		}).on('click', 'article.sticky .post-stick-link', function(e) {
 			e.stopPropagation();
 			e.preventDefault();
-		}).on('click', 'article.sticky .post-stick-link', function(e) {
 			var $article = $(this).closest('article'),
 				postId = $article.data('post-id');
 			Capsule.unstickPost(postId, $article);
-			e.stopPropagation();
-			e.preventDefault();
 		}).on('mousewheel', 'article.edit', function(e) {
 			e.preventDefault();
-		});
-		$('#header').on('click', '.post-new-link', function(e) {
+		}).on('click', '#header .post-new-link', function(e) {
+			e.preventDefault();
 			var $article = $('<article></article>').height('400px'),
 				timestamp = (new Date()).getTime() / 1000,
 				ymd = date('Ymd', timestamp),
@@ -518,15 +520,12 @@
 					.prepend('<h2 class="date-title date-' + ymd + '">' + date('F j, Y', timestamp) + '</h2>');
 			}
 			Capsule.createPost($article);
-			e.preventDefault();
 		});
 		$(window).on('resize', function() {
 			Capsule.sizeEditor();
-		});
-		$(window).on('blur', function() {
+		}).on('blur', function() {
 			Capsule.saveAllEditors();
 		})
-
 	});
 
 })(jQuery);

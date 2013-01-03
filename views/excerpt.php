@@ -1,33 +1,18 @@
-<?php
-
-$terms = array();
-
-$taxes = array('projects', 'post_tag', 'code');
-foreach ($taxes as $tax) {
-	if (($tax_terms = get_the_terms($post->ID, $tax)) != false) {
-		$terms = array_merge($terms, $tax_terms);
-	}
-}
-
-if (count($terms)) {
-	$tags = get_the_term_list($post->ID, 'projects', '<span class="tag-group">', ', ', '</span>')
-		.get_the_term_list($post->ID, 'post_tag', '<span class="tag-group">', ', ', '</span>')
-		.get_the_term_list($post->ID, 'code', '<span class="tag-group">', ', ', '</span>');
-}
-else {
-	$tags = '<span class="none">'.__('(no tags)', 'capsule').'</span>';
-}
-
-?>
-<article id="post-excerpt-<?php echo $post->ID; ?>" data-post-id="<?php echo $post->ID; ?>" <?php post_class('excerpt clearfix' . (is_sticky() ? ' sticky' : ''), $post->ID); ?>>
+<article id="post-content-<?php the_ID(); ?>" data-post-id="<?php the_ID(); ?>" <?php post_class('content clearfix excerpt' . (is_sticky() ? ' sticky' : '')); ?>>
 	<header>
-		<a href="<?php get_permalink($post->ID); ?>" class="post-link"><?php echo get_the_time('', $post); ?></a>
-<?php
-echo $tags;
-?>
-		<a href="<?php echo esc_url(admin_url('post.php?post='.$post->ID.'&action=edit')); ?>" class="post-edit-link"><?php _e('Edit', 'capsule'); ?></a>
+		<a href="<?php the_permalink(); ?>" class="post-link"><?php the_time(); ?></a>
+		<?php edit_post_link(__('Edit', 'capsule'), '', ''); ?>
 		<a href="#" class="post-stick-link"><span><?php _e('Sticky', 'capsule'); ?></span></a>
 	</header>
-	<div class="content"><?php the_excerpt(); ?></div>
-	<a href="<?php echo esc_url(admin_url('post.php?post='.$post->ID.'&action=trash')); ?>" class="post-delete-link"><?php _e('Delete', 'capsule'); ?></a>
+	<div class="meta">
+		<h3><?php _e('Projects', 'capsule'); ?></h3>
+		<?php echo capsule_term_list(get_the_ID(), 'projects'); ?>
+		<br>
+		<h3><?php _e('Tags', 'capsule'); ?></h3>
+		<?php echo capsule_term_list(get_the_ID(), 'post_tag'); ?>
+		<br>
+		<h3><?php _e('Code', 'capsule'); ?></h3>
+		<?php echo capsule_term_list(get_the_ID(), 'code'); ?>
+	</div>
+	<div class="content"><?php the_content(); ?></div>
 </article>

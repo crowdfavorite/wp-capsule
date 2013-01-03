@@ -313,51 +313,7 @@ article.dirty header .post-dirty {
 	visibility: visible;
 }
 
-/* Excerpt */
-
-article.excerpt {
-	background: transparent;
-	cursor: pointer;
-}
-article.excerpt:hover {
-	background: #fff;
-}
-
-article.excerpt header {
-	background: transparent;
-	padding-bottom: 3px;
-}
-article.excerpt header .tag-group {
-	padding-right: 15px;
-}
-article.excerpt header,
-article.excerpt header a,
-article.excerpt header a:visited {
-	color: #666;
-	font-size: 12px;
-}
-
-article.excerpt .content {
-	overflow: auto;
-	padding: 0 115px 10px;
-}
-article.excerpt .content p {
-	margin: 0;
-	padding: 0;
-}
-article.excerpt a.post-delete-link,
-article.excerpt a.post-delete-link:visited {
-	bottom: 5px;
-	color: #900;
-	font-size: 12px;
-	position: absolute;
-	right: 10px;
-	visibility: hidden;
-}
-article.excerpt:hover a.post-delete-link,
-article.excerpt:hover a.post-delete-link:visited {
-	visibility: visible;
-}
+/* Deleted */
 
 article.deleted {
 	background: #ccc;
@@ -384,6 +340,11 @@ article.deleted a.post-undelete-link:visited {
 }
 
 /* Content */
+
+article.excerpt .content {
+	max-height: 100px;
+	overflow: auto;
+}
 
 article.content .content {
 	overflow: auto;
