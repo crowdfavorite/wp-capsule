@@ -1,10 +1,10 @@
 /*
 Theme Name:   Capsule
 Theme URI:    http://crowdfavorite.com/wordpress/themes/capsule/
-Description:  A theme to turn WordPress into a kick-ass development diary theme.
+Description:  A theme to turn WordPress into a kick-ass development diary.
 Author:       Crowd Favorite
 Author URI:   http://crowdfavorite.com/
-Version:      0.1
+Version:      0.2
 */
 
 /* HTML5 ✰ Boilerplate
@@ -204,14 +204,13 @@ article .spinner {
 article .spinner span {
 	display: none;
 }
-article.excerpt,
 article.content,
 article.edit {
+	border: 1px solid #ccc;
 	-webkit-border-radius: 5px;
 	-moz-border-radius: 5px;
 	border-radius: 5px;
 }
-article.content,
 article.edit {
 	border: 1px solid #eee;
 	-moz-box-shadow: 0 1px 3px 1px #999;
@@ -224,8 +223,9 @@ article.unstyled {
 	-webkit-box-shadow: none;
 	box-shadow: none;
 }
-article header {
-	background: #666;
+article.content header,
+article.edit header {
+	background: #999;
 	-webkit-border-top-left-radius: 5px;
 	-webkit-border-top-right-radius: 5px;
 	-moz-border-radius-topleft: 5px;
@@ -234,6 +234,9 @@ article header {
 	border-top-right-radius: 5px;
 	color: #fff;
 	padding: 7px 10px 6px;
+}
+article.edit header {
+	background: #666;
 }
 article header a,
 article header a:visited {
@@ -277,17 +280,15 @@ article header a.post-stick-link:hover {
 }
 
 article header a.post-stick-link {
-    filter: alpha(opacity=25);
-    opacity: 0.25;
-	background-image: url(img/anchor.png);
-	background-repeat: no-repeat;
-	background-position: center;
-	vertical-align:middle;
+	filter: alpha(opacity=25);
+	opacity: 0.25;
+	background: transparent url(img/anchor.png) no-repeat center center;
+	vertical-align: middle;
 }
 
 article.sticky header a.post-stick-link {
-    filter: alpha(opacity=100);
-    opacity: 1;
+	filter: alpha(opacity=100);
+	opacity: 1;
 }
 
 article img.save-indicator {
