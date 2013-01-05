@@ -342,14 +342,18 @@ article.deleted a.post-undelete-link:visited {
 
 /* Content */
 
-article.excerpt .content {
-	max-height: 100px;
-	overflow: auto;
-}
-
-article.content .content {
+article .content {
+	-webkit-border-bottom-left-radius: 4px;
+	-webkit-border-bottom-right-radius: 4px;
+	-moz-border-radius-bottomleft: 4px;
+	-moz-border-radius-bottomright: 4px;
+	border-bottom-left-radius: 4px;
+	border-bottom-right-radius: 4px;
 	overflow: auto;
 	padding: 10px;
+}
+article.excerpt .content {
+	max-height: 100px;
 }
 article.content .meta {
 	background: #f8f8f8;
