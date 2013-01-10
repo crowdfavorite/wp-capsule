@@ -354,6 +354,7 @@ article .content {
 }
 article.excerpt .content {
 	max-height: 100px;
+	overflow: hidden;
 }
 article.content .meta {
 	background: #f8f8f8;
