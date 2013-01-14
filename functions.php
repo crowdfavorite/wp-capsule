@@ -6,7 +6,7 @@ define('CAPSULE_TAX_PREFIX_TAG', '#');
 define('CAPSULE_TAX_PREFIX_CODE', '`');
 
 include('controller.php');
-
+include('client-functions.php');
 show_admin_bar(false);
 
 function capsule_gatekeeper() {
