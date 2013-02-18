@@ -10,12 +10,16 @@ class Capsule_Client {
 	var $server_api_key = '_cap_server_api_key';
 	var $server_url_key = '_cap_server_url';
 
+	var $debug = true;
+
 	function __construct() {
 		$this->user_id = get_current_user_id();
 	}
 
 	function add_actions() {
+		// Come in after post types and taxonomies registered
 		add_action('wp_loaded', array($this, 'request_handler'));
+
 		// Priority 11 to come after taxonomy registration
 		add_action('init', array($this, 'register_post_types'), 11);
 		add_action('admin_menu', array($this, 'add_menu_pages'));
@@ -27,14 +31,15 @@ class Capsule_Client {
 		$template_url = trailingslashit(get_template_directory_uri());
 
 		wp_enqueue_script(
-		'capsule-client-admin',
-		$template_url.'js/client-admin.js',
-		array('jquery'),
-		CAPSULE_URL_VERSION,
-		true
+			'capsule-client-admin',
+			$template_url.'js/client-admin.js',
+			array('jquery'),
+			CAPSULE_URL_VERSION,
+			true
 		);
 	}
 
+	// Handles all client actions including those coming in via ajax
 	public function request_handler() {
 		if (isset($_POST['capsule_client_action'])) {
 			switch ($_POST['capsule_client_action']) {
@@ -191,10 +196,14 @@ class Capsule_Client {
 		return substr(sha1($this->post_type_prefix.$post_name), 0, 20);
 	}
 
+	/**
+	 * Registers required post types. These include the server post type
+	 * and one post type for each server which stores the term mappings
+	 **/ 
 	public function register_post_types() {
 		// Register the server type
 		$default_args = array(
-			'public' => true,
+			'public' => $this->debug,
 			'publicly_queryable' => true,
 			'show_ui' => true, 
 			'show_in_menu' => true, 
@@ -209,7 +218,6 @@ class Capsule_Client {
 		$args['label'] = __('Servers', 'capsule-client');
 
 		register_post_type('server', $args);
-
 
 		$servers = $this->get_servers();
 		$args = array_merge($default_args, array(
@@ -241,11 +249,13 @@ class Capsule_Client {
 		return apply_filters('capsule_client_taxonomies_to_map', $taxonomies);
 	}
 
+	// Add menu pages
 	function add_menu_pages() {
 		add_options_page(__('Capsule Term Mapping', 'capsule_client'), __('Capsule Term Mapping', 'capsule_client'), 'manage_options', 'capsule-term-mapping', array($this, 'term_mapping_page'));
 		add_options_page(__('Capsule Servers Management', 'capsule_client'), __('Capsule Servers Management', 'capsule_client'), 'manage_options', 'capsule-server-management', array($this, 'server_management_page'));
 	}
 
+	// Markup for server management
 	public function server_management_page() {
 		$servers = $this->get_servers();
 ?>
@@ -301,7 +311,15 @@ class Capsule_Client {
 <?php
 	}	
 
-	public function server_row_markup($server_post, $class) {
+	/**
+	 * Markup for a 'row' representing a server.
+	 *
+	 * @param object $server_post Normal WP Post object, has api_key and url properties if set @see get_servers())
+	 * @param string $class Additional class to put on the wrapper for the row
+	 *
+	 * @return string HTML for the row
+	 **/
+	public function server_row_markup($server_post, $class = '') {
 		//@Todo nonce
 		$html = '
 <div class="'.esc_attr('server-item'.$class).'">
@@ -706,6 +724,14 @@ class Capsule_Client {
 		}
 	}
 
+	/** 
+	 * Check to see if a post has a server term mapping for a given server
+	 * 
+	 * @param object $post
+	 * @param object $server 
+	 *
+	 * @todo revisit this...
+	 **/
 	function has_server_mapping($post, $server) {
 		// Get the taxonomies that are mapped
 		$mapped_taxonomies = $this->taxonomies_to_map();
@@ -738,6 +764,15 @@ class Capsule_Client {
 		return false;
 	}
 
+	/**
+	 * Format post term mappings to be sent to a server
+	 * 
+	 * @param object $post Post being sent to the server
+	 * @param arary $taxonomies array of taxonomies to get data for from $post
+	 * @param string $server_post_type Post of of the term mappings @see post_type_slug()
+	 * 
+	 * @return array Array of formatted taxonomy terms ready for transmission to a server
+	 **/
 	function format_terms_to_send($post, $taxonomies, $server_post_type) {
 		$mapped_taxonomies = $this->taxonomies_to_map();
 
@@ -747,6 +782,8 @@ class Capsule_Client {
 			// Get posts of all the mapped terms
 			$mapped_term_posts = $this->get_server_term_posts($server_post_type);
 
+			// For taxonomies that are mapped, we need to get the mapping data and set it
+			// Otherwise, just send along the local data for the terms
 			foreach ($taxonomies as $tax_name) {
 				$tax_input[$tax_name] = array();
 				$terms = wp_get_object_terms($post->ID, $tax_name);
