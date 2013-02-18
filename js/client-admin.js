@@ -9,11 +9,11 @@
 				ajaxurl,
 				$form.serialize(),
 				function(data) {
-					// @TODO handle if response is an error
 					if (data.result == 'success') {
 						$(data.html).hide().prependTo("div#capsule-servers").fadeIn();
 					}
 					else {
+						// @TODO handle if response is an error
 						alert('error');
 					}
 				},
@@ -30,8 +30,7 @@
 				$form.serialize(),
 				function(data) {
 					if (data.result == 'success') {
-						$closest = $form.closest('div');
-						$closest.fadeOut().fadeIn();
+						$form.closest('div').fadeOut().fadeIn();
 					}
 					else {
 						// @TODO handle if response is an error
@@ -50,7 +49,6 @@
 				ajaxurl,
 				$form.serialize(),
 				function(data) {
-					// @TODO handle if response is an error
 					if (data.result == 'success') {
 						$form.closest('div.server-item').fadeOut();
 					}

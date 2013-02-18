@@ -11,8 +11,6 @@ class Capsule_Client {
 	var $server_url_key = '_cap_server_url';
 
 	function __construct() {
-		//@TODO multisite instance support
-		$this->servers_meta_key = '_capsule_servers';
 		$this->user_id = get_current_user_id();
 	}
 
@@ -250,116 +248,8 @@ class Capsule_Client {
 		add_options_page(__('Capsule Term Mapping', 'capsule_client'), __('Capsule Term Mapping', 'capsule_client'), 'manage_options', 'capsule-term-mapping', array($this, 'term_mapping_page'));
 		add_options_page(__('Capsule Servers Management', 'capsule_client'), __('Capsule Servers Management', 'capsule_client'), 'manage_options', 'capsule-server-management', array($this, 'server_management_page'));
 	}
-/*
-	public static function server_markup($label, $url, $api_key) {
-?>
-	<div>
-        <label for="<?php echo esc_attr('label-'.$label); ?>"><?php _e('Server Label', 'capsule-client'); ?>
-			<input id="<?php echo esc_attr('label-'.$label); ?>" size="10" name="<?php echo esc_attr('label-'.$label); ?>" value="<?php echo esc_attr($label); ?>" />
-    	</label>
-             
-    	<label for="<?php echo esc_attr('label-'.$url); ?>"><?php _e('Server URL', 'capsule-client'); ?>
-			<input id="<?php echo esc_attr('label-'.$url); ?>" size="10" name="<?php echo esc_attr('label-'.$url); ?>" value="<?php echo esc_attr($url); ?>" />
-    	</label>
-
-    	<label for="<?php echo esc_attr('label-'.$api_key); ?>"><?php _e('API Key', 'capsule-client'); ?>
-			<input id="<?php echo esc_attr('label-'.$api_key); ?>" size="10" name="<?php echo esc_attr('label-'.$api_key); ?>" value="<?php echo esc_attr($api_key); ?>" />
-    	</label>
-
-	</div>
-<?php
-	}
-
-	public static function new_server_markup($label = null, $url = null, $api_key = null) {
-?>
-	<form method="post">
-		<fieldgroup>
-			<div>
-				<label> <?php _e('Label', 'capsule-client'); ?>
-					<input type="text" value="<?php echo esc_attr($label); ?>" name="capsule_server[label]" />
-				</label>
-			</div>
-			<div>
-				<label> <?php _e('Server URL', 'capsule-client'); ?>
-					<input type="text" value="<?php echo esc_attr($url); ?>" name="capsule_server[url]" />
-				</label>
-			</div>
-			<div>
-				<label> <?php _e('API Key', 'capsule-client'); ?>
-					<input type="text" value="<?php echo esc_attr($api_key); ?>" name="capsule_server[api_key]" />
-				</label>
-			</div>
-		</fieldgroup>
-		<input type="submit" value="<?php _e('Submit', 'capsule-client'); ?>" />
-		<input type="hidden" name="capsule_client_action" value="add_server" />
-	<form>
-<?php 
-	}
-
-	public function add_menu_items() {
-		add_options_page(__('Capsule Servers', 'capsule_client'), __('Capsule Servers', 'capsule_client'), 'manage_options', 'capsule-servers', array($this, 'servers_page'));
-	}
-
-	public function servers_page() {
-		$servers = $this->get_servers();
-?>
-<div class="wrap">
-	<div id="icon-plugins" class="icon32"></div>
-	<h2><?php _e('Capsule Servers', 'capsule-client'); ?></h2>
-	<div id="cap-servers">
-<?php
-		foreach ($servers as $label => $server) {
-			self::server_markup($label, $server['url'], $server['api_key']);
-		}
-?>
-	</div>
-<?php
-		$this->new_server_markup()
-?>
-	<a href="#" id="cap-add-new-server"><?php _e('Add New Server', 'capsule-client'); ?></a>
-<?php 	
-	}
-
-	public function add_server($server) {
-		if (!is_array($server)) {
-			$server = array();
-		}
-
-		$servers = $this->get_servers();
-
-		//@TODO check if server already exists
-		if (isset($server['url']) && isset($server['label']) && isset($server['api_key'])) {
-			$post_type = $server['label'];
-			$url = $server['url'];
-			$api_key = $server['api_key'];
-
-			$sanitized_post_type = sanitize_key($post_type);
-
-			// WP enforces 20 character limit, prefix counts for 3.
-			if ($sanitized_post_type != $post_type || strlen($sanitized_post_type) > 17) {
-				return new WP_Error('post_type', __('Invalid label', 'capsule-client'));
-			}
-
-			// Check if already registered
-			if (post_type_exists($post_type) || array_key_exists($sanitized_post_type, $servers)) {
-				return new WP_Error('post_type_exists', __('Label already exists', 'capsule-client'));
-			}
-
-			// Relevant if ajax request?
-			register_post_type($post_type, array('public' => false));
-
-			// Register post type for future additions and update user settings.
-			$servers[$post_type] = array(
-				'url' => $url,
-				'api_key' => $api_key,
-			);
-			update_user_meta($this->user_id, $this->servers_meta_key, $servers);
-		}
-	}
-*/
 
 	public function server_management_page() {
-
 		$servers = $this->get_servers();
 ?>
 <div class="wrap">
@@ -700,7 +590,6 @@ class Capsule_Client {
 				echo $this->term_select_markup($post->ID, 'projects', $taxonomy_array['projects'], $selected_id);
 				echo '</div>';
 			}
-			//@TODO Noncify
 		}
 ?>
 			<input type="submit" value="<?php _e('Submit', 'capsule-client'); ?>">
