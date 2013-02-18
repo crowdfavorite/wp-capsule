@@ -47,9 +47,9 @@ class Capsule_Client {
 						);
 						$post = $this->add_server($server_data);
 					}
-					
 					break;
 				case 'add_server_ajax':
+					$error = 'error';
 					if (wp_verify_nonce($_POST['_add_server_nonce'], '_cap_client_add_server')) {
 						$server_data = array(
 							'server_name' => isset($_POST['server_name']) ? $_POST['server_name'] : '',
@@ -62,19 +62,16 @@ class Capsule_Client {
 								'result' => 'success',
 								'html' => $this->server_row_markup($post, ''),
 							));
-
+							die();
 						}
 						else {
-							echo json_encode(array(
-								'results' => 'error',
-								'html' => 'error',
-							));
+							$error = 'error'; //@TODO maybe something more informative
 						}
 					}
 					else {
 						echo json_encode(array(
 							'results' => 'error',
-							'html' => 'error',
+							'html' => $error,
 						));
 					}
 					die();
@@ -86,20 +83,18 @@ class Capsule_Client {
 					}
 					break;
 				case 'delete_server_ajax':
+					$error = 'error';
 					if (wp_verify_nonce($_POST['_delete_server_nonce'], '_cap_client_delete_server')) {
-						if ($this->delete_server($_POST['server_id']) === false) {
-							echo json_encode(array('result' => 'error'));
-						}
-						else {
+						if ($this->delete_server($_POST['server_id']) !== false) {
 							echo json_encode(array('result' => 'success'));
+							die();
 						}
 					}
-					else {
-						echo json_encode(array('result' => 'error'));
-					}
+					echo json_encode(array('result' => 'error'));
 					die();
 					break;
 				case 'update_server_ajax':
+					$error = 'error';
 					if (wp_verify_nonce($_POST['_update_server_nonce'], '_cap_client_update_server')) {
 						if ($server_id = $_POST['server_id']) {
 							$data['server_name'] = isset($_POST['server_name']) ? $_POST['server_name'] : '';
@@ -108,18 +103,20 @@ class Capsule_Client {
 
 							if ($this->update_server($server_id, $data)) {
 								echo json_encode(array('result' => 'success'));
+								die();
 							}
 							else {
-								echo json_encode(array('result' => 'error'));
+								$error = 'error'; //@TODO maybe something more informative
 							}
 						}
 						else {
-							echo json_encode(array('result' => 'error'));
+							$error = 'error'; //@TODO maybe something more informative
 						}
 					}
-					else {
-						echo json_encode(array('result' => 'error'));
-					}
+					echo json_encode(array(
+						'result' => 'error',
+						'html' => $error,
+					));
 					die();
 					break;
 				case 'update_server':
