@@ -151,7 +151,7 @@ class Capsule_Client {
 	}
 
 	/**
-	 * Get a list of servers that this user has set up
+	 * Get a list of servers
 	 * Returns an array of servers with the key as the post type slug:
 	 * array(
 	 *	'server-1' => array(
@@ -164,7 +164,7 @@ class Capsule_Client {
 	 *	)
 	 * )
 	 * 
-	 * Potential feature - servers owned by users for multi user support
+	 * Potential feature - Filter servers based on owner for multi-user support
 	 **/
 	function get_servers() {
 		$query = new WP_Query(array(
