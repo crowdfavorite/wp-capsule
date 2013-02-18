@@ -1,5 +1,6 @@
 <?php 
 
+// Class here is mostly for namespacing of methods and properties
 class Capsule_Client {
 
 	var $post_type_prefix = '_cc_';
@@ -10,10 +11,10 @@ class Capsule_Client {
 	var $server_api_key = '_cap_server_api_key';
 	var $server_url_key = '_cap_server_url';
 
-	var $debug = true;
-
 	function __construct() {
-		$this->user_id = get_current_user_id();
+		// Used for debugging, add this constant to your local-config or wp-config.php to override
+		// Shows hidden taxonomies and post types.
+		@define('CAP_CLIENT_DEBUG', false);
 	}
 
 	function add_actions() {
@@ -203,7 +204,7 @@ class Capsule_Client {
 	public function register_post_types() {
 		// Register the server type
 		$default_args = array(
-			'public' => $this->debug,
+			'public' => CAP_CLIENT_DEBUG,
 			'publicly_queryable' => true,
 			'show_ui' => true, 
 			'show_in_menu' => true, 
