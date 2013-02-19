@@ -608,7 +608,7 @@ class Capsule_Client {
 			}
 		}
 ?>
-			<input type="submit" value="<?php _e('Submit', 'capsule-client'); ?>">
+			<input type="submit" value="<?php _e('Save Mappings', 'capsule-client'); ?>">
 			<input type="hidden" name="capsule_client_action" value="save_mapping" />
 			<?php wp_nonce_field('_cap_client_save_mapping', '_save_mapping_nonce', true, true); ?>
 		</form>
@@ -713,8 +713,9 @@ class Capsule_Client {
 				// Only send post if theres a term thats been mapped
 				if ($this->has_server_mapping($post, $server_post)) {
 					$tax_input = $this->format_terms_to_send($post, $taxonomies, $this->post_type_slug($server_post->post_name));
+					$mapped_taxonomies = $this->taxonomies_to_map();
 
-					$tax = compact('taxonomies', 'tax_input');
+					$tax = compact('taxonomies', 'tax_input', 'mapped_taxonomies');
 
 					$api_key = get_post_meta($server_post->ID, $this->server_api_key, true);
 					$endpoint = get_post_meta($server_post->ID, $this->server_url_key, true);
@@ -738,15 +739,16 @@ class Capsule_Client {
 		$mapped_taxonomies = $this->taxonomies_to_map();
 
 		foreach ($mapped_taxonomies as $taxonomy) {
-			$post_terms = wp_get_object_terms($post->ID, $taxonomy, array('fields' => 'slug'));
+			$post_terms = wp_get_object_terms($post->ID, $taxonomy, array('fields' => 'slugs'));
 
 			if (!empty($post_terms)) {
 				$query = new WP_Query(array(
+					'post_type' => $this->post_type_slug($server->post_name),
 					'tax_query' => array(
 						array(
-							'taxonomy' => 'people',
+							'taxonomy' => $taxonomy,
 							'field' => 'slug',
-							'terms' => 'bob'
+							'terms' => $post_terms,
 						),
 					),
 					'update_post_term_cache' => false,
@@ -785,9 +787,10 @@ class Capsule_Client {
 
 			// For taxonomies that are mapped, we need to get the mapping data and set it
 			// Otherwise, just send along the local data for the terms
-			foreach ($taxonomies as $tax_name) {
-				$tax_input[$tax_name] = array();
-				$terms = wp_get_object_terms($post->ID, $tax_name);
+			foreach ($taxonomies as $taxonomy) {
+				$tax_input[$taxonomy] = array();
+				$terms = wp_get_object_terms($post->ID, $taxonomy);
+
 				if (is_array($terms) && !empty($terms)) {
 					// Taxonomy has been mapped, need to get the slug/term_id thats on the server
 					if (in_array($taxonomy, $mapped_taxonomies)) {
@@ -796,37 +799,47 @@ class Capsule_Client {
 							$term_ids[] = $term->term_id;
 						}
 
-						$term_objects = get_objects_in_term($term_ids, $taxonomy);
 
-						foreach ($term_objects as $object) {
-							if (isset($object->post_type) && $object->post_type == $server_post_type) {
+						// Get the objects with this term
+						$term_object_ids = get_objects_in_term($term_ids, $taxonomy);
+						if (is_array($term_object_ids) && !empty($term_object_ids)) {
+							$term_object_query = new WP_Query(array(
+								// There should be only 1 mapping per server
+								'posts_per_page' => 1,
+								'post_type' => $server_post_type,
+								'post__in' => $term_object_ids,
+								'post_status' => 'publish',
+							));
+							
+							if (!empty($term_object_query->posts)) {
+								$term_mapping_post = $term_object_query->posts[0];
 								if (is_taxonomy_hierarchical($taxonomy)) {
-									$server_term_id = get_post_meta($object->ID, $this->server_term_id_key, true);
+									$server_term_id = get_post_meta($term_mapping_post->ID, $this->server_term_id_key, true);
 									if ($server_term_id) {
-										$tax_input[$tax_name][] = $server_term_id;
+										$tax_input[$taxonomy][] = $server_term_id;
 									}
 								}
 								else {
-									$server_term_slug = get_post_meta($object->ID, $this->server_term_slug_key, true);
+									$server_term_slug = get_post_meta($term_mapping_post->ID, $this->server_term_slug_key, true);
 									if ($server_term_slug) {
-										$tax_input[$tax_name][] = $server_term_slug;
+										$tax_input[$taxonomy][] = $server_term_slug;
 									}
 								}
 							}
 						}
-						
 					}
 					else {
 						foreach ($terms as $term) {
 							// check if heirarchical, wp_insert_post handles them differently
-							// @TODO server wont know about the term ids!
-							$tax_input[$tax_name][] = is_taxonomy_hierarchical($taxonomy) ? $term->term_id : $term->name;
+							// wp_insert_post expects hierachical term to come in as IDs, server won't know about these,
+							// have to send them as term names. strtolower for normalization.
+							$tax_input[$taxonomy][] = $term->name;
 						}
 					}
 				}
 				else {
 					// So data gets sent through POST
-					$tax_input[$tax_name][] = null;
+					$tax_input[$taxonomy][] = null;
 				}
 			}
 		}
