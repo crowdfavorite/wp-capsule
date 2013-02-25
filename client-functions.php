@@ -799,20 +799,23 @@ class Capsule_Client {
 							$term_ids[] = $term->term_id;
 						}
 
+						// There may be one local term mapped to many server terms, so we handle them all
+						$term_object_query = new WP_Query(array(
+							'posts_per_page' => -1,
+							'post_type' => $server_post_type,
+							'post__in' => $term_object_ids,
+							'post_status' => 'publish',
+							'tax_query' => array(
+								array(
+								'taxonomy' => $taxonomy,
+								'field' => 'id',
+								'terms' => $term_ids
+								)
+							)
+						));
 
-						// Get the objects with this term
-						$term_object_ids = get_objects_in_term($term_ids, $taxonomy);
-						if (is_array($term_object_ids) && !empty($term_object_ids)) {
-							$term_object_query = new WP_Query(array(
-								// There should be only 1 mapping per server
-								'posts_per_page' => 1,
-								'post_type' => $server_post_type,
-								'post__in' => $term_object_ids,
-								'post_status' => 'publish',
-							));
-							
-							if (!empty($term_object_query->posts)) {
-								$term_mapping_post = $term_object_query->posts[0];
+						if (!empty($term_object_query->posts)) {
+							foreach ($term_object_query->posts as $term_mapping_post) {
 								if (is_taxonomy_hierarchical($taxonomy)) {
 									$server_term_id = get_post_meta($term_mapping_post->ID, $this->server_term_id_key, true);
 									if ($server_term_id) {
