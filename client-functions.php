@@ -805,25 +805,29 @@ class Capsule_Client {
 							'post_type' => $server_post_type,
 							'post__in' => $term_object_ids,
 							'post_status' => 'publish',
+							'fields' => 'ids',
+							'update_post_term_cache' => false,
+							// Same number of queries if left as false. Default is true
+							'update_post_meta_cache' => true,
 							'tax_query' => array(
 								array(
-								'taxonomy' => $taxonomy,
-								'field' => 'id',
-								'terms' => $term_ids
+									'taxonomy' => $taxonomy,
+									'field' => 'id',
+									'terms' => $term_ids
 								)
 							)
 						));
 
 						if (!empty($term_object_query->posts)) {
-							foreach ($term_object_query->posts as $term_mapping_post) {
+							foreach ($term_object_query->posts as $term_mapping_post_id) {
 								if (is_taxonomy_hierarchical($taxonomy)) {
-									$server_term_id = get_post_meta($term_mapping_post->ID, $this->server_term_id_key, true);
+									$server_term_id = get_post_meta($term_mapping_post_id, $this->server_term_id_key, true);
 									if ($server_term_id) {
 										$tax_input[$taxonomy][] = $server_term_id;
 									}
 								}
 								else {
-									$server_term_slug = get_post_meta($term_mapping_post->ID, $this->server_term_slug_key, true);
+									$server_term_slug = get_post_meta($term_mapping_post_id, $this->server_term_slug_key, true);
 									if ($server_term_slug) {
 										$tax_input[$taxonomy][] = $server_term_slug;
 									}
