@@ -135,11 +135,6 @@ class Capsule_Client {
 						}
 					}
 					break;
-				case 'get_terms':
-					if (wp_verify_nonce($_POST['_get_terms_nonce'], '_cap_client_get_terms')) {
-						$this->get_server_terms();
-					}
-					break;
 				case 'save_mapping':
 					if (wp_verify_nonce($_POST['_save_mapping_nonce'], '_cap_client_save_mapping')) {
 						$this->save_mapping($_POST['cap_client_mapping']);
@@ -429,9 +424,12 @@ class Capsule_Client {
 	/**
 	 * Fetch terms from the capsule server to be mapped locally.
 	 * Passes taxonomies to get terms from and API key to validate against
+	 *
+	 * @return true|array True if everything went smoothly, array of errors with server post key as the id 
 	 **/
 	public function get_server_terms() {
 		// Query the servers, hits endpoint via request handler - requires API key
+		$errors = array();
 		$servers = $this->get_servers();
 		foreach	($servers as $server_post) {
 			$args = array(
@@ -445,10 +443,15 @@ class Capsule_Client {
 			);
 			$request = wp_remote_post($server_post->url, $args);
 			// Check for errors
-			if (is_wp_error($request) || $request['response']['code'] != '200') {
-				print_r($request);
-				die();
-				// @TODO Handle this error
+			if (is_wp_error($request)) {
+				foreach ($request->errors as $key => $wp_errors) {
+					foreach ($wp_errors as $error) {
+						$errors[$server_post->ID][] = $error;
+					}
+				}
+			}
+			else if ($request['response']['code'] != '200') {
+				$errors[$server_post->ID][] = 'Server said: '.$request['response']['code'].':'.$request['response']['message'].'. Please check the server credentials and connectivity and try again.';
 			}
 			else {
 				// Response is serialized string of taxonomies as keys with values of array of terms (ID, name, slug, description)
@@ -456,6 +459,8 @@ class Capsule_Client {
 				$this->process_server_terms($terms, $this->post_type_slug($server_post->post_name));
 			}
 		}
+
+		return empty($errors) ? true : $errors;
 	}
 
 	/**
@@ -570,10 +575,25 @@ class Capsule_Client {
 		}
 	}
 
+	function show_term_mapping_errors($errors, $post_id) {
+		$html = '';
+		if (isset($errors[$post_id])) {
+			foreach ($errors[$post_id] as $error_message) {
+				$html .= $error_message;
+			}
+		}
+
+		echo $html;
+	}
+
 	/**
 	 * Markup and logic for the term mapping page
 	 **/
 	function term_mapping_page() {
+		// Fetch server terms on each page load
+		// @TODO check what happens when disconnected
+		$errors = $this->get_server_terms();
+
 		// Get all the terms in taxonomies are mapped and sort them by taxonomy
 		// For easier displaying later
 		$taxonomies = $this->taxonomies_to_map();
@@ -586,39 +606,48 @@ class Capsule_Client {
 			}
 		}
 ?>
-<div class="wrap">
+ <div class="wrap">
 	<div id="icon-options-general" class="icon32"></div>
 	<h2><?php _e('Capsule Server Term Mappings', 'capsule-client'); ?></h2>
-	<div id="cap-term-mappings">
-		<form method="post">
-<?php 
+	<form method="post">
+		<input type="submit" value="<?php _e('Save Mappings', 'capsule-client'); ?>">
+ <?php 
 		$servers = $this->get_servers();
-		foreach	($servers as $server_post) {
-			echo '<h3>'.esc_html($server_post->post_title).'</h3>';
+		foreach ($servers as $server_post) {
 			$posts = $this->get_server_term_posts($this->post_type_slug($server_post->post_name));
-			foreach ($posts as $post) {
-				echo '<div>';
-				echo $post->post_title.': ';
-				$terms = get_the_terms($post, 'projects');
-
-				$selected_id = (is_array($terms) && !empty($terms)) ? array_shift($terms)->term_id : 0;
-
-				echo $this->term_select_markup($post->ID, 'projects', $taxonomy_array['projects'], $selected_id);
-				echo '</div>';
-			}
-		}
-?>
+		?>
+		<h3><?php echo esc_html($server_post->post_title); ?></h3><?php $this->show_term_mapping_errors($errors, $server_post->ID); ?>
+			<table class="wp-list-table widefat fixed posts">
+				<thead>
+					<tr>
+						<th scope="col" class="manage-column column-label" style="">
+							<?php _e('Project Name', 'capsule-client'); ?>
+						</th>
+						<th scope="col" class="manage-column column-api-key" style="">
+							<?php _e('Select your mapping', 'capsule-client'); ?>
+						</th>
+					</tr>
+				</thead>
+				<tbody>
+		<?php 
+		foreach ($posts as $post) :
+			$terms = get_the_terms($post, 'projects');
+			$selected_id = (is_array($terms) && !empty($terms)) ? array_shift($terms)->term_id : 0;
+		?>
+					<tr>
+						<td><?php echo esc_html($post->post_title); ?></td>
+						<td><?php echo $this->term_select_markup($post->ID, 'projects', $taxonomy_array['projects'], $selected_id); ?></td>
+					</tr>
+		<?php endforeach;  ?>
+				</tbody>
+			</table>
+		<?php 
+                }
+		?>
 			<input type="submit" value="<?php _e('Save Mappings', 'capsule-client'); ?>">
 			<input type="hidden" name="capsule_client_action" value="save_mapping" />
 			<?php wp_nonce_field('_cap_client_save_mapping', '_save_mapping_nonce', true, true); ?>
 		</form>
-		<form method="post">
-			<input type="submit" value="<?php _e('Fetch Terms', 'capsule-client'); ?>">
-			<input type="hidden" name="capsule_client_action" value="get_terms" />
-			<?php wp_nonce_field('_cap_client_get_terms', '_get_terms_nonce', true, true); ?>
-		</form>
-		
-	</div>
 </div>
 
 <?php 
