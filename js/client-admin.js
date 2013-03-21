@@ -1,7 +1,7 @@
 (function($) {
 
 	$(function() {
-		$('form#capsule-add-server').on('submit', function(e) {
+		$('form#js-capsule-add-server').on('submit', function(e) {
 			var $form = $(this);
 			$form.find('input[name="capsule_client_action"]').val('add_server_ajax');
 			e.preventDefault();
@@ -10,7 +10,7 @@
 				$form.serialize(),
 				function(data) {
 					if (data.result == 'success') {
-						$(data.html).hide().prependTo("div#capsule-servers").fadeIn();
+						$(data.html).hide().prependTo("#js-capsule-update-servers tbody").fadeIn();
 					}
 					else {
 						// @TODO handle if response is an error
@@ -21,40 +21,47 @@
 			);
 		});
 
-		$('#wpbody-content').on('submit', 'form.update-server', function(e) {
-			var $form = $(this);
-			$form.find('input[name="capsule_client_action"]').val('update_server_ajax');
+		$('#wpbody-content').on('click', 'form#js-capsule-update-servers .js-update-server', function(e) {
+			var server_id = $(this).data('server_id');
+			var $form = $('form#js-capsule-update-servers');
 			e.preventDefault();
 			$.post(
 				ajaxurl,
-				$form.serialize(),
+				{
+					capsule_client_action : 'update_server_ajax',
+					server_name : $('#js-server-name-'+server_id).val(),
+					server_id : server_id,
+					api_key : $('#js-server-api_key-'+server_id).val(),
+					server_url : $('#js-server-url-'+server_id).val(),
+					_update_server_nonce : $('#_update_server_nonce').val(),
+					_wp_http_referer : $form.find('input[name="_wp_http_referer"]').val()
+				},
 				function(data) {
 					if (data.result == 'success') {
-						$form.closest('div').fadeOut().fadeIn();
+						$('#js-server-item-'+server_id).fadeOut().fadeIn();
 					}
 					else {
-						// @TODO handle if response is an error
-						alert('error');
+						// @TODO nothing, it hasn't been updated
 					}
 				},
 				'json'
 			);
 		});
 
-		$('#wpbody-content').on('submit', 'form.delete-server', function(e) {
-			var $form = $(this);
-			$form.find('input[name="capsule_client_action"]').val('delete_server_ajax');
+		$('#wpbody-content').on('click', '.js-delete-server', function(e) {
+			var url = $(this).attr('href');
+			var $form = $('#js-capsule-update-servers');
+			var server_id = $(this).data('server_id');
 			e.preventDefault();
-			$.post(
-				ajaxurl,
-				$form.serialize(),
+			$.get(
+				url,
+				{ doing_ajax : true },
 				function(data) {
 					if (data.result == 'success') {
-						$form.closest('div.server-item').fadeOut();
+						$form.find('#js-server-item-'+server_id).fadeOut();
 					}
 					else {
-						// @TODO handle if response is an error
-						alert('error');
+						//nothing it hasn't been deleted
 					}
 				},
 				'json'

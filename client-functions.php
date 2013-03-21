@@ -26,6 +26,8 @@ class Capsule_Client {
 		add_action('admin_menu', array($this, 'add_menu_pages'));
 		add_action('wp_insert_post', array($this,'insert_post'), 10, 2);
 		add_action('admin_enqueue_scripts', array($this,'admin_enqueue_scripts'), 10, 2);
+		add_action('admin_head-settings_page_capsule-server-management', array($this, 'admin_css'));
+		add_action('admin_head-settings_page_capsule-term-mapping', array($this, 'admin_css'));
 	}
 
 	public function admin_enqueue_scripts() {
@@ -42,8 +44,8 @@ class Capsule_Client {
 
 	// Handles all client actions including those coming in via ajax
 	public function request_handler() {
-		if (isset($_POST['capsule_client_action'])) {
-			switch ($_POST['capsule_client_action']) {
+		if (isset($_REQUEST['capsule_client_action'])) {
+			switch ($_REQUEST['capsule_client_action']) {
 				case 'add_server':
 					if (wp_verify_nonce($_POST['_add_server_nonce'], '_cap_client_add_server')) {
 						$server_data = array(
@@ -83,21 +85,20 @@ class Capsule_Client {
 					die();
 					
 					break;
+				// Delete server handled slightly differently, with a link and GET params
 				case 'delete_server':
-					if (wp_verify_nonce($_POST['_delete_server_nonce'], '_cap_client_delete_server')) {
-						$this->delete_server($_POST['server_id']);
-					}
-					break;
-				case 'delete_server_ajax':
-					$error = 'error';
-					if (wp_verify_nonce($_POST['_delete_server_nonce'], '_cap_client_delete_server')) {
-						if ($this->delete_server($_POST['server_id']) !== false) {
-							echo json_encode(array('result' => 'success'));
+					if (wp_verify_nonce($_REQUEST['_wpnonce'], '_cap_client_delete_server')) {
+						$result = $this->delete_server($_GET['server_id']);
+						if (isset($_GET['doing_ajax'])) {
+							if ( $result !== false) {
+								echo json_encode(array('result' => 'success'));
+							}
+							else {
+								echo json_encode(array('result' => 'error'));
+							}
 							die();
 						}
 					}
-					echo json_encode(array('result' => 'error'));
-					die();
 					break;
 				case 'update_server_ajax':
 					$error = 'error';
@@ -125,13 +126,15 @@ class Capsule_Client {
 					));
 					die();
 					break;
-				case 'update_server':
+				// Non ajax way, have to update all servers
+				case 'update_servers':
 					if (wp_verify_nonce($_POST['_update_server_nonce'], '_cap_client_update_server')) {
-						if ($server_id = $_POST['server_id']) {
-							$data['server_name'] = isset($_POST['server_name']) ? $_POST['server_name'] : '';
-							$data['api_key'] = isset($_POST['api_key']) ? $_POST['api_key'] : '';
-							$data['server_url'] = isset($_POST['server_url']) ? $_POST['server_url'] : '';
-							$this->update_server($server_id, $data);
+						$servers = isset($_POST['servers']) ? $_POST['servers'] : array();
+						error_log(print_r($servers,1));
+						if (!empty($servers)) {
+							foreach ($servers as $server_id => $server_data) {
+								$this->update_server($server_id, $server_data);
+							}
 						}
 					}
 					break;
@@ -255,53 +258,76 @@ class Capsule_Client {
 	public function server_management_page() {
 		$servers = $this->get_servers();
 ?>
-<div class="wrap">
+<div class="wrap capsule-admin">
 	<div id="icon-options-general" class="icon32"></div>
 	<h2><?php _e('Capsule Server Management', 'capsule-client'); ?></h2>
 	<div id="cap-servers">
-		<form method="post" id="capsule-add-server">
+		<form method="post" id="js-capsule-add-server">
 			<table class="wp-list-table widefat fixed posts">
 				<thead>
-				<tr>
-					<th scope="col" class="manage-column column-label" style="">
-						<?php _e('Server Name', 'capsule-client'); ?>
-					</th>
-					<th scope="col" class="manage-column column-api-key" style="">
-						<?php _e('Server API Key', 'capsule-client'); ?>
-					</th>
-					<th scope="col" class="manage-column column-api-key" style="">
-						<?php _e('Server URL', 'capsule-client'); ?>
-					</th>
-					<th scope="col" class="manage-column column-actions" style="">
-						<?php _e('Actions', 'capsule-client'); ?>
-					</th>
-				</tr>
-			</thead>
-			<tbody>
-				<tr>
-					<td><input name="server_name" type="text" /></td>
-					<td><input name="server_api_key" type="text" /></td>
-					<td><input name="server_url" type="text" /></td>
-					<td>
-						<input type="submit" class="button-primary" value="<?php _e('+ Add New', 'capsule-client'); ?>" />
-						<input type="hidden" value="add_server" name="capsule_client_action" />
-					</td>
+					<tr>
+						<th scope="col" class="manage-column column-label" style="">
+							<?php _e('Server Name', 'capsule-client'); ?>
+						</th>
+						<th scope="col" class="manage-column column-api-key" style="">
+							<?php _e('Server API Key', 'capsule-client'); ?>
+						</th>
+						<th scope="col" class="manage-column column-api-key" style="">
+							<?php _e('Server URL', 'capsule-client'); ?>
+						</th>
+						<th scope="col" class="manage-column column-actions" style="">
+							<?php _e('Actions', 'capsule-client'); ?>
+						</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td><input name="server_name" type="text" /></td>
+						<td><input name="server_api_key" type="text" /></td>
+						<td><input name="server_url" type="text" /></td>
+						<td>
+							<input type="submit" class="button-primary" value="<?php _e('+ Add New', 'capsule-client'); ?>" />
+							<input type="hidden" value="add_server" name="capsule_client_action" />
+						</td>
 
-					<?php wp_nonce_field('_cap_client_add_server', '_add_server_nonce', true, true); ?>
-				</tr>
+						<?php wp_nonce_field('_cap_client_add_server', '_add_server_nonce', true, true); ?>
+					</tr>
+				</tbody>
 			</table>
 		</form>
-
-		<div id="capsule-servers" class="wp-list-table widefat fixed posts">
-			
-		<?php
-			$class = ''; 
-			foreach ($servers as $server_post) {
-				$class = ($class == '') ? ' alternate' : '';
-				echo $this->server_row_markup($server_post, $class);
-			} 
-		?>
-		</table>
+		<div>
+			<form method="post" id="js-capsule-update-servers">
+				<table class="wp-list-table widefat fixed posts">
+					<thead>
+						<tr>
+							<th scope="col" class="manage-column column-label" style="">
+								<?php _e('Server Name', 'capsule-client'); ?>
+							</th>
+							<th scope="col" class="manage-column column-api-key" style="">
+								<?php _e('Server API Key', 'capsule-client'); ?>
+							</th>
+							<th scope="col" class="manage-column column-api-key" style="">
+								<?php _e('Server URL', 'capsule-client'); ?>
+							</th>
+							<th scope="col" class="manage-column column-actions" style="">
+								<?php _e('Actions', 'capsule-client'); ?>
+							</th>
+						</tr>
+					</thead>
+					<tbody>
+					<?php 
+						$class = ''; 
+						foreach ($servers as $server_post) {
+							$class = ($class == '') ? ' alternate' : '';
+							echo $this->server_row_markup($server_post, $class);
+						}
+					?>
+					</tbody>
+				</table>
+				<?php wp_nonce_field('_cap_client_update_server', '_update_server_nonce', true, true); ?>
+				<input type="hidden" name="capsule_client_action" value="update_servers" />
+			</form>
+		</div>
 	</div>
 </div>
 <?php
@@ -316,25 +342,23 @@ class Capsule_Client {
 	 * @return string HTML for the row
 	 **/
 	public function server_row_markup($server_post, $class = '') {
-		//@Todo nonce
+		$delete_url = add_query_arg('capsule_client_action', 'delete_server', admin_url());
+		$delete_url = add_query_arg('server_id', $server_post->ID, $delete_url);
+		// wp_nonce_url does esc_html
+		$delete_url = wp_nonce_url($delete_url, '_cap_client_delete_server');
+		$name_base = 'servers['.$server_post->ID.']';
 		$html = '
-<div class="'.esc_attr('server-item'.$class).'">
-	<form class="update-server" method="post">
-		<input type="text" name="server_name" value="'.esc_attr($server_post->post_title).'" />
-		<input name="api_key" type="text" value="'.$server_post->api_key.'" />
-		<input type="text" name="server_url" value="'.esc_attr($server_post->url).'" />
-		<input type="submit" class="button-primary" value="Update" />
-		<input type="hidden" name="server_id" value="'.esc_attr($server_post->ID).'" />
-		<input type="hidden" name="capsule_client_action" value="update_server" />
-		'.wp_nonce_field('_cap_client_update_server', '_update_server_nonce', true, false).'
-	</form>
-	<form class="delete-server" method="post">
-		<input type="submit" value="'.__('Delete', 'capsule-client').'" />
-		<input type="hidden" name="server_id" value="'.esc_attr($server_post->ID).'" />
-		<input type="hidden" name="capsule_client_action" value="delete_server" />
-		'.wp_nonce_field('_cap_client_delete_server', '_delete_server_nonce', true, false).'
-	</form>
-</div>';
+<tr id="'.esc_attr('js-server-item-'.$server_post->ID).'" class="'.esc_attr('server-item'.$class).'">
+	<td><input id="'.esc_attr('js-server-name-'.$server_post->ID).'" type="text" name="'.$name_base.'[server_name]" value="'.esc_attr($server_post->post_title).'" /></td>
+	<td><input id="'.esc_attr('js-server-api_key-'.$server_post->ID).'" name="'.$name_base.'[api_key]" type="text" value="'.esc_attr($server_post->api_key).'" /></td>
+	<td><input id="'.esc_attr('js-server-url-'.$server_post->ID).'" type="text" name="'.$name_base.'[server_url]" value="'.esc_attr($server_post->url).'" /></td>
+	<td>
+		<input type="submit" data-server_id="'.esc_attr($server_post->ID).'" class="js-update-server button-primary" value="'.__('Update', 'capsule-client').'" />
+		<input id="'.esc_attr('js-server-id-'.$server_post->ID).'" type="hidden" name="'.$name_base.'[id]" value="'.esc_attr($server_post->ID).'" />
+		<a href="'.$delete_url.'" style="color:#ff0000;" data-server_id="'.esc_attr($server_post->ID).'" class="delete js-delete-server">'.__('Delete', 'capsule-client').'</a>
+	</td>
+</tr>';
+
 		return $html;
 	}
 
@@ -606,7 +630,7 @@ class Capsule_Client {
 			}
 		}
 ?>
- <div class="wrap">
+ <div class="wrap capsule-admin">
 	<div id="icon-options-general" class="icon32"></div>
 	<h2><?php _e('Capsule Server Term Mappings', 'capsule-client'); ?></h2>
 	<form method="post">
@@ -880,6 +904,15 @@ class Capsule_Client {
 			}
 		}
 		return $tax_input;
+	}
+
+	function admin_css() {
+		echo '
+	<style type="text/css">
+		.capsule-admin table {
+			margin-top: 10px;
+		}
+	</style>';
 	}
 }
 
