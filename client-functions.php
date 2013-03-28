@@ -204,8 +204,8 @@ class Capsule_Client {
 		$default_args = array(
 			'public' => CAP_CLIENT_DEBUG,
 			'publicly_queryable' => true,
-			'show_ui' => false, 
-			'show_in_menu' => false, 
+			'show_ui' => false,
+			'show_in_menu' => false,
 			'query_var' => true,
 			'capability_type' => 'post',
 			'has_archive' => true, 
@@ -221,8 +221,9 @@ class Capsule_Client {
 		$servers = $this->get_servers();
 		$args = array_merge($default_args, array(
 			'taxonomies' => $this->taxonomies_to_map(),
-			)
-		); 
+			'show_ui' => true,
+			'show_in_menu' => true,
+		));
 		
 		// Generate post types for each of the servers, this is where the server
 		// terms are stored. Must have unique, reproducable names.
