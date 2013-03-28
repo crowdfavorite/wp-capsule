@@ -204,8 +204,8 @@ class Capsule_Client {
 		$default_args = array(
 			'public' => CAP_CLIENT_DEBUG,
 			'publicly_queryable' => true,
-			'show_ui' => true, 
-			'show_in_menu' => true, 
+			'show_ui' => false, 
+			'show_in_menu' => false, 
 			'query_var' => true,
 			'capability_type' => 'post',
 			'has_archive' => true, 
