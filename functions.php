@@ -260,3 +260,4 @@ function capsule_trim_excerpt($excerpt) {
 }
 add_filter('get_the_excerpt', 'capsule_trim_excerpt');
 
+

@@ -249,9 +249,20 @@ class Capsule_Client {
 	}
 
 	// Add menu pages
-	function add_menu_pages() {
-		add_options_page(__('Capsule Term Mapping', 'capsule_client'), __('Capsule Term Mapping', 'capsule_client'), 'manage_options', 'capsule-term-mapping', array($this, 'term_mapping_page'));
-		add_options_page(__('Capsule Servers Management', 'capsule_client'), __('Capsule Servers Management', 'capsule_client'), 'manage_options', 'capsule-server-management', array($this, 'server_management_page'));
+	public function add_menu_pages() {
+		add_menu_page(__('Capsule', 'capsule_client'), __('Capsule', 'capsule_client'), 'manage_options', 'capsule-main', array($this, 'capsule_options') );
+		add_submenu_page('capsule-main', __('Term Mapping', 'capsule_client'), __('Term Mapping', 'capsule_client'), 'manage_options', 'capsule-term-mapping', array($this, 'term_mapping_page'));
+		add_submenu_page('capsule-main', __('Servers Management', 'capsule_client'), __('Servers Management', 'capsule_client'), 'manage_options', 'capsule-server-management', array($this, 'server_management_page'));
+	}
+
+	// Menu page
+	public function capsule_options() {
+		if ( !current_user_can( 'manage_options' ) )  {
+			wp_die( __( 'You do not have sufficient permissions to access this page.' ) );
+		}
+		echo '<div class="wrap">';
+		echo '<p>Capsule settings page</p>';
+		echo '</div>';
 	}
 
 	// Markup for server management
