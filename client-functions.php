@@ -28,6 +28,7 @@ class Capsule_Client {
 		add_action('admin_enqueue_scripts', array($this,'admin_enqueue_scripts'), 10, 2);
 		add_action('admin_head-settings_page_capsule-server-management', array($this, 'admin_css'));
 		add_action('admin_head-settings_page_capsule-term-mapping', array($this, 'admin_css'));
+		add_action('wp_dashboard_setup', array($this, 'add_dashboard_widget'));
 	}
 
 	public function admin_enqueue_scripts() {
@@ -264,6 +265,39 @@ class Capsule_Client {
 		echo '<div class="wrap">';
 		echo '<p>Capsule settings page</p>';
 		echo '</div>';
+	}
+
+	// Add dashboard widget
+	public function dashboard_widget_content() {
+		// Content
+		echo "Give me a quarter, I love quarters.";
+	} 
+
+	// Create the function use in the action hook
+
+	public function add_dashboard_widget() {
+		wp_add_dashboard_widget('capsule_dashboard_widget', __('Capsule', 'capsule'), array($this, 'dashboard_widget_content'));
+
+		// Globalize the metaboxes array, this holds all the widgets for wp-admin
+		global $wp_meta_boxes;
+		
+		// Get the regular dashboard widgets array 
+		// (which has our new widget already but at the end)
+
+		$normal_dashboard = $wp_meta_boxes['dashboard']['normal']['core'];
+		
+		// Backup and delete our new dashboard widget from the end of the array
+
+		$widget_backup = array('capsule_dashboard_widget' => $normal_dashboard['capsule_dashboard_widget']);
+		unset($normal_dashboard['capsule_dashboard_widget']);
+
+		// Merge the two arrays together so our widget is at the beginning
+
+		$sorted_dashboard = array_merge($widget_backup, $normal_dashboard);
+
+		// Save the sorted array back into the original metaboxes 
+
+		$wp_meta_boxes['dashboard']['normal']['core'] = $sorted_dashboard;
 	}
 
 	// Markup for server management
