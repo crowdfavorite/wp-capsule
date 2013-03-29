@@ -28,6 +28,7 @@ class Capsule_Client {
 		add_action('admin_enqueue_scripts', array($this,'admin_enqueue_scripts'), 10, 2);
 		add_action('admin_head-settings_page_capsule-server-management', array($this, 'admin_css'));
 		add_action('admin_head-settings_page_capsule-term-mapping', array($this, 'admin_css'));
+		add_action('admin_notices', array($this,'capsule_admin_notice'));
 	}
 
 	public function admin_enqueue_scripts() {
@@ -264,6 +265,10 @@ class Capsule_Client {
 		echo '<div class="wrap">';
 		echo '<p>Capsule settings page</p>';
 		echo '</div>';
+	}
+
+	public function capsule_admin_notice(){
+		_e('<div class="updated"><p>Welcome to Capsule.</p></div>', 'capsule');
 	}
 
 	// Markup for server management
