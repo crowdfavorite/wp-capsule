@@ -490,7 +490,7 @@ class Capsule_Client {
 				}
 			}
 			else if ($request['response']['code'] != '200') {
-				$errors[$server_post->ID][] = 'Server said: "'.$request['response']['code'].':'.$request['response']['message'].'" Please check the server credentials and connectivity and try again.';
+				$errors[$server_post->ID][] = sprintf(__('Server said: "%s:%s" Please check the server credentials and connectivity and try again.', 'capsule-client'), $request['response']['code'], $request['response']['message']);
 			}
 			else {
 				// Response is serialized string of taxonomies as keys with values of array of terms (ID, name, slug, description)
@@ -597,14 +597,18 @@ class Capsule_Client {
 	 * Return posts that represent taxonomy terms on a server
 	 *
 	 * @param string $server_name Name of the server to get the posts for (also the post type)
+	 * @param array $args Array of WP_Query args
 	 * @return array Empty array or an array of posts for the server name
 	 **/
-	function get_server_term_posts($server_post_type) {
-		$post_query = new WP_Query(array(
+	function get_server_term_posts($server_post_type, $args = array()) {
+		$defaults = array(
 			'posts_per_page' => -1,
 			'post_type' => $server_post_type,
 			'post_status' => 'publish',
-		));
+		);
+		$query_args = array_merge($defaults, $args);
+
+		$post_query = new WP_Query($query_args);
 
 		if (is_array($post_query->posts)) {
 			return $post_query->posts;
@@ -615,12 +619,12 @@ class Capsule_Client {
 	}
 
 	function show_term_mapping_errors($errors, $post_id) {
-		$html = '';
+		$error_html = '';
 		if (isset($errors[$post_id]) && !empty($errors[$post_id])) {
-			$html = __('Error: ');
 			foreach ($errors[$post_id] as $error_message) {
-				$html .= $error_message;
+				$error_html .= $error_message;
 			}
+			$html = sprintf(__('Error: %s', 'capsule-client'), $error_html);
 		}
 
 		echo $html;
@@ -651,18 +655,35 @@ class Capsule_Client {
 	<h2><?php _e('Capsule Server Term Mappings', 'capsule-client'); ?></h2>
 	<form method="post">
 		<input type="submit" class="save-mappings button-primary" value="<?php _e('Save Mappings', 'capsule-client'); ?>">
-		<hr />
  <?php 
 		$servers = $this->get_servers();
 		foreach ($servers as $server_post) {
-			$posts = $this->get_server_term_posts($this->post_type_slug($server_post->post_name));
-		?>
-		<h3><?php echo esc_html($server_post->post_title); ?></h3><span class="error"><?php $this->show_term_mapping_errors($errors, $server_post->ID); ?></span>
+?>
+			<h3><?php echo esc_html($server_post->post_title); ?></h3><span class="error"><?php $this->show_term_mapping_errors($errors, $server_post->ID); ?></span>
+<?php 
+			// Default capsule functionality only includes projects here, but support for more taxonomies is present
+			foreach ($taxonomies as $taxonomy) {
+				$tax_obj = get_taxonomy($taxonomy);
+
+				// Get all posts with this taxonomy, doesn't matter which term
+				$posts = $this->get_server_term_posts(
+					$this->post_type_slug($server_post->post_name), 
+					array(
+						'tax_query' => array(
+							array(
+								'operator' => 'NOT IN',
+								'terms' => array(-1),
+								'taxonomy' => $taxonomy,
+							)
+						),
+					)
+				);
+?>
 			<table class="wp-list-table widefat fixed posts">
 				<thead>
 					<tr>
 						<th scope="col" class="manage-column column-label" style="">
-							<?php _e('Project Name', 'capsule-client'); ?>
+							<?php echo sprintf(_x('%s Name', 'taxonomy name', 'capsule-client'), $tax_obj->labels->singular_name); ?>
 						</th>
 						<th scope="col" class="manage-column column-api-key" style="">
 							<?php _e('Select your mapping', 'capsule-client'); ?>
@@ -670,20 +691,22 @@ class Capsule_Client {
 					</tr>
 				</thead>
 				<tbody>
-		<?php 
-		foreach ($posts as $post) :
-			$terms = get_the_terms($post, 'projects');
-			$selected_id = (is_array($terms) && !empty($terms)) ? array_shift($terms)->term_id : 0;
-		?>
+<?php 
+				foreach ($posts as $post) :
+					// get_the_terms is cached by WP_Query, this isn't as expensive as it looks
+					$terms = get_the_terms($post, $taxonomy);
+					$selected_id = (is_array($terms) && !empty($terms)) ? array_shift($terms)->term_id : 0;
+?>
 					<tr>
 						<td><?php echo esc_html($post->post_title); ?></td>
-						<td><?php echo $this->term_select_markup($post->ID, 'projects', $taxonomy_array['projects'], $selected_id); ?></td>
+						<td><?php echo $this->term_select_markup($post, $taxonomy, $taxonomy_array[$taxonomy], $selected_id); ?></td>
 					</tr>
-		<?php endforeach;  ?>
+				<?php endforeach;  ?>
 				</tbody>
 			</table>
 		<?php 
-                }
+		}
+	}
 		?>
 		
 			<input type="submit" class="save-mappings button-primary" value="<?php _e('Save Mappings', 'capsule-client'); ?>">
@@ -696,24 +719,37 @@ class Capsule_Client {
 	}
 
 	/**
-	 * Generate markup for a term mapping select box
-	 *
-	 * @param int $post_id ID of the post 
+	 * Generate markup for a term mapping select box. Adds a 'Create Term Locally' option if no
+	 * term is found that matches the server term name
+	 * 
+	 * @param obj $post Post object
 	 * @param string $taxonomy Taxonomy name to select from
 	 * @param arary $terms Terms in the taxonomy
 	 * @param int $selected_id Term ID that is selected
 	 *
 	 * @return string HTML markup for the select box
 	 **/
-	function term_select_markup($post_id, $taxonomy, $terms, $selected_id) {
+	function term_select_markup($post, $taxonomy, $terms, $selected_id) {
+		$options = '';
+		$match = false;
+
 		$output = '
-<select name="'.esc_attr('cap_client_mapping['.$post_id.']['.$taxonomy.']').'">
+<input type="hidden" name="'.esc_attr('cap_client_mapping['.$post->ID.']['.$taxonomy.'][server_term]').'" value="'.esc_attr($post->post_title).'">
+<select name="'.esc_attr('cap_client_mapping['.$post->ID.']['.$taxonomy.'][term_id]').'">
 	<option value="0">'.__('No Mapping', 'capsule-client').'</option>';
 
 		foreach ($terms as $term) {
-			$output .= '<option value="'.esc_attr($term->term_id).'"'.selected($selected_id, $term->term_id, false).'>'.esc_html($term->name).'</option>';
+			if ($term->name == $post->post_title) {
+				$match = true;
+			}
+			$options .= '<option value="'.esc_attr($term->term_id).'"'.selected($selected_id, $term->term_id, false).'>'.esc_html($term->name).'</option>';
 		}
-		$output .= '</select>';
+		// If there are no local terms that match the server term, provide a 'Create Term' option
+		if (!$match) {
+			$output .= '<option value="-1">'.__('Create Term Locally', 'capsule-client').'</option>';
+		}
+
+		$output .= $options.'</select>';
 
 		return $output;
 	}
@@ -731,7 +767,15 @@ class Capsule_Client {
 	function save_mapping($mappings) {
 		if (is_array($mappings)) {
 			foreach ($mappings as $post_id => $mapping) {
-				foreach ($mapping as $taxonomy => $term_id) {
+				foreach ($mapping as $taxonomy => $term_data) {
+					$term_id = $term_data['term_id'];
+
+					// This is the create id see term_select_markup
+					if ($term_data['term_id'] == -1) {
+						// Create term
+						$term_id = capsule_create_term($term_data['server_term'], $taxonomy);
+					}
+
 					wp_set_object_terms($post_id, (int) $term_id, $taxonomy);
 				}
 			}
