@@ -222,8 +222,6 @@ class Capsule_Client {
 		$servers = $this->get_servers();
 		$args = array_merge($default_args, array(
 			'taxonomies' => $this->taxonomies_to_map(),
-			'show_ui' => true,
-			'show_in_menu' => true,
 		));
 		
 		// Generate post types for each of the servers, this is where the server
@@ -252,9 +250,9 @@ class Capsule_Client {
 
 	// Add menu pages
 	public function add_menu_pages() {
-		add_menu_page(__('Capsule', 'capsule_client'), __('Capsule', 'capsule_client'), 'manage_options', 'capsule-main', array($this, 'capsule_options') );
-		add_submenu_page('capsule-main', __('Term Mapping', 'capsule_client'), __('Term Mapping', 'capsule_client'), 'manage_options', 'capsule-term-mapping', array($this, 'term_mapping_page'));
-		add_submenu_page('capsule-main', __('Servers Management', 'capsule_client'), __('Servers Management', 'capsule_client'), 'manage_options', 'capsule-server-management', array($this, 'server_management_page'));
+		add_menu_page(__('Capsule', 'capsule_client'), __('Capsule', 'capsule_client'), 'manage_options', 'capsule', array($this, 'capsule_options') );
+		add_submenu_page('capsule', __('Projects', 'capsule_client'), __('Projects', 'capsule_client'), 'manage_options', 'capsule-term-mapping', array($this, 'term_mapping_page'));
+		add_submenu_page('capsule', __('Servers', 'capsule_client'), __('Servers', 'capsule_client'), 'manage_options', 'capsule-server-management', array($this, 'server_management_page'));
 	}
 
 	// Menu page
@@ -283,16 +281,16 @@ class Capsule_Client {
 			<table class="wp-list-table widefat fixed posts">
 				<thead>
 					<tr>
-						<th scope="col" class="manage-column column-label" style="">
+						<th scope="col" class="manage-column column-label">
 							<?php _e('Server Name', 'capsule-client'); ?>
 						</th>
-						<th scope="col" class="manage-column column-api-key" style="">
+						<th scope="col" class="manage-column column-api-key">
 							<?php _e('Server API Key', 'capsule-client'); ?>
 						</th>
-						<th scope="col" class="manage-column column-api-key" style="">
+						<th scope="col" class="manage-column column-api-key">
 							<?php _e('Server URL', 'capsule-client'); ?>
 						</th>
-						<th scope="col" class="manage-column column-actions" style="">
+						<th scope="col" class="manage-column column-actions">
 							<?php _e('Actions', 'capsule-client'); ?>
 						</th>
 					</tr>
