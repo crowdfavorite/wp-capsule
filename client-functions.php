@@ -492,7 +492,7 @@ class Capsule_Client {
 				}
 			}
 			else if ($request['response']['code'] != '200') {
-				$errors[$server_post->ID][] = 'Server said: '.$request['response']['code'].':'.$request['response']['message'].'. Please check the server credentials and connectivity and try again.';
+				$errors[$server_post->ID][] = 'Server said: "'.$request['response']['code'].':'.$request['response']['message'].'" Please check the server credentials and connectivity and try again.';
 			}
 			else {
 				// Response is serialized string of taxonomies as keys with values of array of terms (ID, name, slug, description)
@@ -618,7 +618,8 @@ class Capsule_Client {
 
 	function show_term_mapping_errors($errors, $post_id) {
 		$html = '';
-		if (isset($errors[$post_id])) {
+		if (isset($errors[$post_id]) && !empty($errors[$post_id])) {
+			$html = __('Error: ');
 			foreach ($errors[$post_id] as $error_message) {
 				$html .= $error_message;
 			}
@@ -651,13 +652,14 @@ class Capsule_Client {
 	<div id="icon-options-general" class="icon32"></div>
 	<h2><?php _e('Capsule Server Term Mappings', 'capsule-client'); ?></h2>
 	<form method="post">
-		<input type="submit" value="<?php _e('Save Mappings', 'capsule-client'); ?>">
+		<input type="submit" class="save-mappings button-primary" value="<?php _e('Save Mappings', 'capsule-client'); ?>">
+		<hr />
  <?php 
 		$servers = $this->get_servers();
 		foreach ($servers as $server_post) {
 			$posts = $this->get_server_term_posts($this->post_type_slug($server_post->post_name));
 		?>
-		<h3><?php echo esc_html($server_post->post_title); ?></h3><?php $this->show_term_mapping_errors($errors, $server_post->ID); ?>
+		<h3><?php echo esc_html($server_post->post_title); ?></h3><span class="error"><?php $this->show_term_mapping_errors($errors, $server_post->ID); ?></span>
 			<table class="wp-list-table widefat fixed posts">
 				<thead>
 					<tr>
@@ -685,7 +687,8 @@ class Capsule_Client {
 		<?php 
                 }
 		?>
-			<input type="submit" value="<?php _e('Save Mappings', 'capsule-client'); ?>">
+		
+			<input type="submit" class="save-mappings button-primary" value="<?php _e('Save Mappings', 'capsule-client'); ?>">
 			<input type="hidden" name="capsule_client_action" value="save_mapping" />
 			<?php wp_nonce_field('_cap_client_save_mapping', '_save_mapping_nonce', true, true); ?>
 		</form>
@@ -928,6 +931,12 @@ class Capsule_Client {
 	<style type="text/css">
 		.capsule-admin table {
 			margin-top: 10px;
+		}
+		.error {
+			color: #FF0000;
+		}
+		.capsule-admin input.save-mappings {
+			margin-top: 20px
 		}
 	</style>';
 	}
