@@ -279,6 +279,7 @@ class Capsule_Client {
 <div class="wrap capsule-admin">
 	<div id="icon-options-general" class="icon32"></div>
 	<h2><?php _e('Capsule: Servers', 'capsule-client'); ?></h2>
+	<p class="description"><?php printf(__('Connect to one or more Capsule servers to replicate selected content to those servers. <a href="%s">Learn More</a>', 'capsule-client'), esc_url(admin_url('admin.php?page=capsule'))); ?></p>
 	<div id="cap-servers">
 		<form method="post" id="js-capsule-add-server">
 			<table class="wp-list-table widefat fixed posts">
@@ -656,7 +657,7 @@ class Capsule_Client {
  <div class="wrap capsule-admin">
 	<div id="icon-options-general" class="icon32"></div>
 	<h2><?php _e('Capsule: Server Projects', 'capsule-client'); ?></h2>
-	<p class="description"><?php _e('When you map a local project to one on a server project, all posts related to that project will be replicated to that server.', 'capsule-client'); ?></p>
+	<p class="description"><?php printf(__('When you map a local project to one on a server project, all posts related to that project will be replicated to that server. <a href="%s">Learn More</a>', 'capsule-client'), esc_url(admin_url('admin.php?page=capsule'))); ?></p>
 	<form method="post">
  <?php 
 		$servers = $this->get_servers();
