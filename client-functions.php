@@ -266,6 +266,9 @@ class Capsule_Client {
 	}
 
 	public function capsule_admin_notice(){
+		if (strpos($_GET['page'], 'capsule') !== false) {
+			return;
+		}
 		_e('<div class="updated"><p>Welcome to Capsule.</p></div>', 'capsule');
 	}
 
@@ -275,7 +278,7 @@ class Capsule_Client {
 ?>
 <div class="wrap capsule-admin">
 	<div id="icon-options-general" class="icon32"></div>
-	<h2><?php _e('Capsule Server Management', 'capsule-client'); ?></h2>
+	<h2><?php _e('Capsule: Servers', 'capsule-client'); ?></h2>
 	<div id="cap-servers">
 		<form method="post" id="js-capsule-add-server">
 			<table class="wp-list-table widefat fixed posts">
@@ -652,9 +655,9 @@ class Capsule_Client {
 ?>
  <div class="wrap capsule-admin">
 	<div id="icon-options-general" class="icon32"></div>
-	<h2><?php _e('Capsule Server Term Mappings', 'capsule-client'); ?></h2>
+	<h2><?php _e('Capsule: Server Projects', 'capsule-client'); ?></h2>
+	<p class="description"><?php _e('When you map a local project to one on a server project, all posts related to that project will be replicated to that server.', 'capsule-client'); ?></p>
 	<form method="post">
-		<input type="submit" class="save-mappings button-primary" value="<?php _e('Save Mappings', 'capsule-client'); ?>">
  <?php 
 		$servers = $this->get_servers();
 		foreach ($servers as $server_post) {
@@ -682,11 +685,11 @@ class Capsule_Client {
 			<table class="wp-list-table widefat fixed posts">
 				<thead>
 					<tr>
-						<th scope="col" class="manage-column column-label" style="">
-							<?php echo sprintf(_x('%s Name', 'taxonomy name', 'capsule-client'), $tax_obj->labels->singular_name); ?>
+						<th scope="col" class="manage-column column-label">
+							<?php printf(_x('Server %s', 'taxonomy name', 'capsule-client'), $tax_obj->labels->singular_name); ?>
 						</th>
-						<th scope="col" class="manage-column column-api-key" style="">
-							<?php _e('Select your mapping', 'capsule-client'); ?>
+						<th scope="col" class="manage-column column-api-key">
+							<?php printf(_x('Local %s', 'taxonomy name', 'capsule-client'), $tax_obj->labels->singular_name); ?>
 						</th>
 					</tr>
 				</thead>
@@ -709,7 +712,9 @@ class Capsule_Client {
 	}
 		?>
 		
-			<input type="submit" class="save-mappings button-primary" value="<?php _e('Save Mappings', 'capsule-client'); ?>">
+			<p>
+				<input type="submit" class="save-mappings button-primary" value="<?php _e('Save', 'capsule-client'); ?>">
+			</p>
 			<input type="hidden" name="capsule_client_action" value="save_mapping" />
 			<?php wp_nonce_field('_cap_client_save_mapping', '_save_mapping_nonce', true, true); ?>
 		</form>
@@ -732,11 +737,12 @@ class Capsule_Client {
 	function term_select_markup($post, $taxonomy, $terms, $selected_id) {
 		$options = '';
 		$match = false;
+		$tax_obj = get_taxonomy($taxonomy);
 
 		$output = '
 <input type="hidden" name="'.esc_attr('cap_client_mapping['.$post->ID.']['.$taxonomy.'][server_term]').'" value="'.esc_attr($post->post_title).'">
 <select name="'.esc_attr('cap_client_mapping['.$post->ID.']['.$taxonomy.'][term_id]').'">
-	<option value="0">'.__('No Mapping', 'capsule-client').'</option>';
+	<option value="0">'.__('(not mapped)', 'capsule-client').'</option>';
 
 		foreach ($terms as $term) {
 			if ($term->name == $post->post_title) {
@@ -744,9 +750,11 @@ class Capsule_Client {
 			}
 			$options .= '<option value="'.esc_attr($term->term_id).'"'.selected($selected_id, $term->term_id, false).'>'.esc_html($term->name).'</option>';
 		}
+		$options = '<optgroup label="'.sprintf(__('Local %s', 'capsule-client'), $tax_obj->labels->name).'">'.$options.'</optgroup>';
+
 		// If there are no local terms that match the server term, provide a 'Create Term' option
 		if (!$match) {
-			$output .= '<option value="-1">'.__('Create Term Locally', 'capsule-client').'</option>';
+			$output .= '<option value="-1">'.sprintf(__('- Create &quot;%s&quot; Locally', 'capsule-client'), $tax_obj->labels->singular_name).'</option>';
 		}
 
 		$output .= $options.'</select>';
