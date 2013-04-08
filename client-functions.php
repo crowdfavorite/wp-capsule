@@ -250,26 +250,82 @@ class Capsule_Client {
 
 	// Add menu pages
 	public function add_menu_pages() {
-		add_menu_page(__('Capsule', 'capsule_client'), __('Capsule', 'capsule_client'), 'manage_options', 'capsule', array($this, 'capsule_options') );
+		global $menu;
+		$menu[39] = array( '', 'read', 'separator-capsule', '', 'wp-menu-separator' );
+		add_menu_page(__('Capsule', 'capsule_client'), __('Capsule', 'capsule_client'), 'manage_options', 'capsule', array($this, 'capsule_help'), '', 40 );
+		// needed to make separator show up
+		ksort($menu);
 		add_submenu_page('capsule', __('Projects', 'capsule_client'), __('Projects', 'capsule_client'), 'manage_options', 'capsule-term-mapping', array($this, 'term_mapping_page'));
 		add_submenu_page('capsule', __('Servers', 'capsule_client'), __('Servers', 'capsule_client'), 'manage_options', 'capsule-server-management', array($this, 'server_management_page'));
 	}
 
 	// Menu page
-	public function capsule_options() {
+	public function capsule_help() {
 		if ( !current_user_can( 'manage_options' ) )  {
 			wp_die( __( 'You do not have sufficient permissions to access this page.' ) );
 		}
-		echo '<div class="wrap">';
-		echo '<p>Capsule settings page</p>';
-		echo '</div>';
+?>
+<div class="wrap capsule-admin">
+	<div id="icon-options-general" class="icon32"></div>
+	<h2><?php _e('Capsule', 'capsule-client'); ?></h2>
+
+<pre>
+
+what it is
+
+- markdown support (space required between # and title so it's not considered a tag)
+- project, tag, code syntax
+- auto-save (+ indicator)
+- keyboard commands
+    - Cmd S to save
+    - Cmd+Shift+0 to recenter editor
+    - in/outdent
+    - Esc to close editor
+- pinning posts
+- connecting to a server
+    - entering server into
+    - choosing projects
+- searching
+- filtering
+
+
+</pre>
+</div>
+<?php
 	}
 
 	public function capsule_admin_notice(){
 		if (strpos($_GET['page'], 'capsule') !== false) {
 			return;
 		}
-		_e('<div class="updated"><p>Welcome to Capsule.</p></div>', 'capsule');
+?>
+<style type="text/css">
+.capsule-welcome {
+	background: #222;
+	color: #fff;
+	margin: 10px 10px 10px 0;
+	padding: 15px;
+}
+.capsule-welcome h1 {
+	font-weight: normal;
+	line-height: 100%;
+	margin: 0 0 10px 0;
+}
+.capsule-welcome p {
+	font-weight: normal;
+	line-height: 100%;
+	margin: 0;
+}
+.capsule-welcome a,
+.capsule-welcome a:visited {
+	color: #f8f8f8;
+}
+</style>
+<section class="capsule-welcome">
+	<h1><?php _e('Welcome to Capsule', 'capsule-client'); ?></h1>
+	<p><?php printf(__('Please read the overview, FAQs and more about <a href="%s">how Capsule works</a>.', 'capsule-client'), esc_url(admin_url('admin.php?page=capsule'))); ?></p>
+</section>
+<?php
 	}
 
 	// Markup for server management
