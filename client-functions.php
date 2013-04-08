@@ -319,16 +319,16 @@ class Capsule_Client {
 				<table class="wp-list-table widefat fixed posts">
 					<thead>
 						<tr>
-							<th scope="col" class="manage-column column-label" style="">
+							<th scope="col" class="manage-column column-label">
 								<?php _e('Server Name', 'capsule-client'); ?>
 							</th>
-							<th scope="col" class="manage-column column-api-key" style="">
+							<th scope="col" class="manage-column column-api-key">
 								<?php _e('Server API Key', 'capsule-client'); ?>
 							</th>
-							<th scope="col" class="manage-column column-api-key" style="">
+							<th scope="col" class="manage-column column-api-key">
 								<?php _e('Server URL', 'capsule-client'); ?>
 							</th>
-							<th scope="col" class="manage-column column-actions" style="">
+							<th scope="col" class="manage-column column-actions">
 								<?php _e('Actions', 'capsule-client'); ?>
 							</th>
 						</tr>
