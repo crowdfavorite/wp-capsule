@@ -251,12 +251,12 @@ class Capsule_Client {
 	// Add menu pages
 	public function add_menu_pages() {
 		global $menu;
-		$menu[39] = array( '', 'read', 'separator-capsule', '', 'wp-menu-separator' );
-		add_menu_page(__('Capsule', 'capsule_client'), __('Capsule', 'capsule_client'), 'manage_options', 'capsule', array($this, 'capsule_help'), '', 40 );
+		$menu['3'] = array( '', 'read', 'separator-capsule', '', 'wp-menu-separator' );
+		add_menu_page(__('Capsule', 'capsule_client'), __('Capsule', 'capsule_client'), 'manage_options', 'capsule', array($this, 'capsule_help'), '', '3.1' );
 		// needed to make separator show up
 		ksort($menu);
-		add_submenu_page('capsule', __('Projects', 'capsule_client'), __('Projects', 'capsule_client'), 'manage_options', 'capsule-term-mapping', array($this, 'term_mapping_page'));
-		add_submenu_page('capsule', __('Servers', 'capsule_client'), __('Servers', 'capsule_client'), 'manage_options', 'capsule-server-management', array($this, 'server_management_page'));
+		add_submenu_page('capsule', __('Servers', 'capsule_client'), __('Servers', 'capsule_client'), 'manage_options', 'capsule-servers', array($this, 'server_management_page'));
+		add_submenu_page('capsule', __('Projects', 'capsule_client'), __('Projects', 'capsule_client'), 'manage_options', 'capsule-projects', array($this, 'term_mapping_page'));
 	}
 
 	// Menu page
@@ -265,44 +265,76 @@ class Capsule_Client {
 			wp_die( __( 'You do not have sufficient permissions to access this page.' ) );
 		}
 ?>
+<style type="text/css">
+.capsule-doc-col-left {
+	float: left;
+	margin-right: 30px;
+	margin-bottom: 30px;
+	max-width: 450px;
+	width: 45%;
+}
+.capsule-doc-col-right {
+	clear: right;
+	float: left;
+	margin-bottom: 30px;
+	max-width: 450px;
+	width: 45%;
+}
+</style>
 <div class="wrap capsule-admin">
 	<div id="icon-options-general" class="icon32"></div>
 	<h2><?php _e('Capsule', 'capsule-client'); ?></h2>
 
 	<p class="description"><?php _e('The developer\'s code journal', 'capsule-client'); ?></p>
 
-	<div style="float: left; max-width: 450px; margin-right: 30px; width: 45%">
+	<p>STYLIZED SCREENSHOT</p>
+
+	<div class="capsule-doc-col-left">
 		<h3><?php _e('Overview', 'capsule-client'); ?></h3>
 		<p><?php _e('Many developers keep a scratch document open next to their project code or IDE when they are coding. This document ends up containing miscellaneous artifacts: failed code attempts, data formats, math calculations, etc. Most of the time, this document gets thrown away.', 'capsule-client'); ?></p>
 		<p><?php _e('Capsule is a replacement for that scratch document. It archives and organizes your development artifacts for future reference.', 'capsule-client'); ?></p>
-		<h3><?php _e('Working With a Team', 'capsule-client'); ?></h3>
-<!--		<h3><?php _e('Capsule Server', 'capsule-client'); ?></h3>-->
-
-
-	</div>
-	<div style="clear: right; float: left; max-width: 450px; width: 45%">
+		<h3><?php _e('Editing', 'capsule-client'); ?></h3>
+		
+		SCREENSHOT
+		
+		<p><?php _e('Capsule supports <a href="http://michelf.ca/projects/php-markdown/extra/">Markdown Extra</a> syntax with one minor nuance. Since we are using hashtag notation to create tags for our posts, to create a title using Markdown syntax Capsule requires a space between the &quot;#&quot; and the title text. Example:', 'capsule-client'); ?></p>
+		<ul>
+			<li><?php _e('Title: # I am a Title!', 'capsule-client'); ?></li>
+			<li><?php _e('Tag: #i-am-a-tag', 'capsule-client'); ?></li>
+		</ul>
+		<p><?php _e('When you are editing a post, Capsule auto-saves for you every 10 seconds. There is an &quot;edited&quot; indicator in the upper left corner of the editor next to the Last Saved time. Of course you can also save explicitly at any time using the keyboard shortcut. Capsule also saves when you close the editor.', 'capsule-client'); ?></p>
+		<p><?php _e('If you want to keep a post easily accessible, you can star it and it will remain at the top of your posts list (until it is un-starred). You can star as many posts as you like.', 'capsule-client'); ?></p>
 		<h3><?php _e('Projects &amp; Tags', 'capsule-client'); ?></h3>
+
+		SCREENSHOT (in editor and sidebar)
+
 		<p><?php _e('Capsule stores metadata about your posts to make them easy to filter and find later. You can specify projects and tags for each post, just by entering them into the content of your post. Capsule uses the following syntax to parse projects and tags:', 'capsule-client'); ?></p>
 		<ul>
 			<li><?php _e('Projects: @example, @example-project, @example.com', 'capsule-client'); ?></li>
 			<li><?php _e('Tags: #example, #example-tag, #example.com', 'capsule-client'); ?></li>
 		</ul>
 		<p><?php _e('Simply include these in the content of your post and Capsule will find them and store them as standard WordPress taxonomy terms for your post.', 'capsule-client'); ?></p>
+	</div>
+	<div class="capsule-doc-col-right">
 		<h3><?php _e('Code Syntax Highlighting', 'capsule-client'); ?></h3>
+
+		SCREENSHOT (front and back end)
+
 		<p><?php _e('Capsule supports GitHub-style fenced code blocks, and syntax highlighting for code blocks.', 'capsule-client'); ?></p>
 <pre>```php
 &lt;php echo 'Hello World'; ?>
 ```</pre>
 		<p><?php _e('Additionally, Capsule identifies these code blocks and saves the code language as taxonomy metadata for your post.', 'capsule-client'); ?></p>
-		<h3><?php _e('Editing', 'capsule-client'); ?></h3>
-		<p><?php _e('Capsule supports Markdown syntax with one minor nuance. Since we are using hashtag notation to create tags for our posts, to create a title using Markdown syntax Capsule requires a space between the &quot;#&quot; and the title text. Example:', 'capsule-client'); ?></p>
-		<ul>
-			<li><?php _e('Title: # I am a Title!', 'capsule-client'); ?></li>
-			<li><?php _e('Tag: #i-am-a-tag', 'capsule-client'); ?></li>
-		</ul>
-		<p><?php _e('When you are editing a post, Capsule auto-saves for you every 10 seconds. There is an &quot;edited&quot; indicator in the upper left corner of the editor next to the Last Saved time. Of course you can also save explicitly at any time using the keyboard shortcut. Capsule also saves when you close the editor.', 'capsule-client'); ?></p>
 		<h3><?php _e('Search', 'capsule-client'); ?></h3>
-- filtering
+
+		<p><?php _e('We\'re saving this information to make it useful in the future, so we\'ve got to be able to find it again. Capsule supports both keyword search and filtering by projects, tags, code languages and date range, whew! When using keyword search you can auto-complete projects, tags, and code languages by using their syntax prefix.', 'capsule-client'); ?></p>
+		
+		SCREENSHOT (auto-complete)
+		
+		<p><?php _e('When filtering, multiple projects/tags/etc. can be selected and are all populated with auto-complete.', 'capsule-client'); ?></p>
+
+		SCREENSHOT (filtering)
+		
 		<h3><?php _e('Keyboard Shortcuts', 'capsule-client'); ?></h3>
 		<table class="widefat">
 			<thead>
@@ -341,16 +373,22 @@ class Capsule_Client {
 			</tbody>
 		</table>
 	</div>
-
-<pre style="clear: both; float: none;">
-
-- pinning posts
-- connecting to a server
-    - entering server into
-    - choosing projects
-
-
-</pre>
+	<br style="clear: both;">
+	<div class="capsule-doc-col-left">
+		<h3><?php _e('Working With a Team', 'capsule-client'); ?></h3>
+		<p><?php _e('While Capsule is a tool for an individual developer, it is also a tool for team collaboration. You can connect to one or more Capsule Servers and replicate selected posts to those servers.', 'capsule-client'); ?></p>
+		<ol>
+			<li><?php printf(__('<a href="%s">Add a Capsule Server</a> (you must have an account on the Capsule Server)', 'capsule-client'), esc_url(admin_url('admin.php?page=capsule-servers'))); ?></li>
+			<li><?php printf(__('<a href="%s">Connect to the Server\'s Projects</a>', 'capsule-client'), esc_url(admin_url('admin.php?page=capsule-projects'))); ?></li>
+		</ol>
+		<p><?php _e('Once you map a local project to a project on a Capsule Server, any posts for that project will be automatically replicated to the Capsule Server (if you want, you can send the same local project to multiple Capsule Servers). While you maintain your single development journal, you can connect to multiple Capsule Servers to coordinate with multiple development teams.', 'capsule-client'); ?></p>
+		<p><?php _e('The Capsule Server allows you to view posts by project, tag, developer, date range, and keyword search.', 'capsule-client'); ?></p>
+	</div>
+	<div class="capsule-doc-col-right">
+		<h3><?php _e('Capsule Server', 'capsule-client'); ?></h3>
+		<p><?php _e('Anyone can set up a <a href="http://crowdfavorite.com/capsule/">Capsule Server</a>. It is free, Open Source and built on WordPress; just like Capsule.', 'capsule-client'); ?></p>
+		<p><?php _e('Add users to your Capsule Server and they will be able to connect their Capsule journals to your Server.', 'capsule-client'); ?></p>
+	</div>
 </div>
 <?php
 	}
