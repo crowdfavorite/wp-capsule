@@ -269,24 +269,85 @@ class Capsule_Client {
 	<div id="icon-options-general" class="icon32"></div>
 	<h2><?php _e('Capsule', 'capsule-client'); ?></h2>
 
-<pre>
+	<p class="description"><?php _e('The developer\'s code journal', 'capsule-client'); ?></p>
 
-what it is
+	<div style="float: left; max-width: 450px; margin-right: 30px; width: 45%">
+		<h3><?php _e('Overview', 'capsule-client'); ?></h3>
+		<p><?php _e('Many developers keep a scratch document open next to their project code or IDE when they are coding. This document ends up containing miscellaneous artifacts: failed code attempts, data formats, math calculations, etc. Most of the time, this document gets thrown away.', 'capsule-client'); ?></p>
+		<p><?php _e('Capsule is a replacement for that scratch document. It archives and organizes your development artifacts for future reference.', 'capsule-client'); ?></p>
+		<h3><?php _e('Working With a Team', 'capsule-client'); ?></h3>
+<!--		<h3><?php _e('Capsule Server', 'capsule-client'); ?></h3>-->
 
-- markdown support (space required between # and title so it's not considered a tag)
-- project, tag, code syntax
-- auto-save (+ indicator)
-- keyboard commands
-    - Cmd S to save
-    - Cmd+Shift+0 to recenter editor
-    - in/outdent
-    - Esc to close editor
+
+	</div>
+	<div style="clear: right; float: left; max-width: 450px; width: 45%">
+		<h3><?php _e('Projects &amp; Tags', 'capsule-client'); ?></h3>
+		<p><?php _e('Capsule stores metadata about your posts to make them easy to filter and find later. You can specify projects and tags for each post, just by entering them into the content of your post. Capsule uses the following syntax to parse projects and tags:', 'capsule-client'); ?></p>
+		<ul>
+			<li><?php _e('Projects: @example, @example-project, @example.com', 'capsule-client'); ?></li>
+			<li><?php _e('Tags: #example, #example-tag, #example.com', 'capsule-client'); ?></li>
+		</ul>
+		<p><?php _e('Simply include these in the content of your post and Capsule will find them and store them as standard WordPress taxonomy terms for your post.', 'capsule-client'); ?></p>
+		<h3><?php _e('Code Syntax Highlighting', 'capsule-client'); ?></h3>
+		<p><?php _e('Capsule supports GitHub-style fenced code blocks, and syntax highlighting for code blocks.', 'capsule-client'); ?></p>
+<pre>```php
+&lt;php echo 'Hello World'; ?>
+```</pre>
+		<p><?php _e('Additionally, Capsule identifies these code blocks and saves the code language as taxonomy metadata for your post.', 'capsule-client'); ?></p>
+		<h3><?php _e('Editing', 'capsule-client'); ?></h3>
+		<p><?php _e('Capsule supports Markdown syntax with one minor nuance. Since we are using hashtag notation to create tags for our posts, to create a title using Markdown syntax Capsule requires a space between the &quot;#&quot; and the title text. Example:', 'capsule-client'); ?></p>
+		<ul>
+			<li><?php _e('Title: # I am a Title!', 'capsule-client'); ?></li>
+			<li><?php _e('Tag: #i-am-a-tag', 'capsule-client'); ?></li>
+		</ul>
+		<p><?php _e('When you are editing a post, Capsule auto-saves for you every 10 seconds. There is an &quot;edited&quot; indicator in the upper left corner of the editor next to the Last Saved time. Of course you can also save explicitly at any time using the keyboard shortcut. Capsule also saves when you close the editor.', 'capsule-client'); ?></p>
+		<h3><?php _e('Search', 'capsule-client'); ?></h3>
+- filtering
+		<h3><?php _e('Keyboard Shortcuts', 'capsule-client'); ?></h3>
+		<table class="widefat">
+			<thead>
+				<tr>
+					<th>&nbsp;</th>
+					<th><?php _e('Mac', 'capsule-client'); ?></th>
+					<th><?php _e('Windows', 'capsule-client'); ?></th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td><?php _e('Save', 'capsule-client'); ?></td>
+					<td><?php _e('Command-S', 'capsule-client'); ?></td>
+					<td><?php _e('Control-S', 'capsule-client'); ?></td>
+				</tr>
+				<tr>
+					<td><?php _e('Re-center active editor', 'capsule-client'); ?></td>
+					<td><?php _e('Command-Shift-0', 'capsule-client'); ?></td>
+					<td><?php _e('Control-Shift-0', 'capsule-client'); ?></td>
+				</tr>
+				<tr>
+					<td><?php _e('Close active editor', 'capsule-client'); ?></td>
+					<td><?php _e('Esc', 'capsule-client'); ?></td>
+					<td><?php _e('Esc', 'capsule-client'); ?></td>
+				</tr>
+				<tr>
+					<td><?php _e('Indent current line', 'capsule-client'); ?></td>
+					<td><?php _e('Command-]', 'capsule-client'); ?></td>
+					<td><?php _e('Control-]', 'capsule-client'); ?></td>
+				</tr>
+				<tr>
+					<td><?php _e('Outdent current line', 'capsule-client'); ?></td>
+					<td><?php _e('Command-[', 'capsule-client'); ?></td>
+					<td><?php _e('Control-[', 'capsule-client'); ?></td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+
+<pre style="clear: both; float: none;">
+
 - pinning posts
 - connecting to a server
     - entering server into
     - choosing projects
-- searching
-- filtering
 
 
 </pre>
