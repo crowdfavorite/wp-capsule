@@ -24,11 +24,9 @@ class Capsule_Client {
 		// Priority 11 to come after taxonomy registration
 		add_action('init', array($this, 'register_post_types'), 11);
 		add_action('admin_menu', array($this, 'add_menu_pages'));
-		add_action('wp_insert_post', array($this,'insert_post'), 10, 2);
-		add_action('admin_enqueue_scripts', array($this,'admin_enqueue_scripts'), 10, 2);
-		add_action('admin_head-settings_page_capsule-server-management', array($this, 'admin_css'));
-		add_action('admin_head-settings_page_capsule-term-mapping', array($this, 'admin_css'));
-		add_action('admin_notices', array($this,'capsule_admin_notice'));
+		add_action('wp_insert_post', array($this, 'insert_post'), 10, 2);
+		add_action('admin_enqueue_scripts', array($this, 'admin_enqueue_scripts'), 10, 2);
+		add_action('admin_notices', array($this, 'capsule_admin_notice'));
 	}
 
 	public function admin_enqueue_scripts() {
@@ -252,11 +250,11 @@ class Capsule_Client {
 	public function add_menu_pages() {
 		global $menu;
 		$menu['3'] = array( '', 'read', 'separator-capsule', '', 'wp-menu-separator' );
-		add_menu_page(__('Capsule', 'capsule_client'), __('Capsule', 'capsule_client'), 'manage_options', 'capsule', array($this, 'capsule_help'), '', '3.1' );
+		add_menu_page(__('Capsule', 'capsule_client'), __('Capsule', 'capsule-client'), 'manage_options', 'capsule', array($this, 'capsule_help'), '', '3.1' );
 		// needed to make separator show up
 		ksort($menu);
-		add_submenu_page('capsule', __('Servers', 'capsule_client'), __('Servers', 'capsule_client'), 'manage_options', 'capsule-servers', array($this, 'server_management_page'));
-		add_submenu_page('capsule', __('Projects', 'capsule_client'), __('Projects', 'capsule_client'), 'manage_options', 'capsule-projects', array($this, 'term_mapping_page'));
+		add_submenu_page('capsule', __('Servers', 'capsule_client'), __('Servers', 'capsule-client'), 'manage_options', 'capsule-servers', array($this, 'server_management_page'));
+		add_submenu_page('capsule', __('Projects', 'capsule_client'), __('Projects', 'capsule-client'), 'manage_options', 'capsule-projects', array($this, 'term_mapping_page'));
 	}
 
 	// Menu page
@@ -1157,21 +1155,6 @@ echo 'Hello World';
 			}
 		}
 		return $tax_input;
-	}
-
-	function admin_css() {
-		echo '
-	<style type="text/css">
-		.capsule-admin table {
-			margin-top: 10px;
-		}
-		.error {
-			color: #FF0000;
-		}
-		.capsule-admin input.save-mappings {
-			margin-top: 20px
-		}
-	</style>';
 	}
 }
 
