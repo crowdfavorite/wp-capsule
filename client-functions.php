@@ -300,14 +300,14 @@ class Capsule_Client {
 	float: left;
 	margin-right: 30px;
 	margin-bottom: 30px;
-	max-width: 450px;
+	max-width: 500px;
 	width: 45%;
 }
 .capsule-doc-col-right {
 	clear: right;
 	float: left;
 	margin-bottom: 30px;
-	max-width: 450px;
+	max-width: 500px;
 	width: 45%;
 }
 </style>
