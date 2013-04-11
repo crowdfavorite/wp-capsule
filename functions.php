@@ -340,7 +340,24 @@ class Capsule_Client {
 		<h3><?php _e('Overview', 'capsule-client'); ?></h3>
 		<p><?php _e('Many developers keep a scratch document open next to their project code or IDE when they are coding. This document ends up containing miscellaneous artifacts: failed code attempts, data formats, math calculations, etc. Most of the time, this document gets thrown away.', 'capsule-client'); ?></p>
 		<p><?php _e('Capsule is a replacement for that scratch document. It archives and organizes your development artifacts for future reference.', 'capsule-client'); ?></p>
+		<p><?php printf(__('Can\'t wait to get started? <a href="%s">Post away!</a>', 'capsule-client'), esc_url(home_url())); ?></p>
 
+		<h3><?php _e('Projects &amp; Tags', 'capsule-client'); ?></h3>
+		<p><img src="<?php echo get_template_directory_uri(); ?>/docs/tags.jpg" alt="<?php _e('Projects and Tags', 'capsule-client'); ?>" class="capsule-screenshot" /></p>
+		<p><?php _e('Capsule stores metadata about your posts to make them easy to filter and find later. You can specify projects and tags for each post, just by entering them into the content of your post. Capsule uses the following syntax to parse projects and tags:', 'capsule-client'); ?></p>
+		<ul>
+			<li><?php _e('Projects: @example, @example-project, @example.com', 'capsule-client'); ?></li>
+			<li><?php _e('Tags: #example, #example-tag, #example.com', 'capsule-client'); ?></li>
+		</ul>
+		<p><?php _e('Simply include these in the content of your post and Capsule will find them and store them as standard WordPress taxonomy terms for your post.', 'capsule-client'); ?></p>
+
+		<h3><?php _e('Search', 'capsule-client'); ?></h3>
+		<p><img src="<?php echo get_template_directory_uri(); ?>/docs/search.jpg" alt="<?php _e('Search', 'capsule-client'); ?>" class="capsule-screenshot" /></p>
+		<p><?php _e('We\'re saving this information to make it useful in the future, so we\'ve got to be able to find it again. Capsule supports both keyword search and filtering by projects, tags, code languages and date range, whew! When using keyword search you can auto-complete projects, tags, and code languages by using their syntax prefix.', 'capsule-client'); ?></p>
+		<p><img src="<?php echo get_template_directory_uri(); ?>/docs/filter.jpg" alt="<?php _e('Filters', 'capsule-client'); ?>" class="capsule-screenshot" /></p>
+		<p><?php _e('When filtering, multiple projects/tags/etc. can be selected and are all populated with auto-complete.', 'capsule-client'); ?></p>
+	</div>
+	<div class="capsule-doc-col-right">
 		<h3><?php _e('Editing', 'capsule-client'); ?></h3>
 		<!-- 1050 x 450 -->
 		<p><img src="<?php echo get_template_directory_uri(); ?>/docs/editing.jpg" alt="<?php _e('Editing', 'capsule-client'); ?>" class="capsule-screenshot" /></p>
@@ -352,16 +369,6 @@ class Capsule_Client {
 		<p><?php _e('When you are editing a post, Capsule auto-saves for you every 10 seconds. There is an &quot;edited&quot; indicator in the upper left corner of the editor next to the Last Saved time. Of course you can also save explicitly at any time using the keyboard shortcut. Capsule also saves when you close the editor.', 'capsule-client'); ?></p>
 		<p><?php _e('If you want to keep a post easily accessible, you can star it and it will remain at the top of your posts list (until it is un-starred). You can star as many posts as you like.', 'capsule-client'); ?></p>
 
-		<h3><?php _e('Projects &amp; Tags', 'capsule-client'); ?></h3>
-		<p><img src="<?php echo get_template_directory_uri(); ?>/docs/tags.jpg" alt="<?php _e('Projects and Tags', 'capsule-client'); ?>" class="capsule-screenshot" /></p>
-		<p><?php _e('Capsule stores metadata about your posts to make them easy to filter and find later. You can specify projects and tags for each post, just by entering them into the content of your post. Capsule uses the following syntax to parse projects and tags:', 'capsule-client'); ?></p>
-		<ul>
-			<li><?php _e('Projects: @example, @example-project, @example.com', 'capsule-client'); ?></li>
-			<li><?php _e('Tags: #example, #example-tag, #example.com', 'capsule-client'); ?></li>
-		</ul>
-		<p><?php _e('Simply include these in the content of your post and Capsule will find them and store them as standard WordPress taxonomy terms for your post.', 'capsule-client'); ?></p>
-	</div>
-	<div class="capsule-doc-col-right">
 		<h3><?php _e('Code Syntax Highlighting', 'capsule-client'); ?></h3>
 		<p><img src="<?php echo get_template_directory_uri(); ?>/docs/highlighting.jpg" alt="<?php _e('Syntax Highlighting', 'capsule-client'); ?>" class="capsule-screenshot" /></p>
 		<p><?php _e('Capsule supports GitHub-style fenced code blocks, and syntax highlighting for code blocks.', 'capsule-client'); ?></p>
@@ -370,14 +377,6 @@ class Capsule_Client {
 echo 'Hello World';
 ```</pre>
 		<p><?php _e('Additionally, Capsule identifies these code blocks and saves the code language as metadata for your post.', 'capsule-client'); ?></p>
-
-		<h3><?php _e('Search', 'capsule-client'); ?></h3>
-		<p><img src="<?php echo get_template_directory_uri(); ?>/docs/search.jpg" alt="<?php _e('Search', 'capsule-client'); ?>" class="capsule-screenshot" /></p>
-		<p><?php _e('We\'re saving this information to make it useful in the future, so we\'ve got to be able to find it again. Capsule supports both keyword search and filtering by projects, tags, code languages and date range, whew! When using keyword search you can auto-complete projects, tags, and code languages by using their syntax prefix.', 'capsule-client'); ?></p>
-
-		SCREENSHOT (filtering)
-
-		<p><?php _e('When filtering, multiple projects/tags/etc. can be selected and are all populated with auto-complete.', 'capsule-client'); ?></p>
 
 		<h3><?php _e('Keyboard Shortcuts', 'capsule-client'); ?></h3>
 		<table class="widefat">
@@ -447,7 +446,7 @@ echo 'Hello World';
 .capsule-welcome {
 	background: #222;
 	color: #fff;
-	margin: 10px 10px 10px 0;
+	margin: 30px 10px 10px 0;
 	padding: 15px;
 }
 .capsule-welcome h1 {
