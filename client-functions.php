@@ -24,9 +24,12 @@ class Capsule_Client {
 		// Priority 11 to come after taxonomy registration
 		add_action('init', array($this, 'register_post_types'), 11);
 		add_action('admin_menu', array($this, 'add_menu_pages'));
-		add_action('wp_insert_post', array($this, 'insert_post'), 10, 2);
-		add_action('admin_enqueue_scripts', array($this, 'admin_enqueue_scripts'), 10, 2);
-		add_action('admin_notices', array($this, 'capsule_admin_notice'));
+
+		add_action('wp_insert_post', array($this,'insert_post'), 10, 2);
+		add_action('admin_enqueue_scripts', array($this,'admin_enqueue_scripts'), 10, 2);
+		add_action('admin_head-capsule_page_capsule-server-management', array($this, 'admin_css'));
+		add_action('admin_head-settings_page_capsule-term-mapping', array($this, 'admin_css'));
+		add_action('admin_notices', array($this,'capsule_admin_notice'));
 	}
 
 	public function admin_enqueue_scripts() {
@@ -107,8 +110,15 @@ class Capsule_Client {
 							$data['api_key'] = isset($_POST['api_key']) ? $_POST['api_key'] : '';
 							$data['server_url'] = isset($_POST['server_url']) ? $_POST['server_url'] : '';
 
-							if ($this->update_server($server_id, $data)) {
-								echo json_encode(array('result' => 'success'));
+							if ($server = $this->update_server($server_id, $data)) {
+								echo json_encode(array(
+									'data' => array(
+										'title' => $server->post_title,
+										'api_key' => $server->api_key,
+										'url' => $server->url,
+									),
+									'result' => 'success'
+								));
 								die();
 							}
 							else {
@@ -172,15 +182,22 @@ class Capsule_Client {
 		$servers = array();
 		if ($query->have_posts()) {
 			foreach ($query->posts as $post) {
-				$api_key = get_post_meta($post->ID, $this->server_api_key, true);
-				$url = get_post_meta($post->ID, $this->server_url_key, true);
-				$post->api_key = $api_key;
-				$post->url = $url;
-				$servers[] = $post;
+				$servers[] = $this->process_server($post);
 			}
 		}
 
 		return $servers;
+	}
+
+	function process_server($server) {
+		if (!is_object($server)) {
+			$server = get_post($server);
+		}
+		$api_key = get_post_meta($server->ID, $this->server_api_key, true);
+		$url = get_post_meta($server->ID, $this->server_url_key, true);
+		$server->api_key = $api_key;
+		$server->url = $url;
+		return $server;
 	}
 
 	/**
@@ -475,7 +492,7 @@ echo 'Hello World';
 							<?php _e('Server URL', 'capsule-client'); ?>
 						</th>
 						<th scope="col" class="manage-column column-actions">
-							<?php _e('Actions', 'capsule-client'); ?>
+						&nbsp;
 						</th>
 					</tr>
 				</thead>
@@ -509,7 +526,7 @@ echo 'Hello World';
 								<?php _e('Server URL', 'capsule-client'); ?>
 							</th>
 							<th scope="col" class="manage-column column-actions">
-								<?php _e('Actions', 'capsule-client'); ?>
+								&nbsp;
 							</th>
 						</tr>
 					</thead>
@@ -547,14 +564,15 @@ echo 'Hello World';
 		$delete_url = wp_nonce_url($delete_url, '_cap_client_delete_server');
 		$name_base = 'servers['.$server_post->ID.']';
 		$html = '
-<tr id="'.esc_attr('js-server-item-'.$server_post->ID).'" class="'.esc_attr('server-item'.$class).'">
-	<td><input id="'.esc_attr('js-server-name-'.$server_post->ID).'" type="text" name="'.$name_base.'[server_name]" value="'.esc_attr($server_post->post_title).'" /></td>
-	<td><input id="'.esc_attr('js-server-api_key-'.$server_post->ID).'" name="'.$name_base.'[api_key]" type="text" value="'.esc_attr($server_post->api_key).'" /></td>
-	<td><input id="'.esc_attr('js-server-url-'.$server_post->ID).'" type="text" name="'.$name_base.'[server_url]" value="'.esc_attr($server_post->url).'" /></td>
-	<td>
-		<input type="submit" data-server_id="'.esc_attr($server_post->ID).'" class="js-update-server button-primary" value="'.__('Update', 'capsule-client').'" />
-		<input id="'.esc_attr('js-server-id-'.$server_post->ID).'" type="hidden" name="'.$name_base.'[id]" value="'.esc_attr($server_post->ID).'" />
-		<a href="'.$delete_url.'" style="color:#ff0000;" data-server_id="'.esc_attr($server_post->ID).'" class="delete js-delete-server">'.__('Delete', 'capsule-client').'</a>
+<tr class="'.esc_attr('js-server-item-'.$server_post->ID).'" class="'.esc_attr('server-item'.$class).'">
+	<td><span class="js-cap-not-editable '.esc_attr('js-static-server-name-'.$server_post->ID).'">'.esc_html($server_post->post_title).'</span><input type="text" class="widefat js-cap-editable" id="'.esc_attr('js-server-name-'.$server_post->ID).'" name="'.$name_base.'[server_name]" value="'.esc_attr($server_post->post_title).'" /></td>
+	<td><span class="js-cap-not-editable '.esc_attr('js-static-server-api-'.$server_post->ID).'">'.esc_html($server_post->api_key).'</span><input type="text" class="widefat js-cap-editable" id="'.esc_attr('js-server-api_key-'.$server_post->ID).'" name="'.$name_base.'[api_key]" value="'.esc_attr($server_post->api_key).'" /></td>
+	<td><span class="js-cap-not-editable '.esc_attr('js-static-server-url-'.$server_post->ID).'">'.esc_html($server_post->url).'</span><input type="text" class="widefat js-cap-editable" id="'.esc_attr('js-server-url-'.$server_post->ID).'" name="'.$name_base.'[server_url]" value="'.esc_attr($server_post->url).'" /></td>
+	<td><a href="#" class="js-cap-edit-server js-cap-not-editable button">'.__('Edit Server', 'capsule-client').'</a>
+		<div class="js-cap-editable">
+			<a href="#" class="js-cap-save-server js-cap-editable button" data-server_id="'.esc_attr($server_post->ID).'">'.__('Save', 'capsule-client').'</a>
+			<a href="'.$delete_url.'" style="color:#ff0000;" data-server_id="'.esc_attr($server_post->ID).'" class="delete js-delete-server">'.__('Delete', 'capsule-client').'</a>
+		</div>
 	</td>
 </tr>';
 
@@ -636,10 +654,41 @@ echo 'Hello World';
 			if (isset($data['server_url'])) {
 				update_post_meta($server_id, $this->server_url_key, $data['server_url']);
 			}
-			return true;
+			return $this->process_server($server_id);
 		}
 
 		return false;
+	}
+
+	public function test_credentials($api_key, $url) {
+		$errors = array();
+
+		$args = array(
+			'body' => array(
+				'capsule_server_action' => 'test_credentials',
+				'capsule_client_post_data' => array(
+					'api_key' => $api_key,
+				),
+			)
+		);
+
+		$request = wp_remote_post($url, $args);
+		// Check for errors
+		if (is_wp_error($request)) {
+			foreach ($request->errors as $key => $wp_errors) {
+				foreach ($wp_errors as $error) {
+					$errors['url'][] = $error;
+				}
+			}
+		}
+		else if ($request['response']['code'] != '200') {
+			$errors['credentials'] = sprintf(__('Server said: "%s:%s" Please check the server credentials and connectivity and try again.', 'capsule-client'), $request['response']['code'], $request['response']['message']);
+		}
+		else if ($request['response']['body'] !== 'authorized') {
+			$errors['url'][] = __('Server theme not active', 'capsule-client');
+		}
+
+		return $errors;
 	}
 
 	/*** Taxonomy Mapping ***/
@@ -1155,6 +1204,24 @@ echo 'Hello World';
 			}
 		}
 		return $tax_input;
+	}
+
+	function admin_css() {
+		echo '
+	<style type="text/css">
+		.capsule-admin table {
+			margin-top: 10px;
+		}
+		.error {
+			color: #FF0000;
+		}
+		.capsule-admin input.save-mappings {
+			margin-top: 20px
+		}
+		.js-cap-editable {
+			display: none;
+		}
+	</style>';
 	}
 }
 

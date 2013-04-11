@@ -1,6 +1,15 @@
 (function($) {
 
 	$(function() {
+		$('a.js-cap-edit-server').on('click', function(e) {
+			e.preventDefault();
+			$(this).closest('tr').find('.js-cap-not-editable').hide();
+			$(this).closest('tr').find('.js-cap-editable').show();
+		});
+
+//		$('a.js-cap-save-server').on('click', function(e) {
+//		});
+
 		$('form#js-capsule-add-server').on('submit', function(e) {
 			var $form = $(this);
 			$form.find('input[name="capsule_client_action"]').val('add_server_ajax');
@@ -21,7 +30,7 @@
 			);
 		});
 
-		$('#wpbody-content').on('click', 'form#js-capsule-update-servers .js-update-server', function(e) {
+		$('#wpbody-content').on('click', 'form#js-capsule-update-servers a.js-cap-save-server', function(e) {
 			var server_id = $(this).data('server_id');
 			var $form = $('form#js-capsule-update-servers');
 			e.preventDefault();
@@ -38,7 +47,11 @@
 				},
 				function(data) {
 					if (data.result == 'success') {
-						$('#js-server-item-'+server_id).fadeOut().fadeIn();
+						$('.js-static-server-name-'+server_id).html(data.data.title);
+						$('.js-static-server-api-'+server_id).html(data.data.api_key);
+						$('.js-static-server-url-'+server_id).html(data.data.url);
+						$('.js-server-item-'+server_id).find('.js-cap-editable').hide();
+						$('.js-server-item-'+server_id).find('.js-cap-not-editable').show();
 					}
 					else {
 						// @TODO nothing, it hasn't been updated
