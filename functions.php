@@ -1,5 +1,10 @@
 <?php 
 
+include('ui/functions.php');
+
+$cap_client = new Capsule_Client;
+$cap_client->add_actions();
+
 // Class here is mostly for namespacing of methods and properties
 class Capsule_Client {
 
@@ -27,8 +32,6 @@ class Capsule_Client {
 
 		add_action('wp_insert_post', array($this,'insert_post'), 10, 2);
 		add_action('admin_enqueue_scripts', array($this,'admin_enqueue_scripts'), 10, 2);
-		add_action('admin_head-capsule_page_capsule-server-management', array($this, 'admin_css'));
-		add_action('admin_head-settings_page_capsule-term-mapping', array($this, 'admin_css'));
 		add_action('admin_notices', array($this,'capsule_admin_notice'));
 	}
 
@@ -1205,25 +1208,4 @@ echo 'Hello World';
 		}
 		return $tax_input;
 	}
-
-	function admin_css() {
-		echo '
-	<style type="text/css">
-		.capsule-admin table {
-			margin-top: 10px;
-		}
-		.error {
-			color: #FF0000;
-		}
-		.capsule-admin input.save-mappings {
-			margin-top: 20px
-		}
-		.js-cap-editable {
-			display: none;
-		}
-	</style>';
-	}
 }
-
-$cap_client = new Capsule_Client;
-$cap_client->add_actions();
