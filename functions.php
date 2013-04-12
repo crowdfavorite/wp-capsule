@@ -877,14 +877,12 @@ echo 'Hello World';
 	}
 
 	function show_term_mapping_errors($errors, $post_id) {
-		$error_html = '';
 		if (isset($errors[$post_id]) && !empty($errors[$post_id])) {
 			foreach ($errors[$post_id] as $error_message) {
-				$error_html .= $error_message;
+				$error_html .= '<p>'.esc_html($error_message).'</p>';
 			}
-			$html = sprintf(__('Error: %s', 'capsule'), $error_html);
+			$html = '<div class="capsule-error">'.$error_html.'</div>';
 		}
-
 		echo $html;
 	}
 
@@ -908,7 +906,24 @@ echo 'Hello World';
 			}
 		}
 ?>
- <div class="wrap capsule-admin">
+<style type="text/css">
+.capsule-error {
+	background: #FFEBE8;
+	border: 1px solid #c00;
+	-moz-border-radius: 3px; /* FF1+ */
+	-webkit-border-radius: 3px; /* Saf3+, Chrome */
+	border-radius: 3px; /* Standard. IE9+ */
+	color: #900;
+	margin-bottom: 5px;
+	padding: 4px 6px;
+}
+.capsule-error p {
+	line-height: 150%;
+	margin: 0;
+	padding: 0;
+}
+</style>
+<div class="wrap capsule-admin">
 	<div id="icon-options-general" class="icon32"></div>
 	<h2><?php _e('Capsule: Server Projects', 'capsule'); ?></h2>
 	<p class="description"><?php printf(__('When you map a local project to one on a server project, all posts related to that project will be replicated to that server. <a href="%s">Learn More</a>', 'capsule'), esc_url(admin_url('admin.php?page=capsule'))); ?></p>
@@ -917,9 +932,11 @@ echo 'Hello World';
 		$servers = $this->get_servers();
 		foreach ($servers as $server_post) {
 ?>
-			<h3><?php echo esc_html($server_post->post_title); ?></h3><span class="error"><?php $this->show_term_mapping_errors($errors, $server_post->ID); ?></span>
-<?php 
-			// Default capsule functionality only includes projects here, but support for more taxonomies is present
+			<h3><?php echo esc_html($server_post->post_title); ?></h3>
+<?php
+			$this->show_term_mapping_errors($errors, $server_post->ID);
+			// Default capsule functionality only includes projects here, 
+			// but support for more taxonomies is present
 			foreach ($taxonomies as $taxonomy) {
 				$tax_obj = get_taxonomy($taxonomy);
 
