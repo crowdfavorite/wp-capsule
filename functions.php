@@ -433,6 +433,29 @@ echo 'Hello World';
 		<p><?php _e('Anyone can set up a <a href="http://crowdfavorite.com/capsule/">Capsule Server</a>. It is free, Open Source and built on WordPress; just like Capsule.', 'capsule-client'); ?></p>
 		<p><?php _e('Add users to your Capsule Server and they will be able to connect their Capsule journals to your Server.', 'capsule-client'); ?></p>
 	</div>
+	<br style="clear: both;">
+	<hr>
+	<div class="capsule-doc-col-left">
+		<h3><?php _e('Credits', 'capsule-client'); ?></h3>
+		<p><?php _e('Capsule was conceived and executed by the brilliant and incredibly good-looking men and women at <a href="http://crowdfavorite.com">Crowd Favorite</a>.', 'capsule-client'); ?></p>
+		<p><?php _e('Capsule is released under the GPL v2 license.', 'capsule-client'); ?></p>
+	</div>
+	<div class="capsule-doc-col-right">
+		<h3>&nbsp;</h3>
+		<p><?php _e('In the finest tradition of Open Source, Capsule was built on the shoulders of the following giants:', 'capsule-client'); ?></p>
+		<ul>
+			<li><a href="http://ajaxorg.github.io/ace/">Ace Code Editor</a> (<a href="https://github.com/ajaxorg/ace">GitHub</a>)</li>
+			<li><a href="http://harvesthq.github.io/chosen/">Chosen</a> (<a href="https://github.com/harvesthq/chosen">GitHub</a>)</li>
+			<li><a href="http://michelf.ca/projects/php-markdown/extra/">PHP Markdown Extra</a> (<a href="https://github.com/michelf/php-markdown">GitHub</a>)</li>
+			<li>Twitter Text JS (<a href="https://github.com/twitter/twitter-text-js">GitHub</a>)</li>
+			<li>jQuery .scrollintoview() (<a href="https://github.com/litera/jquery-scrollintoview">GitHub</a>)</li>
+			<li>JSON in JavaScript (<a href="https://github.com/douglascrockford/JSON-js">GitHub</a>)</li>
+			<li><a href="http://requirejs.org/">RequireJS</a> (<a href="https://github.com/jrburke/requirejs">GitHub</a>)</li>
+			<li><a href="http://sass-lang.com/">Sass</a> (<a href="https://github.com/nex3/sass">GitHub</a>)</li>
+			<li><a href="http://www.google.com/fonts/specimen/Source+Sans+Pro">Source Sans Pro</a> &amp <a href="http://www.google.com/fonts/specimen/Source+Code+Pro">Source Code Pro</a></li>
+			<li>Icon fonts from Fontello (Andrew, please link as appropriate)
+		</ul>
+	</div>
 </div>
 <?php
 	}
