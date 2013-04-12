@@ -233,7 +233,7 @@ class Capsule_Client {
 		); 
 
 		$args = $default_args;
-		$args['label'] = __('Servers', 'capsule-client');
+		$args['label'] = __('Servers', 'capsule');
 
 		register_post_type('server', $args);
 
@@ -270,11 +270,11 @@ class Capsule_Client {
 	public function add_menu_pages() {
 		global $menu;
 		$menu['3'] = array( '', 'read', 'separator-capsule', '', 'wp-menu-separator' );
-		add_menu_page(__('Capsule', 'capsule_client'), __('Capsule', 'capsule-client'), 'manage_options', 'capsule', array($this, 'capsule_help'), '', '3.1' );
+		add_menu_page(__('Capsule', 'capsule_client'), __('Capsule', 'capsule'), 'manage_options', 'capsule', array($this, 'capsule_help'), '', '3.1' );
 		// needed to make separator show up
 		ksort($menu);
-		add_submenu_page('capsule', __('Servers', 'capsule_client'), __('Servers', 'capsule-client'), 'manage_options', 'capsule-servers', array($this, 'server_management_page'));
-		add_submenu_page('capsule', __('Projects', 'capsule_client'), __('Projects', 'capsule-client'), 'manage_options', 'capsule-projects', array($this, 'term_mapping_page'));
+		add_submenu_page('capsule', __('Servers', 'capsule_client'), __('Servers', 'capsule'), 'manage_options', 'capsule-servers', array($this, 'server_management_page'));
+		add_submenu_page('capsule', __('Projects', 'capsule_client'), __('Projects', 'capsule'), 'manage_options', 'capsule-projects', array($this, 'term_mapping_page'));
 	}
 
 	// Menu page
@@ -331,87 +331,87 @@ class Capsule_Client {
 </style>
 <div class="wrap capsule-admin">
 	<div class="capsule-welcome">
-		<h1><?php _e('Capsule', 'capsule-client'); ?></h1>
-		<p><?php _e('The developer\'s code journal', 'capsule-client'); ?></p>
+		<h1><?php _e('Capsule', 'capsule'); ?></h1>
+		<p><?php _e('The developer\'s code journal', 'capsule'); ?></p>
 	</div>
 	<img src="<?php echo get_template_directory_uri(); ?>/docs/hero.jpg" style="width: 100%;" alt="" />
 
 	<div class="capsule-doc-col-left">
-		<h3><?php _e('Overview', 'capsule-client'); ?></h3>
-		<p><?php _e('Many developers keep a scratch document open next to their project code or IDE when they are coding. This document ends up containing miscellaneous artifacts: failed code attempts, data formats, math calculations, etc. Most of the time, this document gets thrown away.', 'capsule-client'); ?></p>
-		<p><?php _e('Capsule is a replacement for that scratch document. It archives and organizes your development artifacts for future reference.', 'capsule-client'); ?></p>
-		<p><?php printf(__('Can\'t wait to get started? <a href="%s">Post away!</a>', 'capsule-client'), esc_url(home_url())); ?></p>
+		<h3><?php _e('Overview', 'capsule'); ?></h3>
+		<p><?php _e('Many developers keep a scratch document open next to their project code or IDE when they are coding. This document ends up containing miscellaneous artifacts: failed code attempts, data formats, math calculations, etc. Most of the time, this document gets thrown away.', 'capsule'); ?></p>
+		<p><?php _e('Capsule is a replacement for that scratch document. It archives and organizes your development artifacts for future reference.', 'capsule'); ?></p>
+		<p><?php printf(__('Can\'t wait to get started? <a href="%s">Post away!</a>', 'capsule'), esc_url(home_url())); ?></p>
 
-		<h3><?php _e('Projects &amp; Tags', 'capsule-client'); ?></h3>
-		<p><img src="<?php echo get_template_directory_uri(); ?>/docs/tags.jpg" alt="<?php _e('Projects and Tags', 'capsule-client'); ?>" class="capsule-screenshot" /></p>
-		<p><?php _e('Capsule stores metadata about your posts to make them easy to filter and find later. You can specify projects and tags for each post, just by entering them into the content of your post. Capsule uses the following syntax to parse projects and tags:', 'capsule-client'); ?></p>
+		<h3><?php _e('Projects &amp; Tags', 'capsule'); ?></h3>
+		<p><img src="<?php echo get_template_directory_uri(); ?>/docs/tags.jpg" alt="<?php _e('Projects and Tags', 'capsule'); ?>" class="capsule-screenshot" /></p>
+		<p><?php _e('Capsule stores metadata about your posts to make them easy to filter and find later. You can specify projects and tags for each post, just by entering them into the content of your post. Capsule uses the following syntax to parse projects and tags:', 'capsule'); ?></p>
 		<ul>
-			<li><?php _e('Projects: @example, @example-project, @example.com', 'capsule-client'); ?></li>
-			<li><?php _e('Tags: #example, #example-tag, #example.com', 'capsule-client'); ?></li>
+			<li><?php _e('Projects: @example, @example-project, @example.com', 'capsule'); ?></li>
+			<li><?php _e('Tags: #example, #example-tag, #example.com', 'capsule'); ?></li>
 		</ul>
-		<p><?php _e('Simply include these in the content of your post and Capsule will find them and store them as standard WordPress taxonomy terms for your post.', 'capsule-client'); ?></p>
+		<p><?php _e('Simply include these in the content of your post and Capsule will find them and store them as standard WordPress taxonomy terms for your post.', 'capsule'); ?></p>
 
-		<h3><?php _e('Search', 'capsule-client'); ?></h3>
-		<p><img src="<?php echo get_template_directory_uri(); ?>/docs/search.jpg" alt="<?php _e('Search', 'capsule-client'); ?>" class="capsule-screenshot" /></p>
-		<p><?php _e('We\'re saving this information to make it useful in the future, so we\'ve got to be able to find it again. Capsule supports both keyword search and filtering by projects, tags, code languages and date range, whew! When using keyword search you can auto-complete projects, tags, and code languages by using their syntax prefix.', 'capsule-client'); ?></p>
-		<p><img src="<?php echo get_template_directory_uri(); ?>/docs/filter.jpg" alt="<?php _e('Filters', 'capsule-client'); ?>" class="capsule-screenshot" /></p>
-		<p><?php _e('When filtering, multiple projects/tags/etc. can be selected and are all populated with auto-complete.', 'capsule-client'); ?></p>
+		<h3><?php _e('Search', 'capsule'); ?></h3>
+		<p><img src="<?php echo get_template_directory_uri(); ?>/docs/search.jpg" alt="<?php _e('Search', 'capsule'); ?>" class="capsule-screenshot" /></p>
+		<p><?php _e('We\'re saving this information to make it useful in the future, so we\'ve got to be able to find it again. Capsule supports both keyword search and filtering by projects, tags, code languages and date range, whew! When using keyword search you can auto-complete projects, tags, and code languages by using their syntax prefix.', 'capsule'); ?></p>
+		<p><img src="<?php echo get_template_directory_uri(); ?>/docs/filter.jpg" alt="<?php _e('Filters', 'capsule'); ?>" class="capsule-screenshot" /></p>
+		<p><?php _e('When filtering, multiple projects/tags/etc. can be selected and are all populated with auto-complete.', 'capsule'); ?></p>
 	</div>
 	<div class="capsule-doc-col-right">
-		<h3><?php _e('Editing', 'capsule-client'); ?></h3>
+		<h3><?php _e('Editing', 'capsule'); ?></h3>
 		<!-- 1050 x 450 -->
-		<p><img src="<?php echo get_template_directory_uri(); ?>/docs/editing.jpg" alt="<?php _e('Editing', 'capsule-client'); ?>" class="capsule-screenshot" /></p>
-		<p><?php _e('Capsule supports <a href="http://michelf.ca/projects/php-markdown/extra/">Markdown Extra</a> syntax with one minor nuance. Since we are using hashtag notation to create tags for our posts, to create a title using Markdown syntax Capsule requires a space between the &quot;#&quot; and the title text. Example:', 'capsule-client'); ?></p>
+		<p><img src="<?php echo get_template_directory_uri(); ?>/docs/editing.jpg" alt="<?php _e('Editing', 'capsule'); ?>" class="capsule-screenshot" /></p>
+		<p><?php _e('Capsule supports <a href="http://michelf.ca/projects/php-markdown/extra/">Markdown Extra</a> syntax with one minor nuance. Since we are using hashtag notation to create tags for our posts, to create a title using Markdown syntax Capsule requires a space between the &quot;#&quot; and the title text. Example:', 'capsule'); ?></p>
 		<ul>
-			<li><?php _e('Title: # I am a Title!', 'capsule-client'); ?></li>
-			<li><?php _e('Tag: #i-am-a-tag', 'capsule-client'); ?></li>
+			<li><?php _e('Title: # I am a Title!', 'capsule'); ?></li>
+			<li><?php _e('Tag: #i-am-a-tag', 'capsule'); ?></li>
 		</ul>
-		<p><?php _e('When you are editing a post, Capsule auto-saves for you every 10 seconds. There is an &quot;edited&quot; indicator in the upper left corner of the editor next to the Last Saved time. Of course you can also save explicitly at any time using the keyboard shortcut. Capsule also saves when you close the editor.', 'capsule-client'); ?></p>
-		<p><?php _e('If you want to keep a post easily accessible, you can star it and it will remain at the top of your posts list (until it is un-starred). You can star as many posts as you like.', 'capsule-client'); ?></p>
+		<p><?php _e('When you are editing a post, Capsule auto-saves for you every 10 seconds. There is an &quot;edited&quot; indicator in the upper left corner of the editor next to the Last Saved time. Of course you can also save explicitly at any time using the keyboard shortcut. Capsule also saves when you close the editor.', 'capsule'); ?></p>
+		<p><?php _e('If you want to keep a post easily accessible, you can star it and it will remain at the top of your posts list (until it is un-starred). You can star as many posts as you like.', 'capsule'); ?></p>
 
-		<h3><?php _e('Code Syntax Highlighting', 'capsule-client'); ?></h3>
-		<p><img src="<?php echo get_template_directory_uri(); ?>/docs/highlighting.jpg" alt="<?php _e('Syntax Highlighting', 'capsule-client'); ?>" class="capsule-screenshot" /></p>
-		<p><?php _e('Capsule supports GitHub-style fenced code blocks, and syntax highlighting for code blocks.', 'capsule-client'); ?></p>
+		<h3><?php _e('Code Syntax Highlighting', 'capsule'); ?></h3>
+		<p><img src="<?php echo get_template_directory_uri(); ?>/docs/highlighting.jpg" alt="<?php _e('Syntax Highlighting', 'capsule'); ?>" class="capsule-screenshot" /></p>
+		<p><?php _e('Capsule supports GitHub-style fenced code blocks, and syntax highlighting for code blocks.', 'capsule'); ?></p>
 <pre>```php
 // Say hello!
 echo 'Hello World';
 ```</pre>
-		<p><?php _e('Additionally, Capsule identifies these code blocks and saves the code language as metadata for your post.', 'capsule-client'); ?></p>
+		<p><?php _e('Additionally, Capsule identifies these code blocks and saves the code language as metadata for your post.', 'capsule'); ?></p>
 
-		<h3><?php _e('Keyboard Shortcuts', 'capsule-client'); ?></h3>
+		<h3><?php _e('Keyboard Shortcuts', 'capsule'); ?></h3>
 		<table class="widefat">
 			<thead>
 				<tr>
 					<th>&nbsp;</th>
-					<th><?php _e('Mac', 'capsule-client'); ?></th>
-					<th><?php _e('Windows', 'capsule-client'); ?></th>
+					<th><?php _e('Mac', 'capsule'); ?></th>
+					<th><?php _e('Windows', 'capsule'); ?></th>
 				</tr>
 			</thead>
 			<tbody>
 				<tr>
-					<td><?php _e('Save', 'capsule-client'); ?></td>
-					<td><?php _e('Command-S', 'capsule-client'); ?></td>
-					<td><?php _e('Control-S', 'capsule-client'); ?></td>
+					<td><?php _e('Save', 'capsule'); ?></td>
+					<td><?php _e('Command-S', 'capsule'); ?></td>
+					<td><?php _e('Control-S', 'capsule'); ?></td>
 				</tr>
 				<tr>
-					<td><?php _e('Re-center active editor', 'capsule-client'); ?></td>
-					<td><?php _e('Command-Shift-0', 'capsule-client'); ?></td>
-					<td><?php _e('Control-Shift-0', 'capsule-client'); ?></td>
+					<td><?php _e('Re-center active editor', 'capsule'); ?></td>
+					<td><?php _e('Command-Shift-0', 'capsule'); ?></td>
+					<td><?php _e('Control-Shift-0', 'capsule'); ?></td>
 				</tr>
 				<tr>
-					<td><?php _e('Close active editor', 'capsule-client'); ?></td>
-					<td><?php _e('Esc', 'capsule-client'); ?></td>
-					<td><?php _e('Esc', 'capsule-client'); ?></td>
+					<td><?php _e('Close active editor', 'capsule'); ?></td>
+					<td><?php _e('Esc', 'capsule'); ?></td>
+					<td><?php _e('Esc', 'capsule'); ?></td>
 				</tr>
 				<tr>
-					<td><?php _e('Indent current line', 'capsule-client'); ?></td>
-					<td><?php _e('Command-]', 'capsule-client'); ?></td>
-					<td><?php _e('Control-]', 'capsule-client'); ?></td>
+					<td><?php _e('Indent current line', 'capsule'); ?></td>
+					<td><?php _e('Command-]', 'capsule'); ?></td>
+					<td><?php _e('Control-]', 'capsule'); ?></td>
 				</tr>
 				<tr>
-					<td><?php _e('Outdent current line', 'capsule-client'); ?></td>
-					<td><?php _e('Command-[', 'capsule-client'); ?></td>
-					<td><?php _e('Control-[', 'capsule-client'); ?></td>
+					<td><?php _e('Outdent current line', 'capsule'); ?></td>
+					<td><?php _e('Command-[', 'capsule'); ?></td>
+					<td><?php _e('Control-[', 'capsule'); ?></td>
 				</tr>
 			</tbody>
 		</table>
@@ -419,30 +419,30 @@ echo 'Hello World';
 	<br style="clear: both;">
 	<hr>
 	<div class="capsule-doc-col-left">
-		<h3><?php _e('Working With a Team', 'capsule-client'); ?></h3>
-		<p><?php _e('While Capsule is a tool for an individual developer, it is also a tool for team collaboration. You can connect to one or more Capsule Servers and replicate selected posts to those servers.', 'capsule-client'); ?></p>
+		<h3><?php _e('Working With a Team', 'capsule'); ?></h3>
+		<p><?php _e('While Capsule is a tool for an individual developer, it is also a tool for team collaboration. You can connect to one or more Capsule Servers and replicate selected posts to those servers.', 'capsule'); ?></p>
 		<ol>
-			<li><?php printf(__('<a href="%s">Add a Capsule Server</a> (you must have an account on the Capsule Server)', 'capsule-client'), esc_url(admin_url('admin.php?page=capsule-servers'))); ?></li>
-			<li><?php printf(__('<a href="%s">Connect to the Server\'s Projects</a>', 'capsule-client'), esc_url(admin_url('admin.php?page=capsule-projects'))); ?></li>
+			<li><?php printf(__('<a href="%s">Add a Capsule Server</a> (you must have an account on the Capsule Server)', 'capsule'), esc_url(admin_url('admin.php?page=capsule-servers'))); ?></li>
+			<li><?php printf(__('<a href="%s">Connect to the Server\'s Projects</a>', 'capsule'), esc_url(admin_url('admin.php?page=capsule-projects'))); ?></li>
 		</ol>
-		<p><?php _e('Once you map a local project to a project on a Capsule Server, any posts for that project will be automatically replicated to the Capsule Server (if you want, you can send the same local project to multiple Capsule Servers). While you maintain your single development journal, you can connect to multiple Capsule Servers to coordinate with multiple development teams.', 'capsule-client'); ?></p>
-		<p><?php _e('The Capsule Server allows you to view posts by project, tag, developer, date range, and keyword search.', 'capsule-client'); ?></p>
+		<p><?php _e('Once you map a local project to a project on a Capsule Server, any posts for that project will be automatically replicated to the Capsule Server (if you want, you can send the same local project to multiple Capsule Servers). While you maintain your single development journal, you can connect to multiple Capsule Servers to coordinate with multiple development teams.', 'capsule'); ?></p>
+		<p><?php _e('The Capsule Server allows you to view posts by project, tag, developer, date range, and keyword search.', 'capsule'); ?></p>
 	</div>
 	<div class="capsule-doc-col-right">
-		<h3><?php _e('Capsule Server', 'capsule-client'); ?></h3>
-		<p><?php _e('Anyone can set up a <a href="http://crowdfavorite.com/capsule/">Capsule Server</a>. It is free, Open Source and built on WordPress; just like Capsule.', 'capsule-client'); ?></p>
-		<p><?php _e('Add users to your Capsule Server and they will be able to connect their Capsule journals to your Server.', 'capsule-client'); ?></p>
+		<h3><?php _e('Capsule Server', 'capsule'); ?></h3>
+		<p><?php _e('Anyone can set up a <a href="http://crowdfavorite.com/capsule/">Capsule Server</a>. It is free, Open Source and built on WordPress; just like Capsule.', 'capsule'); ?></p>
+		<p><?php _e('Add users to your Capsule Server and they will be able to connect their Capsule journals to your Server.', 'capsule'); ?></p>
 	</div>
 	<br style="clear: both;">
 	<hr>
 	<div class="capsule-doc-col-left">
-		<h3><?php _e('Credits', 'capsule-client'); ?></h3>
-		<p><?php _e('Capsule was conceived and executed by the brilliant and incredibly good-looking men and women at <a href="http://crowdfavorite.com">Crowd Favorite</a>.', 'capsule-client'); ?></p>
-		<p><?php _e('Capsule is released under the GPL v2 license.', 'capsule-client'); ?></p>
+		<h3><?php _e('Credits', 'capsule'); ?></h3>
+		<p><?php _e('Capsule was conceived and executed by the brilliant and devastatingly good-looking men and women at <a href="http://crowdfavorite.com">Crowd Favorite</a>.', 'capsule'); ?></p>
+		<p><?php _e('Capsule is released under the GPL v2 license.', 'capsule'); ?></p>
 	</div>
 	<div class="capsule-doc-col-right">
 		<h3>&nbsp;</h3>
-		<p><?php _e('In the finest tradition of Open Source, Capsule was built on the shoulders of the following giants:', 'capsule-client'); ?></p>
+		<p><?php _e('In the finest tradition of Open Source, Capsule was built on the shoulders of the following giants:', 'capsule'); ?></p>
 		<ul>
 			<li><a href="http://ajaxorg.github.io/ace/">Ace Code Editor</a> (<a href="https://github.com/ajaxorg/ace">GitHub</a>)</li>
 			<li><a href="http://harvesthq.github.io/chosen/">Chosen</a> (<a href="https://github.com/harvesthq/chosen">GitHub</a>)</li>
@@ -488,8 +488,8 @@ echo 'Hello World';
 }
 </style>
 <section class="capsule-welcome">
-	<h1><?php _e('Welcome to Capsule', 'capsule-client'); ?></h1>
-	<p><?php printf(__('Please read the overview, FAQs and more about <a href="%s">how Capsule works</a>.', 'capsule-client'), esc_url(admin_url('admin.php?page=capsule'))); ?></p>
+	<h1><?php _e('Welcome to Capsule', 'capsule'); ?></h1>
+	<p><?php printf(__('Please read the overview, FAQs and more about <a href="%s">how Capsule works</a>.', 'capsule'), esc_url(admin_url('admin.php?page=capsule'))); ?></p>
 </section>
 <?php
 	}
@@ -500,21 +500,21 @@ echo 'Hello World';
 ?>
 <div class="wrap capsule-admin">
 	<div id="icon-options-general" class="icon32"></div>
-	<h2><?php _e('Capsule: Servers', 'capsule-client'); ?></h2>
-	<p class="description"><?php printf(__('Connect to one or more Capsule servers to replicate selected content to those servers. <a href="%s">Learn More</a>', 'capsule-client'), esc_url(admin_url('admin.php?page=capsule'))); ?></p>
+	<h2><?php _e('Capsule: Servers', 'capsule'); ?></h2>
+	<p class="description"><?php printf(__('Connect to one or more Capsule servers to replicate selected content to those servers. <a href="%s">Learn More</a>', 'capsule'), esc_url(admin_url('admin.php?page=capsule'))); ?></p>
 	<div id="cap-servers">
 		<form method="post" id="js-capsule-add-server">
 			<table class="wp-list-table widefat fixed posts">
 				<thead>
 					<tr>
 						<th scope="col" class="manage-column column-label">
-							<?php _e('Server Name', 'capsule-client'); ?>
+							<?php _e('Server Name', 'capsule'); ?>
 						</th>
 						<th scope="col" class="manage-column column-api-key">
-							<?php _e('Server API Key', 'capsule-client'); ?>
+							<?php _e('Server API Key', 'capsule'); ?>
 						</th>
 						<th scope="col" class="manage-column column-api-key">
-							<?php _e('Server URL', 'capsule-client'); ?>
+							<?php _e('Server URL', 'capsule'); ?>
 						</th>
 						<th scope="col" class="manage-column column-actions">
 						&nbsp;
@@ -527,7 +527,7 @@ echo 'Hello World';
 						<td><input name="server_api_key" type="text" /></td>
 						<td><input name="server_url" type="text" /></td>
 						<td>
-							<input type="submit" class="button-primary" value="<?php _e('+ Add New', 'capsule-client'); ?>" />
+							<input type="submit" class="button-primary" value="<?php _e('+ Add New', 'capsule'); ?>" />
 							<input type="hidden" value="add_server" name="capsule_client_action" />
 						</td>
 
@@ -542,13 +542,13 @@ echo 'Hello World';
 					<thead>
 						<tr>
 							<th scope="col" class="manage-column column-label">
-								<?php _e('Server Name', 'capsule-client'); ?>
+								<?php _e('Server Name', 'capsule'); ?>
 							</th>
 							<th scope="col" class="manage-column column-api-key">
-								<?php _e('Server API Key', 'capsule-client'); ?>
+								<?php _e('Server API Key', 'capsule'); ?>
 							</th>
 							<th scope="col" class="manage-column column-api-key">
-								<?php _e('Server URL', 'capsule-client'); ?>
+								<?php _e('Server URL', 'capsule'); ?>
 							</th>
 							<th scope="col" class="manage-column column-actions">
 								&nbsp;
@@ -593,10 +593,10 @@ echo 'Hello World';
 	<td><span class="js-cap-not-editable '.esc_attr('js-static-server-name-'.$server_post->ID).'">'.esc_html($server_post->post_title).'</span><input type="text" class="widefat js-cap-editable" id="'.esc_attr('js-server-name-'.$server_post->ID).'" name="'.$name_base.'[server_name]" value="'.esc_attr($server_post->post_title).'" /></td>
 	<td><span class="js-cap-not-editable '.esc_attr('js-static-server-api-'.$server_post->ID).'">'.esc_html($server_post->api_key).'</span><input type="text" class="widefat js-cap-editable" id="'.esc_attr('js-server-api_key-'.$server_post->ID).'" name="'.$name_base.'[api_key]" value="'.esc_attr($server_post->api_key).'" /></td>
 	<td><span class="js-cap-not-editable '.esc_attr('js-static-server-url-'.$server_post->ID).'">'.esc_html($server_post->url).'</span><input type="text" class="widefat js-cap-editable" id="'.esc_attr('js-server-url-'.$server_post->ID).'" name="'.$name_base.'[server_url]" value="'.esc_attr($server_post->url).'" /></td>
-	<td><a href="#" class="js-cap-edit-server js-cap-not-editable button">'.__('Edit Server', 'capsule-client').'</a>
+	<td><a href="#" class="js-cap-edit-server js-cap-not-editable button">'.__('Edit Server', 'capsule').'</a>
 		<div class="js-cap-editable">
-			<a href="#" class="js-cap-save-server js-cap-editable button" data-server_id="'.esc_attr($server_post->ID).'">'.__('Save', 'capsule-client').'</a>
-			<a href="'.$delete_url.'" style="color:#ff0000;" data-server_id="'.esc_attr($server_post->ID).'" class="delete js-delete-server">'.__('Delete', 'capsule-client').'</a>
+			<a href="#" class="js-cap-save-server js-cap-editable button" data-server_id="'.esc_attr($server_post->ID).'">'.__('Save', 'capsule').'</a>
+			<a href="'.$delete_url.'" style="color:#ff0000;" data-server_id="'.esc_attr($server_post->ID).'" class="delete js-delete-server">'.__('Delete', 'capsule').'</a>
 		</div>
 	</td>
 </tr>';
@@ -707,10 +707,10 @@ echo 'Hello World';
 			}
 		}
 		else if ($request['response']['code'] != '200') {
-			$errors['credentials'] = sprintf(__('Server said: "%s:%s" Please check the server credentials and connectivity and try again.', 'capsule-client'), $request['response']['code'], $request['response']['message']);
+			$errors['credentials'] = sprintf(__('Server said: "%s:%s" Please check the server credentials and connectivity and try again.', 'capsule'), $request['response']['code'], $request['response']['message']);
 		}
 		else if ($request['response']['body'] !== 'authorized') {
-			$errors['url'][] = __('Server theme not active', 'capsule-client');
+			$errors['url'][] = __('Server theme not active', 'capsule');
 		}
 
 		return $errors;
@@ -748,7 +748,7 @@ echo 'Hello World';
 				}
 			}
 			else if ($request['response']['code'] != '200') {
-				$errors[$server_post->ID][] = sprintf(__('Server said: "%s:%s" Please check the server credentials and connectivity and try again.', 'capsule-client'), $request['response']['code'], $request['response']['message']);
+				$errors[$server_post->ID][] = sprintf(__('Server said: "%s:%s" Please check the server credentials and connectivity and try again.', 'capsule'), $request['response']['code'], $request['response']['message']);
 			}
 			else {
 				// Response is serialized string of taxonomies as keys with values of array of terms (ID, name, slug, description)
@@ -882,7 +882,7 @@ echo 'Hello World';
 			foreach ($errors[$post_id] as $error_message) {
 				$error_html .= $error_message;
 			}
-			$html = sprintf(__('Error: %s', 'capsule-client'), $error_html);
+			$html = sprintf(__('Error: %s', 'capsule'), $error_html);
 		}
 
 		echo $html;
@@ -910,8 +910,8 @@ echo 'Hello World';
 ?>
  <div class="wrap capsule-admin">
 	<div id="icon-options-general" class="icon32"></div>
-	<h2><?php _e('Capsule: Server Projects', 'capsule-client'); ?></h2>
-	<p class="description"><?php printf(__('When you map a local project to one on a server project, all posts related to that project will be replicated to that server. <a href="%s">Learn More</a>', 'capsule-client'), esc_url(admin_url('admin.php?page=capsule'))); ?></p>
+	<h2><?php _e('Capsule: Server Projects', 'capsule'); ?></h2>
+	<p class="description"><?php printf(__('When you map a local project to one on a server project, all posts related to that project will be replicated to that server. <a href="%s">Learn More</a>', 'capsule'), esc_url(admin_url('admin.php?page=capsule'))); ?></p>
 	<form method="post">
  <?php 
 		$servers = $this->get_servers();
@@ -941,10 +941,10 @@ echo 'Hello World';
 				<thead>
 					<tr>
 						<th scope="col" class="manage-column column-label">
-							<?php printf(_x('Server %s', 'taxonomy name', 'capsule-client'), $tax_obj->labels->singular_name); ?>
+							<?php printf(_x('Server %s', 'taxonomy name', 'capsule'), $tax_obj->labels->singular_name); ?>
 						</th>
 						<th scope="col" class="manage-column column-api-key">
-							<?php printf(_x('Local %s', 'taxonomy name', 'capsule-client'), $tax_obj->labels->singular_name); ?>
+							<?php printf(_x('Local %s', 'taxonomy name', 'capsule'), $tax_obj->labels->singular_name); ?>
 						</th>
 					</tr>
 				</thead>
@@ -968,7 +968,7 @@ echo 'Hello World';
 		?>
 		
 			<p>
-				<input type="submit" class="save-mappings button-primary" value="<?php _e('Save', 'capsule-client'); ?>">
+				<input type="submit" class="save-mappings button-primary" value="<?php _e('Save', 'capsule'); ?>">
 			</p>
 			<input type="hidden" name="capsule_client_action" value="save_mapping" />
 			<?php wp_nonce_field('_cap_client_save_mapping', '_save_mapping_nonce', true, true); ?>
@@ -997,7 +997,7 @@ echo 'Hello World';
 		$output = '
 <input type="hidden" name="'.esc_attr('cap_client_mapping['.$post->ID.']['.$taxonomy.'][server_term]').'" value="'.esc_attr($post->post_title).'">
 <select name="'.esc_attr('cap_client_mapping['.$post->ID.']['.$taxonomy.'][term_id]').'">
-	<option value="0">'.__('(not mapped)', 'capsule-client').'</option>';
+	<option value="0">'.__('(not mapped)', 'capsule').'</option>';
 
 		foreach ($terms as $term) {
 			if ($term->name == $post->post_title) {
@@ -1005,11 +1005,11 @@ echo 'Hello World';
 			}
 			$options .= '<option value="'.esc_attr($term->term_id).'"'.selected($selected_id, $term->term_id, false).'>'.esc_html($term->name).'</option>';
 		}
-		$options = '<optgroup label="'.sprintf(__('Local %s', 'capsule-client'), $tax_obj->labels->name).'">'.$options.'</optgroup>';
+		$options = '<optgroup label="'.sprintf(__('Local %s', 'capsule'), $tax_obj->labels->name).'">'.$options.'</optgroup>';
 
 		// If there are no local terms that match the server term, provide a 'Create Term' option
 		if (!$match) {
-			$output .= '<option value="-1">'.sprintf(__('- Create &quot;%s&quot; Locally', 'capsule-client'), $tax_obj->labels->singular_name).'</option>';
+			$output .= '<option value="-1">'.sprintf(__('- Create &quot;%s&quot; Locally', 'capsule'), $tax_obj->labels->singular_name).'</option>';
 		}
 
 		$output .= $options.'</select>';
