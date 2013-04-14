@@ -31,20 +31,7 @@ class Capsule_Client {
 		add_action('admin_menu', array($this, 'add_menu_pages'));
 
 		add_action('wp_insert_post', array($this,'insert_post'), 10, 2);
-		add_action('admin_enqueue_scripts', array($this,'admin_enqueue_scripts'), 10, 2);
 		add_action('admin_notices', array($this,'capsule_admin_notice'));
-	}
-
-	public function admin_enqueue_scripts() {
-		$template_url = trailingslashit(get_template_directory_uri());
-
-		wp_enqueue_script(
-			'capsule-client-admin',
-			$template_url.'js/client-admin.js',
-			array('jquery'),
-			CAPSULE_URL_VERSION,
-			true
-		);
 	}
 
 	// Handles all client actions including those coming in via ajax
