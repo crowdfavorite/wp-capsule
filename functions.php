@@ -474,6 +474,11 @@ echo 'Hello World';
 	public function server_management_page() {
 		$servers = $this->get_servers();
 ?>
+<style type="text/css">
+.js-cap-editable {
+	display: none;
+}
+</style>
 <div class="wrap capsule-admin">
 	<div id="icon-options-general" class="icon32"></div>
 	<h2><?php _e('Capsule: Servers', 'capsule'); ?></h2>
@@ -550,6 +555,13 @@ echo 'Hello World';
 <script type="text/javascript">
 (function($) {
 	$(function() {
+		$('#wpbody-content').on('click', '.js-cap-edit-server', function(e) {
+			var server_id = $(this).data('server_id');
+			e.preventDefault();
+			$('tr#js-server-item-'+server_id+' .js-cap-not-editable').hide();
+			$('tr#js-server-item-'+server_id+' .js-cap-editable').show();
+		});
+
 		$('form#js-capsule-add-server').on('submit', function(e) {
 			var $form = $(this);
 			$form.find('input[name="capsule_client_action"]').val('add_server_ajax');
@@ -570,7 +582,7 @@ echo 'Hello World';
 			);
 		});
 
-		$('#wpbody-content').on('click', 'form#js-capsule-update-servers .js-update-server', function(e) {
+		$('#wpbody-content').on('click', 'form#js-capsule-update-servers .js-cap-save-server', function(e) {
 			var server_id = $(this).data('server_id');
 			var $form = $('form#js-capsule-update-servers');
 			e.preventDefault();
@@ -587,6 +599,7 @@ echo 'Hello World';
 				},
 				function(data) {
 					if (data.result == 'success') {
+						// @TODO validation, check, replace static content with new content
 						$('#js-server-item-'+server_id).fadeOut().fadeIn();
 					}
 					else {
@@ -637,11 +650,11 @@ echo 'Hello World';
 		$delete_url = wp_nonce_url($delete_url, '_cap_client_delete_server');
 		$name_base = 'servers['.$server_post->ID.']';
 		$html = '
-<tr class="'.esc_attr('js-server-item-'.$server_post->ID).'" class="'.esc_attr('server-item'.$class).'">
+<tr id="'.esc_attr('js-server-item-'.$server_post->ID).'" class="'.esc_attr('server-item'.$class).'">
 	<td><span class="js-cap-not-editable '.esc_attr('js-static-server-name-'.$server_post->ID).'">'.esc_html($server_post->post_title).'</span><input type="text" class="widefat js-cap-editable" id="'.esc_attr('js-server-name-'.$server_post->ID).'" name="'.$name_base.'[server_name]" value="'.esc_attr($server_post->post_title).'" /></td>
 	<td><span class="js-cap-not-editable '.esc_attr('js-static-server-api-'.$server_post->ID).'">'.esc_html($server_post->api_key).'</span><input type="text" class="widefat js-cap-editable" id="'.esc_attr('js-server-api_key-'.$server_post->ID).'" name="'.$name_base.'[api_key]" value="'.esc_attr($server_post->api_key).'" /></td>
 	<td><span class="js-cap-not-editable '.esc_attr('js-static-server-url-'.$server_post->ID).'">'.esc_html($server_post->url).'</span><input type="text" class="widefat js-cap-editable" id="'.esc_attr('js-server-url-'.$server_post->ID).'" name="'.$name_base.'[server_url]" value="'.esc_attr($server_post->url).'" /></td>
-	<td><a href="#" class="js-cap-edit-server js-cap-not-editable button">'.__('Edit Server', 'capsule').'</a>
+	<td><a href="#" class="js-cap-edit-server js-cap-not-editable button" data-server_id="'.esc_attr($server_post->ID).'">'.__('Edit Server', 'capsule').'</a>
 		<div class="js-cap-editable">
 			<a href="#" class="js-cap-save-server js-cap-editable button" data-server_id="'.esc_attr($server_post->ID).'">'.__('Save', 'capsule').'</a>
 			<a href="'.$delete_url.'" style="color:#ff0000;" data-server_id="'.esc_attr($server_post->ID).'" class="delete js-delete-server">'.__('Delete', 'capsule').'</a>
