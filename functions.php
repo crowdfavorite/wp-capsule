@@ -129,7 +129,6 @@ class Capsule_Client {
 				case 'update_servers':
 					if (wp_verify_nonce($_POST['_update_server_nonce'], '_cap_client_update_server')) {
 						$servers = isset($_POST['servers']) ? $_POST['servers'] : array();
-						error_log(print_r($servers,1));
 						if (!empty($servers)) {
 							foreach ($servers as $server_id => $server_data) {
 								$this->update_server($server_id, $server_data);
@@ -868,10 +867,12 @@ echo 'Hello World';
 				foreach ($terms as $term_slug => $term) {
 					// array key matches above @TODO trim?
 					$array_key = $term['taxonomy'].'_'.$term['id'];
+
 					if (isset($post_term_array[$array_key])) {
+
 						// Check for any differences, if there is update as necessary
 						$existing_data = $post_term_array[$array_key];
-						
+						$post_id = $existing_data['post']->ID;
 						if ($existing_data['term_name'] != $term['name'] || $existing_data['term_description'] != $term['description']) {
 							$existing_data['post']->post_title = $term['name'];
 							$existing_data['post']->post_content = $term['description'];
@@ -880,8 +881,9 @@ echo 'Hello World';
 						if ($existing_data['term_taxonomy'] != $term['taxonomy']) {
 							update_post_meta($post_id, $this->server_term_tax_key, $term['taxonomy']);
 						}
-						if ($existing_data['term_slug'] != $term['slug']) {
-							update_post_meta($post_id, $this->server_term_slug_key, $term['slug']);
+						
+						if ($existing_data['term_slug'] != $term_slug) {
+							update_post_meta($post_id, $this->server_term_slug_key, $term_slug);
 						}
 					}
 					else {
@@ -1240,7 +1242,6 @@ echo 'Hello World';
 		if (!empty($taxonomies)) {
 			// Get posts of all the mapped terms
 			$mapped_term_posts = $this->get_server_term_posts($server_post_type);
-
 			// For taxonomies that are mapped, we need to get the mapping data and set it
 			// Otherwise, just send along the local data for the terms
 			foreach ($taxonomies as $taxonomy) {
@@ -1306,6 +1307,7 @@ echo 'Hello World';
 				}
 			}
 		}
+
 		return $tax_input;
 	}
 }
