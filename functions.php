@@ -754,7 +754,8 @@ echo 'Hello World';
 				'capsule_client_post_data' => array(
 					'api_key' => $api_key,
 				),
-			)
+			),
+			'sslverify' => false,
 		);
 
 		$request = wp_remote_post($url, $args);
@@ -797,6 +798,7 @@ echo 'Hello World';
 						'taxonomies' => $this->taxonomies_to_map(),
 					),
 				),
+				'sslverify' => false,
 			);
 			$request = wp_remote_post($server_post->url, $args);
 			// Check for errors
@@ -1147,6 +1149,7 @@ echo 'Hello World';
 					'tax' => $tax
 				)
 			),
+			'sslverify' => false,
 		);
 		wp_remote_post($server_url, $args);
 		//@TODO response
