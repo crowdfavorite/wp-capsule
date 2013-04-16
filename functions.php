@@ -256,7 +256,7 @@ class Capsule_Client {
 	public function add_menu_pages() {
 		global $menu;
 		$menu['3'] = array( '', 'read', 'separator-capsule', '', 'wp-menu-separator' );
-		add_menu_page(__('Capsule', 'capsule_client'), __('Capsule', 'capsule'), 'manage_options', 'capsule', array($this, 'capsule_help'), '', '3.1' );
+		add_menu_page(__('Capsule', 'capsule_client'), __('Capsule', 'capsule'), 'publish_post', 'capsule', array($this, 'capsule_help'), '', '3.1' );
 		// needed to make separator show up
 		ksort($menu);
 		add_submenu_page('capsule', __('Servers', 'capsule_client'), __('Servers', 'capsule'), 'manage_options', 'capsule-servers', array($this, 'server_management_page'));
