@@ -265,7 +265,7 @@ class Capsule_Client {
 
 	// Menu page
 	public function capsule_help() {
-		if ( !current_user_can( 'manage_options' ) )  {
+		if ( !current_user_can( 'publish_post' ) )  {
 			wp_die( __( 'You do not have sufficient permissions to access this page.' ) );
 		}
 ?>
