@@ -405,7 +405,7 @@ class Capsule_Client {
 // Say hello!
 echo 'Hello World';
 ```</pre>
-		<p><?php _e('Additionally, Capsule identifies these code blocks and saves the code language as metadata for your post.', 'capsule'); ?></p>
+		<p><?php _e('Additionally, when you use fenced code blocks Capsule saves the code language as metadata for your post.', 'capsule'); ?></p>
 
 		<h3><?php _e('Keyboard Shortcuts', 'capsule'); ?></h3>
 		<table class="widefat">
