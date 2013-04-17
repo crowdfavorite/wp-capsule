@@ -517,6 +517,16 @@ echo 'Hello World';
 		$servers = $this->get_servers();
 ?>
 <style type="text/css">
+#cap-servers {
+	padding-top: 10px;
+}
+#cap-servers td {
+	padding: 5px;
+}
+.cap-api-key {
+	font-family: monospace;
+	white-space: nowrap;
+}
 .js-cap-editable {
 	display: none;
 	margin-bottom: 2px;
@@ -559,16 +569,16 @@ input.cap-input-error {
 			<table class="wp-list-table widefat fixed posts">
 				<thead>
 					<tr>
-						<th scope="col" class="manage-column column-label">
+						<th scope="col" class="manage-column column-label" width="15%">
 							<?php _e('Server Name', 'capsule'); ?>
 						</th>
-						<th scope="col" class="manage-column column-api-key">
-							<?php _e('Server API Key', 'capsule'); ?>
-						</th>
-						<th scope="col" class="manage-column column-api-key">
+						<th scope="col" class="manage-column column-api-key" width="35%">
 							<?php _e('Server URL', 'capsule'); ?>
 						</th>
-						<th scope="col" class="manage-column column-actions">
+						<th scope="col" class="manage-column column-api-key" width="40%">
+							<?php _e('Server API Key', 'capsule'); ?>
+						</th>
+						<th scope="col" class="manage-column column-actions" width="10%">
 							&nbsp;
 						</th>
 					</tr>
@@ -589,17 +599,17 @@ input.cap-input-error {
 					</td>
 					<td>
 						<div class="">
-							<input type="text" class="widefat" name="server_api_key" value=""  placeholder="<?php _e('API Key', 'capsule-client'); ?>" />
-						</div>
-					</td>
-					<td>
-						<div class="">
 							<input type="text" class="widefat" name="server_url" value=""  placeholder="<?php _e('Server URL', 'capsule-client'); ?>" />
 						</div>
 					</td>
 					<td>
 						<div class="">
-							<input type="submit" class="button-primary" value="<?php  _e('Add New', 'capsule-client'); ?>" />
+							<input type="text" class="widefat" name="server_api_key" value=""  placeholder="<?php _e('API Key', 'capsule-client'); ?>" />
+						</div>
+					</td>
+					<td>
+						<div class="">
+							<input type="submit" class="button" value="<?php  _e('Add Server', 'capsule-client'); ?>" />
 							<input type="hidden" value="add_server" name="capsule_client_action" />
 							<?php wp_nonce_field('_cap_client_server_management', '_server_nonce', true, true); ?>
 						</div>
@@ -770,14 +780,6 @@ input.cap-input-error {
 		</div>
 	</td>
 	<td>
-		<div class="js-cap-not-editable '.esc_attr('js-static-server-api-'.$server_post->ID).'">'
-			.esc_html($server_post->api_key).
-		'</div>
-		<div class="js-cap-editable">
-			<input type="text" class="widefat js-cap-editable js-cap-server-api-key" id="'.esc_attr('js-server-api_key-'.$server_post->ID).'" name="'.$name_base.'[api_key]" value="'.esc_attr($server_post->api_key).'" />
-		</div>
-	</td>
-	<td>
 		<div class="js-cap-not-editable '.esc_attr('js-static-server-url-'.$server_post->ID).'">'
 			.esc_html($server_post->url).
 		'</div>
@@ -786,13 +788,20 @@ input.cap-input-error {
 		</div>
 	</td>
 	<td>
+		<div class="cap-api-key js-cap-not-editable '.esc_attr('js-static-server-api-'.$server_post->ID).'">'
+			.esc_html($server_post->api_key).
+		'</div>
+		<div class="js-cap-editable">
+			<input type="text" class="widefat js-cap-editable js-cap-server-api-key" id="'.esc_attr('js-server-api_key-'.$server_post->ID).'" name="'.$name_base.'[api_key]" value="'.esc_attr($server_post->api_key).'" />
+		</div>
+	</td>
+	<td>
 		<div class="js-cap-not-editable cap-edit-server-actions">
-			<a href="#" class="js-cap-edit-server button" data-server_id="'.esc_attr($server_post->ID).'">'.__('Edit Server', 'capsule').'</a>
+			<a href="#" class="js-cap-edit-server" data-server_id="'.esc_attr($server_post->ID).'">'.__('Edit', 'capsule').'</a> |
 			<a href="'.$delete_url.'" style="color:#ff0000;" data-server_id="'.esc_attr($server_post->ID).'" class="delete js-server-delete">'.__('Delete', 'capsule').'</a>
 		</div>
 		<div class="js-cap-editable">
-			<a href="#" class="js-cap-save-server button" data-server_id="'.esc_attr($server_post->ID).'">'.__('Save', 'capsule').'</a>
-			<a href="'.$delete_url.'" style="color:#ff0000;" data-server_id="'.esc_attr($server_post->ID).'" class="delete js-server-delete">'.__('Delete', 'capsule').'</a>
+			<a href="#" class="js-cap-save-server button-primary" data-server_id="'.esc_attr($server_post->ID).'">'.__('Save', 'capsule').'</a>
 		</div>
 	</td>
 </tr>';
