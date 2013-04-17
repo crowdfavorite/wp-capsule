@@ -368,6 +368,7 @@ class Capsule_Client {
 		<h3><?php _e('Overview', 'capsule'); ?></h3>
 		<p><?php _e('Many developers keep a scratch document open next to their project code or IDE when they are coding. This document ends up containing miscellaneous artifacts: failed code attempts, data formats, math calculations, etc. Most of the time, this document gets thrown away.', 'capsule'); ?></p>
 		<p><?php _e('Capsule is a replacement for that scratch document. It archives and organizes your development artifacts for future reference.', 'capsule'); ?></p>
+		<p><?php _e('We have intentionally designed Capsule so that you you can stay on the front-end of the app for everything except administrative tasks (adding Capsule Servers, mapping projects, etc.).', 'capsule'); ?></p>
 		<p><?php printf(__('Can\'t wait to get started? <a href="%s">Post away!</a>', 'capsule'), esc_url(home_url())); ?></p>
 
 		<h3><?php _e('Projects &amp; Tags', 'capsule'); ?></h3>
