@@ -479,7 +479,7 @@ echo 'Hello World';
 	}
 
 	public function capsule_admin_notice(){
-		if (strpos($_GET['page'], 'capsule') !== false) {
+		if (isset($_GET['page']) && strpos($_GET['page'], 'capsule') !== false) {
 			return;
 		}
 ?>
