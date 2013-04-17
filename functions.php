@@ -563,7 +563,7 @@ input.cap-input-error {
 <div class="wrap capsule-admin">
 	<div id="icon-options-general" class="icon32"></div>
 	<h2><?php _e('Capsule: Servers', 'capsule'); ?></h2>
-	<p class="description"><?php printf(__('Connect to one or more Capsule servers to replicate selected content to those servers. <a href="%s">Learn More</a>', 'capsule'), esc_url(admin_url('admin.php?page=capsule'))); ?></p>
+	<p class="description"><?php printf(__('Connect to one or more Capsule Servers to replicate selected content to those servers. <a href="%s">Learn More</a>', 'capsule'), esc_url(admin_url('admin.php?page=capsule'))); ?></p>
 	<div id="cap-servers">
 		<form method="post" id="js-cap-servers">
 			<table class="wp-list-table widefat fixed posts">
