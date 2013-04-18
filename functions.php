@@ -56,27 +56,17 @@ class Capsule_Client {
 					);
 					if (wp_verify_nonce($_POST['_server_nonce'], '_cap_client_server_management')) {
 					
-						$post = $this->add_server($server_data);
-						if ($post) {
-							$server_data['id'] = $post->ID;
-							$test_errors = $this->test_credentials($server_data['api_key'], $server_data['server_url']);
-							if (empty($test_errors)) {
-								// Success!
-								echo json_encode(array(
-									'result' => 'success',
-									'html' => $this->server_row_markup($post, ''),
-								));
-								die();
-							}
-							else {
-								$errors = $test_errors;
-							}
+						$test_errors = $this->test_credentials($server_data['api_key'], $server_data['server_url']);
+						if (empty($test_errors)) {
+							$post = $this->add_server($server_data);
+							echo json_encode(array(
+								'result' => 'success',
+								'html' => $this->server_row_markup($post, ''),
+							));
+							die();
 						}
 						else {
-							$errors[] = array(
-								'message' => __('Could not save server data', 'capsule'),
-								'type' => 'general',
-							);
+							$errors = $test_errors;
 						}
 					}
 					else {
@@ -94,11 +84,6 @@ class Capsule_Client {
 							'url' => $server_data['server_url'],
 						)
 					);
-
-					if ($post) {
-						$results['html'] = $this->server_row_markup($post, '');
-						$results['data']['id'] = $post->ID;
-					}
 
 					// Something didn't go quite right
 					echo json_encode($results);
@@ -602,8 +587,9 @@ input.cap-input-error:focus {
 						$class = ($class == '') ? ' alternate' : '';
 						echo $this->server_row_markup($server_post, $class);
 					}
+					$class = ($class == '') ? ' alternate' : '';
 				?>
-				<tr>
+				<tr id="js-server-item-new" class="<?php echo esc_attr($class); ?>">
 					<td>
 						<div>
 							<input type="text" class="widefat"  name="server_name" value="" placeholder="<?php _e('Server Name', 'capsule-client'); ?>" />
@@ -611,12 +597,12 @@ input.cap-input-error:focus {
 					</td>
 					<td>
 						<div>
-							<input type="text" class="widefat" name="server_url" value=""  placeholder="<?php _e('Server URL', 'capsule-client'); ?>" />
+							<input type="text" class="widefat js-cap-server-url" name="server_url" value=""  placeholder="<?php _e('Server URL', 'capsule-client'); ?>" />
 						</div>
 					</td>
 					<td>
 						<div>
-							<input type="text" class="widefat" name="server_api_key" value=""  placeholder="<?php _e('API Key', 'capsule-client'); ?>" />
+							<input type="text" class="widefat js-cap-server-api-key" name="server_api_key" value=""  placeholder="<?php _e('API Key', 'capsule-client'); ?>" />
 						</div>
 					</td>
 					<td>
@@ -640,14 +626,10 @@ input.cap-input-error:focus {
 			new_server == undefined ? new_server : false;
 			var error_html = '';
 			var $new_error_div = $('<div id="js-cap-error-'+server_id+'" class="capsule-error" style="display:none;"></div>');
-			$('.js-cap-server-api-key', $tr).removeClass('cap-input-error');
-			$('.js-cap-server-url', $tr).removeClass('cap-input-error');
+			capsule_remove_input_errors($tr);
 
-			if (new_server) {
+			if (!new_server) {
 				$tr.fadeIn();
-			}
-			else {
-				$tr.animate({opacity:1});
 			}
 
 			for (var key in result.errors) {
@@ -669,6 +651,11 @@ input.cap-input-error:focus {
 			$('input[name="server_api_key"]', $form).val("");
 		}
 
+		function capsule_remove_input_errors($tr) {
+			$('.js-cap-server-api-key', $tr).removeClass('cap-input-error');
+			$('.js-cap-server-url', $tr).removeClass('cap-input-error');
+		}
+
 
 		$('#wpbody-content').on('click', '.js-cap-edit-server', function(e) {
 			var server_id = $(this).data('server_id');
@@ -680,8 +667,12 @@ input.cap-input-error:focus {
 		$('form#js-cap-servers').on('submit', function(e) {
 			var $form = $(this);
 			var $spinner = $('.js-cap-add').siblings('.capsule-spinner');
+			var $tr = $('tr#js-server-item-new');
 			e.preventDefault();
+
 			$form.find('input[name="capsule_client_action"]').val('add_server_ajax');
+			$('#js-cap-error-new').hide();
+			capsule_remove_input_errors($tr);
 			$spinner.show();
 
 			$.post(
@@ -690,18 +681,11 @@ input.cap-input-error:focus {
 				function(result) {
 					$spinner.hide();
 					if (result.result == 'success') {
-						$(result.html).prependTo("#js-cap-servers tbody").hide().fadeIn();
+						$(result.html).insertBefore("tr#js-server-item-new").hide().fadeIn();
 						capsule_reset_server_form($form);
 					}
 					else {
-						if (result.html != undefined) {
-							$tr = $(result.html).prependTo("#js-cap-servers tbody").hide();
-							// Add it but also process
-							$('.js-cap-not-editable', $tr).hide();
-							$('.js-cap-editable', $tr).show();
-							capsule_process_server_errors($tr, result, result.data.id, true);
-						}
-						capsule_reset_server_form($form);
+						capsule_process_server_errors($tr, result, 'new', true);
 					}
 				},
 				'json'
