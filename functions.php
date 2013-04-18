@@ -553,11 +553,23 @@ div.cap-edit-server-actions {
 	margin: 0;
 	padding: 0;
 }
-
-input.cap-input-error {
-	border: 1px solid #FF0000;
+.capsule-spinner {
+	background: url(<?php echo admin_url('images/loading.gif'); ?>) no-repeat center center;
+	background-size: 16px;
+	margin: 5px 0 0 5px;
+	height: 16px;
+	width: 16px;
+	display: none;
 }
 
+.capsule-float-left {
+	float: left;
+}
+
+input.cap-input-error,
+input.cap-input-error:focus {
+	border: 1px solid #FF0000;
+}
 
 </style>
 <div class="wrap capsule-admin">
@@ -598,18 +610,18 @@ input.cap-input-error {
 						</div>
 					</td>
 					<td>
-						<div class="">
+						<div>
 							<input type="text" class="widefat" name="server_url" value=""  placeholder="<?php _e('Server URL', 'capsule-client'); ?>" />
 						</div>
 					</td>
 					<td>
-						<div class="">
+						<div>
 							<input type="text" class="widefat" name="server_api_key" value=""  placeholder="<?php _e('API Key', 'capsule-client'); ?>" />
 						</div>
 					</td>
 					<td>
-						<div class="">
-							<input type="submit" class="button" value="<?php  _e('Add Server', 'capsule-client'); ?>" />
+						<div>
+							<input type="submit" class="js-cap-add capsule-float-left button" value="<?php  _e('Add Server', 'capsule-client'); ?>" /><span class="capsule-float-left capsule-spinner"></span>
 							<input type="hidden" value="add_server" name="capsule_client_action" />
 							<?php wp_nonce_field('_cap_client_server_management', '_server_nonce', true, true); ?>
 						</div>
@@ -651,6 +663,12 @@ input.cap-input-error {
 			$new_error_div.insertAfter('h2:first').fadeIn();
 		}
 
+		function capsule_reset_server_form($form) {
+			$('input[name="server_name"]', $form).val("");
+			$('input[name="server_url"]', $form).val("");
+			$('input[name="server_api_key"]', $form).val("");
+		}
+
 
 		$('#wpbody-content').on('click', '.js-cap-edit-server', function(e) {
 			var server_id = $(this).data('server_id');
@@ -661,24 +679,29 @@ input.cap-input-error {
 
 		$('form#js-cap-servers').on('submit', function(e) {
 			var $form = $(this);
-			$form.find('input[name="capsule_client_action"]').val('add_server_ajax');
+			var $spinner = $('.js-cap-add').siblings('.capsule-spinner');
 			e.preventDefault();
+			$form.find('input[name="capsule_client_action"]').val('add_server_ajax');
+			$spinner.show();
+
 			$.post(
 				ajaxurl,
 				$form.serialize(),
 				function(result) {
+					$spinner.hide();
 					if (result.result == 'success') {
-						$(result.html).hide().prependTo("#js-cap-servers tbody").fadeIn();
+						$(result.html).prependTo("#js-cap-servers tbody").hide().fadeIn();
+						capsule_reset_server_form($form);
 					}
 					else {
-						// @TODO check for HTML, if no html, throw general error
 						if (result.html != undefined) {
-							$tr = $(result.html).hide().prependTo("#js-cap-servers tbody");
+							$tr = $(result.html).prependTo("#js-cap-servers tbody").hide();
 							// Add it but also process
 							$('.js-cap-not-editable', $tr).hide();
 							$('.js-cap-editable', $tr).show();
 							capsule_process_server_errors($tr, result, result.data.id, true);
 						}
+						capsule_reset_server_form($form);
 					}
 				},
 				'json'
@@ -689,7 +712,10 @@ input.cap-input-error {
 			var server_id = $(this).data('server_id');
 			var $form = $('form#js-cap-servers');
 			var $tr = $('tr#js-server-item-'+server_id);
+			var $spinner = $(this).siblings('.capsule-spinner');
+			
 			e.preventDefault();
+			$spinner.show();
 
 			$.post(
 				ajaxurl,
@@ -703,6 +729,7 @@ input.cap-input-error {
 					_wp_http_referer : $form.find('input[name="_wp_http_referer"]').val()
 				},
 				function(result) {
+					$spinner.hide();
 					if (result.result == 'success') {
 						$('.js-cap-server-api-key', $tr).removeClass('cap-input-error');
 						$('.js-cap-server-url', $tr).removeClass('cap-input-error');
@@ -801,7 +828,7 @@ input.cap-input-error {
 			<a href="'.$delete_url.'" style="color:#ff0000;" data-server_id="'.esc_attr($server_post->ID).'" class="delete js-server-delete">'.__('Delete', 'capsule').'</a>
 		</div>
 		<div class="js-cap-editable">
-			<a href="#" class="js-cap-save-server button-primary" data-server_id="'.esc_attr($server_post->ID).'">'.__('Save', 'capsule').'</a>
+			<a href="#" class="capsule-float-left js-cap-save-server button-primary" data-server_id="'.esc_attr($server_post->ID).'">'.__('Save', 'capsule').'</a><span class="capsule-float-left capsule-spinner"></span>
 		</div>
 	</td>
 </tr>';
