@@ -512,11 +512,20 @@ echo 'Hello World';
 	font-family: monospace;
 	white-space: nowrap;
 }
-.js-cap-editable {
+.cap-delete,
+.cap-delete:visited {
+	color: #BC0B0B;
+}
+}
+.cap-delete:hover,
+.cap-delete:active {
+	color: #f00;
+}
+.cap-editable {
 	display: none;
 	margin-bottom: 2px;
 }
-.js-cap-not-editable {
+.cap-not-editable {
 	margin-top: 3px;
 	margin-left: 4px;
 }
@@ -783,35 +792,35 @@ input.cap-input-error:focus {
 		$html = '
 <tr id="'.esc_attr('js-server-item-'.$server_post->ID).'" class="'.esc_attr('server-item'.$class).'">
 	<td>
-		<div class="js-cap-not-editable '.esc_attr('js-static-server-name-'.$server_post->ID).'">'
+		<div class="js-cap-not-editable cap-not-editable '.esc_attr('js-static-server-name-'.$server_post->ID).'">'
 			.esc_html($server_post->post_title).
 		'</div>
 		<div class="js-cap-editable">
-			<input type="text" class="widefat js-cap-editable" id="'.esc_attr('js-server-name-'.$server_post->ID).'" name="'.$name_base.'[server_name]" value="'.esc_attr($server_post->post_title).'" />
+			<input type="text" class="widefat js-cap-editable cap-editable" id="'.esc_attr('js-server-name-'.$server_post->ID).'" name="'.$name_base.'[server_name]" value="'.esc_attr($server_post->post_title).'" />
 		</div>
 	</td>
 	<td>
-		<div class="js-cap-not-editable '.esc_attr('js-static-server-url-'.$server_post->ID).'">'
+		<div class="js-cap-not-editable cap-not-editable '.esc_attr('js-static-server-url-'.$server_post->ID).'">'
 			.esc_html($server_post->url).
 		'</div>
 		<div class="js-cap-editable">
-			<input type="text" class="widefat js-cap-editable js-cap-server-url" id="'.esc_attr('js-server-url-'.$server_post->ID).'" name="'.$name_base.'[server_url]" value="'.esc_attr($server_post->url).'" />
+			<input type="text" class="widefat js-cap-editable cap-editable js-cap-server-url" id="'.esc_attr('js-server-url-'.$server_post->ID).'" name="'.$name_base.'[server_url]" value="'.esc_attr($server_post->url).'" />
 		</div>
 	</td>
 	<td>
-		<div class="cap-api-key js-cap-not-editable '.esc_attr('js-static-server-api-'.$server_post->ID).'">'
+		<div class="cap-api-key js-cap-not-editable cap-not-editable '.esc_attr('js-static-server-api-'.$server_post->ID).'">'
 			.esc_html($server_post->api_key).
 		'</div>
-		<div class="js-cap-editable">
+		<div class="js-cap-editable cap-editable">
 			<input type="text" class="widefat js-cap-editable js-cap-server-api-key" id="'.esc_attr('js-server-api_key-'.$server_post->ID).'" name="'.$name_base.'[api_key]" value="'.esc_attr($server_post->api_key).'" />
 		</div>
 	</td>
 	<td>
-		<div class="js-cap-not-editable cap-edit-server-actions">
+		<div class="js-cap-not-editable cap-not-editable cap-edit-server-actions">
 			<a href="#" class="js-cap-edit-server" data-server_id="'.esc_attr($server_post->ID).'">'.__('Edit', 'capsule').'</a> |
-			<a href="'.$delete_url.'" style="color:#ff0000;" data-server_id="'.esc_attr($server_post->ID).'" class="delete js-server-delete">'.__('Delete', 'capsule').'</a>
+			<a href="'.$delete_url.'" data-server_id="'.esc_attr($server_post->ID).'" class="delete js-server-delete cap-delete">'.__('Delete', 'capsule').'</a>
 		</div>
-		<div class="js-cap-editable">
+		<div class="js-cap-editable cap-editable">
 			<a href="#" class="capsule-float-left js-cap-save-server button-primary" data-server_id="'.esc_attr($server_post->ID).'">'.__('Save', 'capsule').'</a><span class="capsule-float-left capsule-spinner"></span>
 		</div>
 	</td>
