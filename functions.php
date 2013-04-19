@@ -4,7 +4,6 @@ include('ui/functions.php');
 
 $cap_client = new Capsule_Client;
 $cap_client->add_actions();
-
 // Class here is mostly for namespacing of methods and properties
 class Capsule_Client {
 
@@ -31,20 +30,7 @@ class Capsule_Client {
 		add_action('admin_menu', array($this, 'add_menu_pages'));
 
 		add_action('wp_insert_post', array($this,'insert_post'), 10, 2);
-		add_action('admin_enqueue_scripts', array($this,'admin_enqueue_scripts'), 10, 2);
 		add_action('admin_notices', array($this,'capsule_admin_notice'));
-	}
-
-	public function admin_enqueue_scripts() {
-		$template_url = trailingslashit(get_template_directory_uri());
-
-		wp_enqueue_script(
-			'capsule-client-admin',
-			$template_url.'js/client-admin.js',
-			array('jquery'),
-			CAPSULE_URL_VERSION,
-			true
-		);
 	}
 
 	// Handles all client actions including those coming in via ajax
@@ -52,7 +38,7 @@ class Capsule_Client {
 		if (isset($_REQUEST['capsule_client_action'])) {
 			switch ($_REQUEST['capsule_client_action']) {
 				case 'add_server':
-					if (wp_verify_nonce($_POST['_add_server_nonce'], '_cap_client_add_server')) {
+					if (wp_verify_nonce($_POST['_server_nonce'], '_cap_client_server_management')) {
 						$server_data = array(
 							'server_name' => isset($_POST['server_name']) ? $_POST['server_name'] : '',
 							'api_key' => isset($_POST['server_api_key']) ? $_POST['server_api_key'] : '',
@@ -62,15 +48,17 @@ class Capsule_Client {
 					}
 					break;
 				case 'add_server_ajax':
-					$error = 'error';
-					if (wp_verify_nonce($_POST['_add_server_nonce'], '_cap_client_add_server')) {
-						$server_data = array(
-							'server_name' => isset($_POST['server_name']) ? $_POST['server_name'] : '',
-							'api_key' => isset($_POST['server_api_key']) ? $_POST['server_api_key'] : '',
-							'server_url' => isset($_POST['server_url']) ? $_POST['server_url'] : '',
-						);
-						$post = $this->add_server($server_data);
-						if ($post) {
+					$errors = array();
+					$server_data = array(
+						'server_name' => isset($_POST['server_name']) ? $_POST['server_name'] : '',
+						'api_key' => isset($_POST['server_api_key']) ? $_POST['server_api_key'] : '',
+						'server_url' => isset($_POST['server_url']) ? $_POST['server_url'] : '',
+					);
+					if (wp_verify_nonce($_POST['_server_nonce'], '_cap_client_server_management')) {
+					
+						$test_errors = $this->test_credentials($server_data['api_key'], $server_data['server_url']);
+						if (empty($test_errors)) {
+							$post = $this->add_server($server_data);
 							echo json_encode(array(
 								'result' => 'success',
 								'html' => $this->server_row_markup($post, ''),
@@ -78,17 +66,28 @@ class Capsule_Client {
 							die();
 						}
 						else {
-							$error = 'error'; //@TODO maybe something more informative
+							$errors = $test_errors;
 						}
 					}
 					else {
-						echo json_encode(array(
-							'results' => 'error',
-							'html' => $error,
-						));
+						$errors[] = array(
+							'message' => __('Could not save server data', 'capsule'),
+							'type' => 'general',
+						);
 					}
+					$results = array(
+						'result' => 'error',
+						'errors' => $errors,
+						'data' => array(
+							'name' => $server_data['server_name'],
+							'api_key' => $server_data['api_key'],
+							'url' => $server_data['server_url'],
+						)
+					);
+
+					// Something didn't go quite right
+					echo json_encode($results);
 					die();
-					
 					break;
 				// Delete server handled slightly differently, with a link and GET params
 				case 'delete_server':
@@ -106,43 +105,60 @@ class Capsule_Client {
 					}
 					break;
 				case 'update_server_ajax':
-					$error = 'error';
-					if (wp_verify_nonce($_POST['_update_server_nonce'], '_cap_client_update_server')) {
+					$errors = array();
+					$data['server_name'] = isset($_POST['server_name']) ? $_POST['server_name'] : '';
+					$data['api_key'] = isset($_POST['api_key']) ? $_POST['api_key'] : '';
+					$data['server_url'] = isset($_POST['server_url']) ? $_POST['server_url'] : '';
+					if (wp_verify_nonce($_POST['_server_nonce'], '_cap_client_server_management')) {
 						if ($server_id = $_POST['server_id']) {
-							$data['server_name'] = isset($_POST['server_name']) ? $_POST['server_name'] : '';
-							$data['api_key'] = isset($_POST['api_key']) ? $_POST['api_key'] : '';
-							$data['server_url'] = isset($_POST['server_url']) ? $_POST['server_url'] : '';
-
 							if ($server = $this->update_server($server_id, $data)) {
-								echo json_encode(array(
-									'data' => array(
-										'title' => $server->post_title,
-										'api_key' => $server->api_key,
-										'url' => $server->url,
-									),
-									'result' => 'success'
-								));
-								die();
+								$test_errors = $this->test_credentials($server->api_key, $server->url);
+								if (empty($test_errors)) {
+									echo json_encode(array(
+										'data' => array(
+											'name' => $server->post_title,
+											'api_key' => $server->api_key,
+											'url' => $server->url,
+										),
+										'result' => 'success'
+									));
+									die();
+								}
+								else {
+									$errors = $test_errors;
+								}
 							}
 							else {
-								$error = 'error'; //@TODO maybe something more informative
+								$errors[] = array(
+									'message' => __('Could not save server.', 'capsule'),
+									'type' => 'genereal',
+								);
 							}
 						}
 						else {
-							$error = 'error'; //@TODO maybe something more informative
+							$errors[] = array(
+								'message' => __('No server ID found.', 'capsule'),
+								'type' => 'genereal',
+							);
 						}
 					}
+					
 					echo json_encode(array(
 						'result' => 'error',
-						'html' => $error,
+						'data' => array(
+							'name' => $server->post_title,
+							'api_key' => $server->api_key,
+							'url' => $server->url,
+						),
+						'errors' => $errors,
 					));
+
 					die();
 					break;
 				// Non ajax way, have to update all servers
 				case 'update_servers':
-					if (wp_verify_nonce($_POST['_update_server_nonce'], '_cap_client_update_server')) {
+					if (wp_verify_nonce($_POST['_server_nonce'], '_cap_client_server_management')) {
 						$servers = isset($_POST['servers']) ? $_POST['servers'] : array();
-						error_log(print_r($servers,1));
 						if (!empty($servers)) {
 							foreach ($servers as $server_id => $server_data) {
 								$this->update_server($server_id, $server_data);
@@ -270,7 +286,7 @@ class Capsule_Client {
 	public function add_menu_pages() {
 		global $menu;
 		$menu['3'] = array( '', 'read', 'separator-capsule', '', 'wp-menu-separator' );
-		add_menu_page(__('Capsule', 'capsule_client'), __('Capsule', 'capsule'), 'manage_options', 'capsule', array($this, 'capsule_help'), '', '3.1' );
+		add_menu_page(__('Capsule', 'capsule_client'), __('Capsule', 'capsule'), 'read', 'capsule', array($this, 'capsule_help'), '', '3.1' );
 		// needed to make separator show up
 		ksort($menu);
 		add_submenu_page('capsule', __('Servers', 'capsule_client'), __('Servers', 'capsule'), 'manage_options', 'capsule-servers', array($this, 'server_management_page'));
@@ -279,9 +295,6 @@ class Capsule_Client {
 
 	// Menu page
 	public function capsule_help() {
-		if ( !current_user_can( 'manage_options' ) )  {
-			wp_die( __( 'You do not have sufficient permissions to access this page.' ) );
-		}
 ?>
 <style type="text/css">
 .capsule-welcome {
@@ -340,6 +353,7 @@ class Capsule_Client {
 		<h3><?php _e('Overview', 'capsule'); ?></h3>
 		<p><?php _e('Many developers keep a scratch document open next to their project code or IDE when they are coding. This document ends up containing miscellaneous artifacts: failed code attempts, data formats, math calculations, etc. Most of the time, this document gets thrown away.', 'capsule'); ?></p>
 		<p><?php _e('Capsule is a replacement for that scratch document. It archives and organizes your development artifacts for future reference.', 'capsule'); ?></p>
+		<p><?php _e('We have intentionally designed Capsule so that you you can stay on the front-end of the app for everything except administrative tasks (adding Capsule Servers, mapping projects, etc.).', 'capsule'); ?></p>
 		<p><?php printf(__('Can\'t wait to get started? <a href="%s">Post away!</a>', 'capsule'), esc_url(home_url())); ?></p>
 
 		<h3><?php _e('Projects &amp; Tags', 'capsule'); ?></h3>
@@ -376,7 +390,7 @@ class Capsule_Client {
 // Say hello!
 echo 'Hello World';
 ```</pre>
-		<p><?php _e('Additionally, Capsule identifies these code blocks and saves the code language as metadata for your post.', 'capsule'); ?></p>
+		<p><?php _e('Additionally, when you use fenced code blocks Capsule saves the code language as metadata for your post.', 'capsule'); ?></p>
 
 		<h3><?php _e('Keyboard Shortcuts', 'capsule'); ?></h3>
 		<table class="widefat">
@@ -443,25 +457,14 @@ echo 'Hello World';
 	<div class="capsule-doc-col-right">
 		<h3>&nbsp;</h3>
 		<p><?php _e('In the finest tradition of Open Source, Capsule was built on the shoulders of the following giants:', 'capsule'); ?></p>
-		<ul>
-			<li><a href="http://ajaxorg.github.io/ace/">Ace Code Editor</a> (<a href="https://github.com/ajaxorg/ace">GitHub</a>)</li>
-			<li><a href="http://harvesthq.github.io/chosen/">Chosen</a> (<a href="https://github.com/harvesthq/chosen">GitHub</a>)</li>
-			<li><a href="http://michelf.ca/projects/php-markdown/extra/">PHP Markdown Extra</a> (<a href="https://github.com/michelf/php-markdown">GitHub</a>)</li>
-			<li>Twitter Text JS (<a href="https://github.com/twitter/twitter-text-js">GitHub</a>)</li>
-			<li>jQuery .scrollintoview() (<a href="https://github.com/litera/jquery-scrollintoview">GitHub</a>)</li>
-			<li>JSON in JavaScript (<a href="https://github.com/douglascrockford/JSON-js">GitHub</a>)</li>
-			<li><a href="http://requirejs.org/">RequireJS</a> (<a href="https://github.com/jrburke/requirejs">GitHub</a>)</li>
-			<li><a href="http://sass-lang.com/">Sass</a> (<a href="https://github.com/nex3/sass">GitHub</a>)</li>
-			<li><a href="http://www.google.com/fonts/specimen/Source+Sans+Pro">Source Sans Pro</a> &amp <a href="http://www.google.com/fonts/specimen/Source+Code+Pro">Source Code Pro</a></li>
-			<li>Icon fonts from Fontello (Andrew, please link as appropriate)
-		</ul>
+		<?php capsule_credits(); ?>
 	</div>
 </div>
 <?php
 	}
 
 	public function capsule_admin_notice(){
-		if (strpos($_GET['page'], 'capsule') !== false) {
+		if (isset($_GET['page']) && strpos($_GET['page'], 'capsule') !== false) {
 			return;
 		}
 ?>
@@ -498,79 +501,278 @@ echo 'Hello World';
 	public function server_management_page() {
 		$servers = $this->get_servers();
 ?>
+<style type="text/css">
+#cap-servers {
+	padding-top: 10px;
+}
+#cap-servers td {
+	padding: 5px;
+}
+.cap-api-key {
+	font-family: monospace;
+	white-space: nowrap;
+}
+.cap-delete,
+.cap-delete:visited {
+	color: #BC0B0B;
+}
+}
+.cap-delete:hover,
+.cap-delete:active {
+	color: #f00;
+}
+.cap-editable {
+	display: none;
+	margin-bottom: 2px;
+}
+.cap-not-editable {
+	margin-top: 3px;
+	margin-left: 4px;
+}
+div.cap-edit-server-actions {
+	margin: 0 0 3px 0;
+}
+.capsule-error {
+	background: #FFEBE8;
+	border: 1px solid #c00;
+	-moz-border-radius: 3px; /* FF1+ */
+	-webkit-border-radius: 3px; /* Saf3+, Chrome */
+	border-radius: 3px; /* Standard. IE9+ */
+	color: #900;
+	margin-top: 5px;
+	padding: 4px 6px;
+}
+.capsule-error p {
+	line-height: 150%;
+	margin: 0;
+	padding: 0;
+}
+.capsule-spinner {
+	background: url(<?php echo admin_url('images/loading.gif'); ?>) no-repeat center center;
+	background-size: 16px;
+	margin: 5px 0 0 5px;
+	height: 16px;
+	width: 16px;
+	display: none;
+}
+
+.capsule-float-left {
+	float: left;
+}
+
+input.cap-input-error,
+input.cap-input-error:focus {
+	border: 1px solid #c00;
+}
+
+</style>
 <div class="wrap capsule-admin">
 	<div id="icon-options-general" class="icon32"></div>
 	<h2><?php _e('Capsule: Servers', 'capsule'); ?></h2>
-	<p class="description"><?php printf(__('Connect to one or more Capsule servers to replicate selected content to those servers. <a href="%s">Learn More</a>', 'capsule'), esc_url(admin_url('admin.php?page=capsule'))); ?></p>
+	<p class="description"><?php printf(__('Connect to one or more Capsule Servers to replicate selected content to those servers. <a href="%s">Learn More</a>', 'capsule'), esc_url(admin_url('admin.php?page=capsule'))); ?></p>
 	<div id="cap-servers">
-		<form method="post" id="js-capsule-add-server">
+		<form method="post" id="js-cap-servers">
 			<table class="wp-list-table widefat fixed posts">
 				<thead>
 					<tr>
-						<th scope="col" class="manage-column column-label">
+						<th scope="col" class="manage-column column-label" width="15%">
 							<?php _e('Server Name', 'capsule'); ?>
 						</th>
-						<th scope="col" class="manage-column column-api-key">
-							<?php _e('Server API Key', 'capsule'); ?>
-						</th>
-						<th scope="col" class="manage-column column-api-key">
+						<th scope="col" class="manage-column column-api-key" width="35%">
 							<?php _e('Server URL', 'capsule'); ?>
 						</th>
-						<th scope="col" class="manage-column column-actions">
-						&nbsp;
+						<th scope="col" class="manage-column column-api-key" width="40%">
+							<?php _e('Server API Key', 'capsule'); ?>
+						</th>
+						<th scope="col" class="manage-column column-actions" width="10%">
+							&nbsp;
 						</th>
 					</tr>
 				</thead>
 				<tbody>
-					<tr>
-						<td><input name="server_name" type="text" /></td>
-						<td><input name="server_api_key" type="text" /></td>
-						<td><input name="server_url" type="text" /></td>
-						<td>
-							<input type="submit" class="button-primary" value="<?php _e('+ Add New', 'capsule'); ?>" />
+				<?php 
+					$class = ''; 
+					foreach ($servers as $server_post) {
+						$class = ($class == '') ? ' alternate' : '';
+						echo $this->server_row_markup($server_post, $class);
+					}
+					$class = ($class == '') ? ' alternate' : '';
+				?>
+				<tr id="js-server-item-new" class="<?php echo esc_attr($class); ?>">
+					<td>
+						<div>
+							<input type="text" class="widefat"  name="server_name" value="" placeholder="<?php _e('Server Name', 'capsule-client'); ?>" />
+						</div>
+					</td>
+					<td>
+						<div>
+							<input type="text" class="widefat js-cap-server-url" name="server_url" value=""  placeholder="<?php _e('Server URL', 'capsule-client'); ?>" />
+						</div>
+					</td>
+					<td>
+						<div>
+							<input type="text" class="widefat js-cap-server-api-key" name="server_api_key" value=""  placeholder="<?php _e('API Key', 'capsule-client'); ?>" />
+						</div>
+					</td>
+					<td>
+						<div>
+							<input type="submit" class="js-cap-add capsule-float-left button" value="<?php  _e('Add Server', 'capsule-client'); ?>" /><span class="capsule-float-left capsule-spinner"></span>
 							<input type="hidden" value="add_server" name="capsule_client_action" />
-						</td>
-
-						<?php wp_nonce_field('_cap_client_add_server', '_add_server_nonce', true, true); ?>
-					</tr>
+							<?php wp_nonce_field('_cap_client_server_management', '_server_nonce', true, true); ?>
+						</div>
+					</td>
+				</tr>
 				</tbody>
 			</table>
 		</form>
-		<div>
-			<form method="post" id="js-capsule-update-servers">
-				<table class="wp-list-table widefat fixed posts">
-					<thead>
-						<tr>
-							<th scope="col" class="manage-column column-label">
-								<?php _e('Server Name', 'capsule'); ?>
-							</th>
-							<th scope="col" class="manage-column column-api-key">
-								<?php _e('Server API Key', 'capsule'); ?>
-							</th>
-							<th scope="col" class="manage-column column-api-key">
-								<?php _e('Server URL', 'capsule'); ?>
-							</th>
-							<th scope="col" class="manage-column column-actions">
-								&nbsp;
-							</th>
-						</tr>
-					</thead>
-					<tbody>
-					<?php 
-						$class = ''; 
-						foreach ($servers as $server_post) {
-							$class = ($class == '') ? ' alternate' : '';
-							echo $this->server_row_markup($server_post, $class);
-						}
-					?>
-					</tbody>
-				</table>
-				<?php wp_nonce_field('_cap_client_update_server', '_update_server_nonce', true, true); ?>
-				<input type="hidden" name="capsule_client_action" value="update_servers" />
-			</form>
-		</div>
 	</div>
 </div>
+<script type="text/javascript">
+(function($) {
+	$(function() {
+
+		function capsule_process_server_errors($tr, result, server_id, new_server) {
+			new_server == undefined ? new_server : false;
+			var error_html = '';
+			var $new_error_div = $('<div id="js-cap-error-'+server_id+'" class="capsule-error" style="display:none;"></div>');
+			capsule_remove_input_errors($tr);
+
+			if (!new_server) {
+				$tr.fadeIn();
+			}
+
+			for (var key in result.errors) {
+				error_html += result.errors[key].message;
+				if (result.errors[key].type == 'url') {
+					$('.js-cap-server-url', $tr).addClass('cap-input-error');
+				}
+				if (result.errors[key].type == 'credentials') {
+					$('.js-cap-server-api-key', $tr).addClass('cap-input-error');
+				}
+			}
+			var err_msg = '<b><?php _e('Error: ', 'capsule'); ?></b>' + result.data.name+' - ' + error_html;
+			$new_error_div.html('<p>' + err_msg + '</p>')
+				.appendTo('#cap-servers').fadeIn();
+		}
+
+		function capsule_reset_server_form($form) {
+			$('input[name="server_name"]', $form).val("");
+			$('input[name="server_url"]', $form).val("");
+			$('input[name="server_api_key"]', $form).val("");
+		}
+
+		function capsule_remove_input_errors($tr) {
+			$('.js-cap-server-api-key', $tr).removeClass('cap-input-error');
+			$('.js-cap-server-url', $tr).removeClass('cap-input-error');
+		}
+
+
+		$('#wpbody-content').on('click', '.js-cap-edit-server', function(e) {
+			var server_id = $(this).data('server_id');
+			e.preventDefault();
+			$('tr#js-server-item-'+server_id+' .js-cap-not-editable').hide();
+			$('tr#js-server-item-'+server_id+' .js-cap-editable').show();
+		});
+
+		$('form#js-cap-servers').on('submit', function(e) {
+			var $form = $(this);
+			var $spinner = $('.js-cap-add').siblings('.capsule-spinner');
+			var $tr = $('tr#js-server-item-new');
+			e.preventDefault();
+
+			$form.find('input[name="capsule_client_action"]').val('add_server_ajax');
+			$('#js-cap-error-new').hide();
+			capsule_remove_input_errors($tr);
+			$spinner.show();
+
+			$.post(
+				ajaxurl,
+				$form.serialize(),
+				function(result) {
+					$spinner.hide();
+					if (result.result == 'success') {
+						$(result.html).insertBefore("tr#js-server-item-new").hide().fadeIn();
+						capsule_reset_server_form($form);
+					}
+					else {
+						capsule_process_server_errors($tr, result, 'new', true);
+					}
+				},
+				'json'
+			);
+		});
+
+		$('#wpbody-content').on('click', '.js-cap-save-server', function(e) {
+			var server_id = $(this).data('server_id');
+			var $form = $('form#js-cap-servers');
+			var $tr = $('tr#js-server-item-'+server_id);
+			var $spinner = $(this).siblings('.capsule-spinner');
+			
+			e.preventDefault();
+			$spinner.show();
+
+			$.post(
+				ajaxurl,
+				{
+					capsule_client_action : 'update_server_ajax',
+					server_name : $('#js-server-name-'+server_id).val(),
+					server_id : server_id,
+					api_key : $('#js-server-api_key-'+server_id).val(),
+					server_url : $('#js-server-url-'+server_id).val(),
+					_server_nonce : $('#_server_nonce').val(),
+					_wp_http_referer : $form.find('input[name="_wp_http_referer"]').val()
+				},
+				function(result) {
+					$spinner.hide();
+					if (result.result == 'success') {
+						$('.js-cap-server-api-key', $tr).removeClass('cap-input-error');
+						$('.js-cap-server-url', $tr).removeClass('cap-input-error');
+
+						$('.js-static-server-api-'+server_id).html(result.data.api_key);
+						$('.js-static-server-name-'+server_id).html(result.data.name);
+						$('.js-static-server-url-'+server_id).html(result.data.url);
+						$('#js-cap-error-'+server_id).remove();
+						$tr.animate({opacity:0}, function() { 
+							$('.js-cap-not-editable', $tr).show();
+							$('.js-cap-editable', $tr).hide();
+							$tr.animate({opacity:1});
+						});
+					}
+					else {
+						$('#js-cap-error-'+server_id).fadeOut(function() {
+							$(this).remove()
+						});
+						$tr.animate({opacity:0}, function() { 
+							capsule_process_server_errors($tr, result, server_id, false);
+						});
+					}
+				},
+				'json'
+			);
+		});
+
+		$('#wpbody-content').on('click', '.js-server-delete', function(e) {
+			var url = $(this).attr('href');
+			var $form = $('#js-cap-servers');
+			var server_id = $(this).data('server_id');
+			e.preventDefault();
+			$.get(
+				url,
+				{ doing_ajax : true },
+				function(data) {
+					if (data.result == 'success') {
+						$form.find('#js-server-item-'+server_id).fadeOut();
+					}
+					else {
+						//nothing it hasn't been deleted
+					}
+				},
+				'json'
+			);
+		});
+	});
+})(jQuery);
+</script>
 <?php
 	}	
 
@@ -589,14 +791,38 @@ echo 'Hello World';
 		$delete_url = wp_nonce_url($delete_url, '_cap_client_delete_server');
 		$name_base = 'servers['.$server_post->ID.']';
 		$html = '
-<tr class="'.esc_attr('js-server-item-'.$server_post->ID).'" class="'.esc_attr('server-item'.$class).'">
-	<td><span class="js-cap-not-editable '.esc_attr('js-static-server-name-'.$server_post->ID).'">'.esc_html($server_post->post_title).'</span><input type="text" class="widefat js-cap-editable" id="'.esc_attr('js-server-name-'.$server_post->ID).'" name="'.$name_base.'[server_name]" value="'.esc_attr($server_post->post_title).'" /></td>
-	<td><span class="js-cap-not-editable '.esc_attr('js-static-server-api-'.$server_post->ID).'">'.esc_html($server_post->api_key).'</span><input type="text" class="widefat js-cap-editable" id="'.esc_attr('js-server-api_key-'.$server_post->ID).'" name="'.$name_base.'[api_key]" value="'.esc_attr($server_post->api_key).'" /></td>
-	<td><span class="js-cap-not-editable '.esc_attr('js-static-server-url-'.$server_post->ID).'">'.esc_html($server_post->url).'</span><input type="text" class="widefat js-cap-editable" id="'.esc_attr('js-server-url-'.$server_post->ID).'" name="'.$name_base.'[server_url]" value="'.esc_attr($server_post->url).'" /></td>
-	<td><a href="#" class="js-cap-edit-server js-cap-not-editable button">'.__('Edit Server', 'capsule').'</a>
+<tr id="'.esc_attr('js-server-item-'.$server_post->ID).'" class="'.esc_attr('server-item'.$class).'">
+	<td>
+		<div class="js-cap-not-editable cap-not-editable '.esc_attr('js-static-server-name-'.$server_post->ID).'">'
+			.esc_html($server_post->post_title).
+		'</div>
 		<div class="js-cap-editable">
-			<a href="#" class="js-cap-save-server js-cap-editable button" data-server_id="'.esc_attr($server_post->ID).'">'.__('Save', 'capsule').'</a>
-			<a href="'.$delete_url.'" style="color:#ff0000;" data-server_id="'.esc_attr($server_post->ID).'" class="delete js-delete-server">'.__('Delete', 'capsule').'</a>
+			<input type="text" class="widefat js-cap-editable cap-editable" id="'.esc_attr('js-server-name-'.$server_post->ID).'" name="'.$name_base.'[server_name]" value="'.esc_attr($server_post->post_title).'" />
+		</div>
+	</td>
+	<td>
+		<div class="js-cap-not-editable cap-not-editable '.esc_attr('js-static-server-url-'.$server_post->ID).'">'
+			.esc_html($server_post->url).
+		'</div>
+		<div class="js-cap-editable">
+			<input type="text" class="widefat js-cap-editable cap-editable js-cap-server-url" id="'.esc_attr('js-server-url-'.$server_post->ID).'" name="'.$name_base.'[server_url]" value="'.esc_attr($server_post->url).'" />
+		</div>
+	</td>
+	<td>
+		<div class="cap-api-key js-cap-not-editable cap-not-editable '.esc_attr('js-static-server-api-'.$server_post->ID).'">'
+			.esc_html($server_post->api_key).
+		'</div>
+		<div class="js-cap-editable cap-editable">
+			<input type="text" class="widefat js-cap-editable js-cap-server-api-key" id="'.esc_attr('js-server-api_key-'.$server_post->ID).'" name="'.$name_base.'[api_key]" value="'.esc_attr($server_post->api_key).'" />
+		</div>
+	</td>
+	<td>
+		<div class="js-cap-not-editable cap-not-editable cap-edit-server-actions">
+			<a href="#" class="js-cap-edit-server" data-server_id="'.esc_attr($server_post->ID).'">'.__('Edit', 'capsule').'</a> |
+			<a href="'.$delete_url.'" data-server_id="'.esc_attr($server_post->ID).'" class="delete js-server-delete cap-delete">'.__('Delete', 'capsule').'</a>
+		</div>
+		<div class="js-cap-editable cap-editable">
+			<a href="#" class="capsule-float-left js-cap-save-server button-primary" data-server_id="'.esc_attr($server_post->ID).'">'.__('Save', 'capsule').'</a><span class="capsule-float-left capsule-spinner"></span>
 		</div>
 	</td>
 </tr>';
@@ -694,7 +920,8 @@ echo 'Hello World';
 				'capsule_client_post_data' => array(
 					'api_key' => $api_key,
 				),
-			)
+			),
+			'sslverify' => false,
 		);
 
 		$request = wp_remote_post($url, $args);
@@ -702,15 +929,31 @@ echo 'Hello World';
 		if (is_wp_error($request)) {
 			foreach ($request->errors as $key => $wp_errors) {
 				foreach ($wp_errors as $error) {
-					$errors['url'][] = $error;
+					$errors[] = array(
+						'message' => $error,
+						'type' => 'url',
+					);
 				}
 			}
 		}
-		else if ($request['response']['code'] != '200') {
-			$errors['credentials'] = sprintf(__('Server said: "%s:%s" Please check the server credentials and connectivity and try again.', 'capsule'), $request['response']['code'], $request['response']['message']);
+		else if ($request['response']['code'] == '401') {
+			$errors[] = array(
+				'message' => sprintf(__('Unauthorized using the api key \'<em>%s</em>\'.', 'capsule'), $api_key),
+				'type' => 'credentials',
+			);
 		}
-		else if ($request['response']['body'] !== 'authorized') {
-			$errors['url'][] = __('Server theme not active', 'capsule');
+		else if ($request['response']['code'] != '200.') {
+			$errors[] = array(
+				'message' => sprintf(__('Server said "%s : %s".', 'capsule'), $request['response']['code'], $request['response']['message']),
+				'type' => 'url',
+			);
+		}
+		// Request successful, should return 'authorized'
+		else if ($request['body'] !== 'authorized') {
+			$errors[] = array(
+				'message' => __('Server theme not active', 'capsule'),
+				'type' => 'url',
+			);
 		}
 
 		return $errors;
@@ -737,6 +980,7 @@ echo 'Hello World';
 						'taxonomies' => $this->taxonomies_to_map(),
 					),
 				),
+				'sslverify' => false,
 			);
 			$request = wp_remote_post($server_post->url, $args);
 			// Check for errors
@@ -807,10 +1051,12 @@ echo 'Hello World';
 				foreach ($terms as $term_slug => $term) {
 					// array key matches above @TODO trim?
 					$array_key = $term['taxonomy'].'_'.$term['id'];
+
 					if (isset($post_term_array[$array_key])) {
+
 						// Check for any differences, if there is update as necessary
 						$existing_data = $post_term_array[$array_key];
-						
+						$post_id = $existing_data['post']->ID;
 						if ($existing_data['term_name'] != $term['name'] || $existing_data['term_description'] != $term['description']) {
 							$existing_data['post']->post_title = $term['name'];
 							$existing_data['post']->post_content = $term['description'];
@@ -819,8 +1065,9 @@ echo 'Hello World';
 						if ($existing_data['term_taxonomy'] != $term['taxonomy']) {
 							update_post_meta($post_id, $this->server_term_tax_key, $term['taxonomy']);
 						}
-						if ($existing_data['term_slug'] != $term['slug']) {
-							update_post_meta($post_id, $this->server_term_slug_key, $term['slug']);
+						
+						if ($existing_data['term_slug'] != $term_slug) {
+							update_post_meta($post_id, $this->server_term_slug_key, $term_slug);
 						}
 					}
 					else {
@@ -1084,6 +1331,7 @@ echo 'Hello World';
 					'tax' => $tax
 				)
 			),
+			'sslverify' => false,
 		);
 		wp_remote_post($server_url, $args);
 		//@TODO response
@@ -1179,7 +1427,6 @@ echo 'Hello World';
 		if (!empty($taxonomies)) {
 			// Get posts of all the mapped terms
 			$mapped_term_posts = $this->get_server_term_posts($server_post_type);
-
 			// For taxonomies that are mapped, we need to get the mapping data and set it
 			// Otherwise, just send along the local data for the terms
 			foreach ($taxonomies as $taxonomy) {
@@ -1245,6 +1492,7 @@ echo 'Hello World';
 				}
 			}
 		}
+
 		return $tax_input;
 	}
 }
