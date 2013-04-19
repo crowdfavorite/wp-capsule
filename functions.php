@@ -539,7 +539,7 @@ div.cap-edit-server-actions {
 	-webkit-border-radius: 3px; /* Saf3+, Chrome */
 	border-radius: 3px; /* Standard. IE9+ */
 	color: #900;
-	margin-bottom: 5px;
+	margin-top: 5px;
 	padding: 4px 6px;
 }
 .capsule-error p {
@@ -562,7 +562,7 @@ div.cap-edit-server-actions {
 
 input.cap-input-error,
 input.cap-input-error:focus {
-	border: 1px solid #FF0000;
+	border: 1px solid #c00;
 }
 
 </style>
@@ -650,8 +650,9 @@ input.cap-input-error:focus {
 					$('.js-cap-server-api-key', $tr).addClass('cap-input-error');
 				}
 			}
-			$new_error_div.html('<p>'+result.data.name+': '+error_html+'</p>');
-			$new_error_div.insertAfter('h2:first').fadeIn();
+			var err_msg = '<b><?php _e('Error: ', 'capsule'); ?></b>' + result.data.name+' - ' + error_html;
+			$new_error_div.html('<p>' + err_msg + '</p>')
+				.appendTo('#cap-servers').fadeIn();
 		}
 
 		function capsule_reset_server_form($form) {
