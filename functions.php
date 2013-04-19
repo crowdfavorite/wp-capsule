@@ -319,7 +319,7 @@ class Capsule_Client {
 }
 .capsule-admin hr {
 	border: 0;
-	border-top: 1px solid #999;
+	border-top: 1px solid #222;
 	margin: 0 100px 10px;
 }
 .capsule-screenshot {
@@ -328,6 +328,7 @@ class Capsule_Client {
 	width: 90%;
 }
 .capsule-doc-col-left {
+	clear: left;
 	float: left;
 	margin-right: 30px;
 	margin-bottom: 30px;
