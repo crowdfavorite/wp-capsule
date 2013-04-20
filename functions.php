@@ -320,6 +320,7 @@ class Capsule_Client {
 .capsule-admin hr {
 	border: 0;
 	border-top: 1px solid #222;
+	clear: both;
 	margin: 0 100px 10px;
 }
 .capsule-screenshot {
