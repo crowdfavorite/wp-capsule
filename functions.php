@@ -196,6 +196,8 @@ class Capsule_Client {
 		$query = new WP_Query(array(
 			'post_type' => 'server',
 			'posts_per_page' => -1,
+			'order' => 'ASC',
+			'orderby' => 'name'
 		));
 
 		$servers = array();
@@ -1112,9 +1114,10 @@ input.cap-input-error:focus {
 			'posts_per_page' => -1,
 			'post_type' => $server_post_type,
 			'post_status' => 'publish',
+			'orderby' => 'name',
+			'order' => 'ASC'
 		);
 		$query_args = array_merge($defaults, $args);
-
 		$post_query = new WP_Query($query_args);
 
 		if (is_array($post_query->posts)) {
@@ -1146,7 +1149,11 @@ input.cap-input-error:focus {
 		// Get all the terms in taxonomies are mapped and sort them by taxonomy
 		// For easier displaying later
 		$taxonomies = $this->taxonomies_to_map();
-		$terms = get_terms($taxonomies, array('hide_empty' => false));
+		$terms = get_terms($taxonomies, array(
+			'hide_empty' => false,
+			'orderby' => 'slug',
+			'order' => 'ASC',
+		));
 		$taxonomy_array = array();
 
 		if (is_array($terms)) {
@@ -1177,7 +1184,7 @@ input.cap-input-error:focus {
 	<h2><?php _e('Capsule: Server Projects', 'capsule'); ?></h2>
 	<p class="description"><?php printf(__('When you map a local project to one on a server project, all posts related to that project will be replicated to that server. <a href="%s">Learn More</a>', 'capsule'), esc_url(admin_url('admin.php?page=capsule'))); ?></p>
 	<form method="post">
- <?php 
+<?php 
 		$servers = $this->get_servers();
 		foreach ($servers as $server_post) {
 ?>
@@ -1216,7 +1223,7 @@ input.cap-input-error:focus {
 				</thead>
 				<tbody>
 <?php 
-				foreach ($posts as $post) :
+				foreach ($posts as $post) {
 					// get_the_terms is cached by WP_Query, this isn't as expensive as it looks
 					$terms = get_the_terms($post, $taxonomy);
 					$selected_id = (is_array($terms) && !empty($terms)) ? array_shift($terms)->term_id : 0;
@@ -1225,13 +1232,15 @@ input.cap-input-error:focus {
 						<td><?php echo esc_html($post->post_title); ?></td>
 						<td><?php echo $this->term_select_markup($post, $taxonomy, $taxonomy_array[$taxonomy], $selected_id); ?></td>
 					</tr>
-				<?php endforeach;  ?>
+<?php
+				}
+?>
 				</tbody>
 			</table>
-		<?php 
+<?php 
 		}
 	}
-		?>
+?>
 		
 			<p>
 				<input type="submit" class="save-mappings button-primary" value="<?php _e('Save', 'capsule'); ?>">
