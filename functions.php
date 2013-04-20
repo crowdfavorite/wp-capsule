@@ -379,6 +379,7 @@ class Capsule_Client {
 		<h3><?php _e('Editing', 'capsule'); ?></h3>
 		<!-- 1050 x 450 -->
 		<p><img src="<?php echo get_template_directory_uri(); ?>/docs/editing.jpg" alt="<?php _e('Editing', 'capsule'); ?>" class="capsule-screenshot" /></p>
+		<p><?php _e('Bring up the editor for a post by clicking the Edit icon or double-clicking on the post content.', 'capsule'); ?></p>
 		<p><?php _e('Capsule supports <a href="http://michelf.ca/projects/php-markdown/extra/">Markdown Extra</a> syntax with one minor nuance. Since we are using hashtag notation to create tags for our posts, to create a title using Markdown syntax Capsule requires a space between the &quot;#&quot; and the title text. Example:', 'capsule'); ?></p>
 		<ul>
 			<li><?php _e('Title: # I am a Title!', 'capsule'); ?></li>
