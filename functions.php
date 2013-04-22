@@ -1130,11 +1130,12 @@ input.cap-input-error:focus {
 	}
 
 	function show_term_mapping_errors($errors, $post_id) {
+		$html = '';
 		if (isset($errors[$post_id]) && !empty($errors[$post_id])) {
 			foreach ($errors[$post_id] as $error_message) {
 				$error_html .= '<p>'.esc_html($error_message).'</p>';
 			}
-			$html = '<div class="capsule-error">'.$error_html.'</div>';
+			$html .= '<div class="capsule-error">'.$error_html.'</div>';
 		}
 		echo $html;
 	}
