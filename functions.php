@@ -1180,6 +1180,10 @@ input.cap-input-error:focus {
 	margin: 0;
 	padding: 0;
 }
+
+.cap-wide-dropdown {
+	width: 80%;
+}
 </style>
 <div class="wrap capsule-admin">
 	<div id="icon-options-general" class="icon32"></div>
@@ -1273,7 +1277,7 @@ input.cap-input-error:focus {
 
 		$output = '
 <input type="hidden" name="'.esc_attr('cap_client_mapping['.$post->ID.']['.$taxonomy.'][server_term]').'" value="'.esc_attr($post->post_title).'">
-<select name="'.esc_attr('cap_client_mapping['.$post->ID.']['.$taxonomy.'][term_id]').'">
+<select name="'.esc_attr('cap_client_mapping['.$post->ID.']['.$taxonomy.'][term_id]').'" class="cap-wide-dropdown">
 	<option value="0">'.__('(not mapped)', 'capsule').'</option>';
 
 		foreach ($terms as $term) {
