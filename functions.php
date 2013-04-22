@@ -1462,7 +1462,7 @@ input.cap-input-error:focus {
 						$term_object_query = new WP_Query(array(
 							'posts_per_page' => -1,
 							'post_type' => $server_post_type,
-							'post__in' => $term_object_ids,
+							'post__in' => $term_ids,
 							'post_status' => 'publish',
 							'fields' => 'ids',
 							'update_post_term_cache' => false,
