@@ -1286,7 +1286,7 @@ input.cap-input-error:focus {
 
 		// If there are no local terms that match the server term, provide a 'Create Term' option
 		if (!$match) {
-			$output .= '<option value="-1">'.sprintf(__('- Create &quot;%s&quot; Locally', 'capsule'), $tax_obj->labels->singular_name).'</option>';
+			$output .= '<option value="-1">'.sprintf(__('- Create &quot;%s&quot; Locally', 'capsule'), $post->post_title).'</option>';
 		}
 
 		$output .= $options.'</select>';
