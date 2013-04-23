@@ -19,3 +19,13 @@ Target browser compatibility:
 License: [GPL v2](http://opensource.org/licenses/GPL-2.0)
 
 Developers, contribute on [GitHub](https://github.com/crowdfavorite/wp-capsule).
+
+---
+
+**Repository Structure**
+
+- Capsule: https://github.com/crowdfavorite/wp-capsule
+- Capsule Server: https://github.com/crowdfavorite/wp-capsule-server
+- Capsule UI: https://github.com/crowdfavorite/wp-capsule-ui
+
+Capsule UI is a submodule of both Capsule and Capsule Server, delivering the UI for both packages.
