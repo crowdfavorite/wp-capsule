@@ -196,6 +196,8 @@ class Capsule_Client {
 		$query = new WP_Query(array(
 			'post_type' => 'server',
 			'posts_per_page' => -1,
+			'order' => 'ASC',
+			'orderby' => 'name'
 		));
 
 		$servers = array();
@@ -319,7 +321,8 @@ class Capsule_Client {
 }
 .capsule-admin hr {
 	border: 0;
-	border-top: 1px solid #999;
+	border-top: 1px solid #222;
+	clear: both;
 	margin: 0 100px 10px;
 }
 .capsule-screenshot {
@@ -328,6 +331,7 @@ class Capsule_Client {
 	width: 90%;
 }
 .capsule-doc-col-left {
+	clear: left;
 	float: left;
 	margin-right: 30px;
 	margin-bottom: 30px;
@@ -375,6 +379,7 @@ class Capsule_Client {
 		<h3><?php _e('Editing', 'capsule'); ?></h3>
 		<!-- 1050 x 450 -->
 		<p><img src="<?php echo get_template_directory_uri(); ?>/docs/editing.jpg" alt="<?php _e('Editing', 'capsule'); ?>" class="capsule-screenshot" /></p>
+		<p><?php _e('Bring up the editor for a post by clicking the Edit icon or double-clicking on the post content.', 'capsule'); ?></p>
 		<p><?php _e('Capsule supports <a href="http://michelf.ca/projects/php-markdown/extra/">Markdown Extra</a> syntax with one minor nuance. Since we are using hashtag notation to create tags for our posts, to create a title using Markdown syntax Capsule requires a space between the &quot;#&quot; and the title text. Example:', 'capsule'); ?></p>
 		<ul>
 			<li><?php _e('Title: # I am a Title!', 'capsule'); ?></li>
@@ -1110,9 +1115,10 @@ input.cap-input-error:focus {
 			'posts_per_page' => -1,
 			'post_type' => $server_post_type,
 			'post_status' => 'publish',
+			'orderby' => 'name',
+			'order' => 'ASC'
 		);
 		$query_args = array_merge($defaults, $args);
-
 		$post_query = new WP_Query($query_args);
 
 		if (is_array($post_query->posts)) {
@@ -1124,11 +1130,12 @@ input.cap-input-error:focus {
 	}
 
 	function show_term_mapping_errors($errors, $post_id) {
+		$html = '';
 		if (isset($errors[$post_id]) && !empty($errors[$post_id])) {
 			foreach ($errors[$post_id] as $error_message) {
 				$error_html .= '<p>'.esc_html($error_message).'</p>';
 			}
-			$html = '<div class="capsule-error">'.$error_html.'</div>';
+			$html .= '<div class="capsule-error">'.$error_html.'</div>';
 		}
 		echo $html;
 	}
@@ -1144,7 +1151,11 @@ input.cap-input-error:focus {
 		// Get all the terms in taxonomies are mapped and sort them by taxonomy
 		// For easier displaying later
 		$taxonomies = $this->taxonomies_to_map();
-		$terms = get_terms($taxonomies, array('hide_empty' => false));
+		$terms = get_terms($taxonomies, array(
+			'hide_empty' => false,
+			'orderby' => 'slug',
+			'order' => 'ASC',
+		));
 		$taxonomy_array = array();
 
 		if (is_array($terms)) {
@@ -1169,13 +1180,17 @@ input.cap-input-error:focus {
 	margin: 0;
 	padding: 0;
 }
+
+.cap-wide-dropdown {
+	width: 80%;
+}
 </style>
 <div class="wrap capsule-admin">
 	<div id="icon-options-general" class="icon32"></div>
 	<h2><?php _e('Capsule: Server Projects', 'capsule'); ?></h2>
 	<p class="description"><?php printf(__('When you map a local project to one on a server project, all posts related to that project will be replicated to that server. <a href="%s">Learn More</a>', 'capsule'), esc_url(admin_url('admin.php?page=capsule'))); ?></p>
 	<form method="post">
- <?php 
+<?php 
 		$servers = $this->get_servers();
 		foreach ($servers as $server_post) {
 ?>
@@ -1214,7 +1229,7 @@ input.cap-input-error:focus {
 				</thead>
 				<tbody>
 <?php 
-				foreach ($posts as $post) :
+				foreach ($posts as $post) {
 					// get_the_terms is cached by WP_Query, this isn't as expensive as it looks
 					$terms = get_the_terms($post, $taxonomy);
 					$selected_id = (is_array($terms) && !empty($terms)) ? array_shift($terms)->term_id : 0;
@@ -1223,13 +1238,15 @@ input.cap-input-error:focus {
 						<td><?php echo esc_html($post->post_title); ?></td>
 						<td><?php echo $this->term_select_markup($post, $taxonomy, $taxonomy_array[$taxonomy], $selected_id); ?></td>
 					</tr>
-				<?php endforeach;  ?>
+<?php
+				}
+?>
 				</tbody>
 			</table>
-		<?php 
+<?php 
 		}
 	}
-		?>
+?>
 		
 			<p>
 				<input type="submit" class="save-mappings button-primary" value="<?php _e('Save', 'capsule'); ?>">
@@ -1260,7 +1277,7 @@ input.cap-input-error:focus {
 
 		$output = '
 <input type="hidden" name="'.esc_attr('cap_client_mapping['.$post->ID.']['.$taxonomy.'][server_term]').'" value="'.esc_attr($post->post_title).'">
-<select name="'.esc_attr('cap_client_mapping['.$post->ID.']['.$taxonomy.'][term_id]').'">
+<select name="'.esc_attr('cap_client_mapping['.$post->ID.']['.$taxonomy.'][term_id]').'" class="cap-wide-dropdown">
 	<option value="0">'.__('(not mapped)', 'capsule').'</option>';
 
 		foreach ($terms as $term) {
@@ -1273,7 +1290,7 @@ input.cap-input-error:focus {
 
 		// If there are no local terms that match the server term, provide a 'Create Term' option
 		if (!$match) {
-			$output .= '<option value="-1">'.sprintf(__('- Create &quot;%s&quot; Locally', 'capsule'), $tax_obj->labels->singular_name).'</option>';
+			$output .= '<option value="-1">'.sprintf(__('- Create &quot;%s&quot; Locally', 'capsule'), $post->post_title).'</option>';
 		}
 
 		$output .= $options.'</select>';
@@ -1445,7 +1462,6 @@ input.cap-input-error:focus {
 						$term_object_query = new WP_Query(array(
 							'posts_per_page' => -1,
 							'post_type' => $server_post_type,
-							'post__in' => $term_object_ids,
 							'post_status' => 'publish',
 							'fields' => 'ids',
 							'update_post_term_cache' => false,
