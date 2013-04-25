@@ -168,7 +168,7 @@ class Capsule_Client {
 					break;
 				case 'save_mapping':
 					if (wp_verify_nonce($_POST['_save_mapping_nonce'], '_cap_client_save_mapping')) {
-						if (!empty( $_POST['cap_client_mapping'])) {
+						if (!empty($_POST['cap_client_mapping'])) {
 							$this->save_mapping($_POST['cap_client_mapping']);
 						}
 					}
