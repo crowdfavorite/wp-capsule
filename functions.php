@@ -29,8 +29,17 @@ class Capsule_Client {
 		add_action('init', array($this, 'register_post_types'), 11);
 		add_action('admin_menu', array($this, 'add_menu_pages'));
 
-		add_action('wp_insert_post', array($this,'insert_post'), 10, 2);
-		add_action('admin_notices', array($this,'capsule_admin_notice'));
+		add_action('wp_insert_post', array($this, 'insert_post'), 10, 2);
+		add_action('admin_notices', array($this, 'capsule_admin_notice'));
+
+		add_action('wp_footer', array($this, 'wp_cron'));
+	}
+	
+	public function wp_cron() {
+		if (!wp_next_scheduled('capsule_queue')) {
+			wp_schedule_event(time(), 'hourly', 'capsule_queue');
+		}
+		add_action('capsule_queue', 'capsule_queue_run');
 	}
 
 	// Handles all client actions including those coming in via ajax
@@ -1355,8 +1364,11 @@ input.cap-input-error:focus {
 			),
 			'sslverify' => false,
 		);
-		wp_remote_post($server_url, $args);
-		//@TODO response
+		$response = wp_remote_post($server_url, $args);
+		if (!is_wp_error($response) && isset($response['body'])) {
+			return json_decode($response['body']);
+		}
+		return false;
 	}
 
 	/**
@@ -1365,27 +1377,16 @@ input.cap-input-error:focus {
 	 **/
 	function insert_post($post_id, $post) {
 		if ((!defined('DOING_AUTOSAVE') || !DOING_AUTOSAVE) && $post->post_status == 'publish') {
-			$postarr = (array) $post;
-
-			//@TODO need to get specific servers to send to, not all of them!
-
 			// Check if there are any posts in the post type
 			$taxonomies = get_object_taxonomies($post->post_type);
-
 			$servers = $this->get_servers();
+			$postarr = (array) $post;
 
 			foreach ($servers as $server_post) {
 				// Only send post if theres a term thats been mapped
 				if ($this->has_server_mapping($post, $server_post)) {
-					$tax_input = $this->format_terms_to_send($post, $taxonomies, $this->post_type_slug($server_post->post_name));
-					$mapped_taxonomies = $this->taxonomies_to_map();
-
-					$tax = compact('taxonomies', 'tax_input', 'mapped_taxonomies');
-
-					$api_key = get_post_meta($server_post->ID, $this->server_api_key, true);
-					$endpoint = get_post_meta($server_post->ID, $this->server_url_key, true);
-
-					$this->send_post($postarr, $tax, $api_key, $endpoint);
+					capsule_queue_add($post_id);
+					capsule_server_start();
 				}
 			}
 		}
