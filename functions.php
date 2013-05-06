@@ -1283,11 +1283,13 @@ input.cap-input-error:focus {
 <select name="'.esc_attr('cap_client_mapping['.$post->ID.']['.$taxonomy.'][term_id]').'" class="cap-wide-dropdown">
 	<option value="0">'.__('(not mapped)', 'capsule').'</option>';
 
-		foreach ($terms as $term) {
-			if ($term->name == $post->post_title) {
-				$match = true;
+		if (is_array($terms) && !empty($terms)) {
+			foreach ($terms as $term) {
+				if ($term->name == $post->post_title) {
+					$match = true;
+				}
+				$options .= '<option value="'.esc_attr($term->term_id).'"'.selected($selected_id, $term->term_id, false).'>'.esc_html($term->name).'</option>';
 			}
-			$options .= '<option value="'.esc_attr($term->term_id).'"'.selected($selected_id, $term->term_id, false).'>'.esc_html($term->name).'</option>';
 		}
 		$options = '<optgroup label="'.sprintf(__('Local %s', 'capsule'), $tax_obj->labels->name).'">'.$options.'</optgroup>';
 
