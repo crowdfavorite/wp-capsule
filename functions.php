@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 include('ui/functions.php');
 
@@ -55,7 +55,7 @@ class Capsule_Client {
 						'server_url' => isset($_POST['server_url']) ? $_POST['server_url'] : '',
 					);
 					if (wp_verify_nonce($_POST['_server_nonce'], '_cap_client_server_management')) {
-					
+
 						$test_errors = $this->test_credentials($server_data['api_key'], $server_data['server_url']);
 						if (empty($test_errors)) {
 							$post = $this->add_server($server_data);
@@ -142,7 +142,7 @@ class Capsule_Client {
 							);
 						}
 					}
-					
+
 					echo json_encode(array(
 						'result' => 'error',
 						'data' => array(
@@ -185,14 +185,14 @@ class Capsule_Client {
 	 * array(
 	 *	'server-1' => array(
 	 * 		'api-key' => '12345abc',
-	 *		'url' => 'http://capsule-server-1.com';		
+	 *		'url' => 'http://capsule-server-1.com';
 	 *	),
 	 *	'server-2' => array(
 	 * 		'api-key' => 'A4d*DYnohiO',
-	 *		'url' => 'http://capsule-server-2.com';		
+	 *		'url' => 'http://capsule-server-2.com';
 	 *	)
 	 * )
-	 * 
+	 *
 	 * Potential feature - Filter servers based on owner for multi-user support
 	 **/
 	function get_servers() {
@@ -228,8 +228,8 @@ class Capsule_Client {
 	* Get the post type name thats generated from a post name
 	* Note this does not return the post type of the post, but
 	* the post type which was generated from/for the post
-	* 
-	*/ 
+	*
+	*/
 	public function post_type_slug($post_name) {
 		// 20 Character limit on post type names
 		return substr(sha1($this->post_type_prefix.$post_name), 0, 20);
@@ -238,7 +238,7 @@ class Capsule_Client {
 	/**
 	 * Registers required post types. These include the server post type
 	 * and one post type for each server which stores the term mappings
-	 **/ 
+	 **/
 	public function register_post_types() {
 		// Register the server type
 		$default_args = array(
@@ -248,10 +248,10 @@ class Capsule_Client {
 			'show_in_menu' => false,
 			'query_var' => true,
 			'capability_type' => 'post',
-			'has_archive' => true, 
+			'has_archive' => true,
 			'hierarchical' => false,
 			'menu_position' => null,
-		); 
+		);
 
 		$args = $default_args;
 		$args['label'] = __('Servers', 'capsule');
@@ -262,7 +262,7 @@ class Capsule_Client {
 		$args = array_merge($default_args, array(
 			'taxonomies' => $this->taxonomies_to_map(),
 		));
-		
+
 		// Generate post types for each of the servers, this is where the server
 		// terms are stored. Must have unique, reproducable names.
 		foreach ($servers as $server_post) {
@@ -273,10 +273,10 @@ class Capsule_Client {
 
 	/**
 	 * Get a list of taxonomies to pull from the capsule server and map local
-	 * terms to. 
+	 * terms to.
 	 *
 	 * Filterable with 'capsule_client_taxonomies_to_map'
-	 * 
+	 *
 	 * @return array Array of taxonomy slugs
 	 **/
 	public function taxonomies_to_map() {
@@ -598,8 +598,8 @@ input.cap-input-error:focus {
 					</tr>
 				</thead>
 				<tbody>
-				<?php 
-					$class = ''; 
+				<?php
+					$class = '';
 					foreach ($servers as $server_post) {
 						$class = ($class == '') ? ' alternate' : '';
 						echo $this->server_row_markup($server_post, $class);
@@ -715,7 +715,7 @@ input.cap-input-error:focus {
 			var $form = $('form#js-cap-servers');
 			var $tr = $('tr#js-server-item-'+server_id);
 			var $spinner = $(this).siblings('.capsule-spinner');
-			
+
 			e.preventDefault();
 			$spinner.show();
 
@@ -740,7 +740,7 @@ input.cap-input-error:focus {
 						$('.js-static-server-name-'+server_id).html(result.data.name);
 						$('.js-static-server-url-'+server_id).html(result.data.url);
 						$('#js-cap-error-'+server_id).remove();
-						$tr.animate({opacity:0}, function() { 
+						$tr.animate({opacity:0}, function() {
 							$('.js-cap-not-editable', $tr).show();
 							$('.js-cap-editable', $tr).hide();
 							$tr.animate({opacity:1});
@@ -750,7 +750,7 @@ input.cap-input-error:focus {
 						$('#js-cap-error-'+server_id).fadeOut(function() {
 							$(this).remove()
 						});
-						$tr.animate({opacity:0}, function() { 
+						$tr.animate({opacity:0}, function() {
 							capsule_process_server_errors($tr, result, server_id, false);
 						});
 					}
@@ -782,7 +782,7 @@ input.cap-input-error:focus {
 })(jQuery);
 </script>
 <?php
-	}	
+	}
 
 	/**
 	 * Markup for a 'row' representing a server.
@@ -874,7 +874,7 @@ input.cap-input-error:focus {
 
 	/**
 	 * Delete a server post.
-	 * 
+	 *
 	 * @param in $server_id ID of the post to delete
 	 * @return mixed False on failure (from wp_delete_post)
 	 **/
@@ -900,7 +900,7 @@ input.cap-input-error:focus {
 		}
 
 		$post_arr = array(
-			'ID' => $server_id, 
+			'ID' => $server_id,
 		);
 		if (isset($data['server_name'])) {
 			$post_arr['post_title'] = $data['server_name'];
@@ -908,7 +908,7 @@ input.cap-input-error:focus {
 		$result = wp_update_post($post_arr);
 		if ($result && !is_wp_error($result)) {
 			if (isset($data['api_key'])) {
-				update_post_meta($server_id, $this->server_api_key, $data['api_key']); 
+				update_post_meta($server_id, $this->server_api_key, $data['api_key']);
 			}
 			if (isset($data['server_url'])) {
 				update_post_meta($server_id, $this->server_url_key, $data['server_url']);
@@ -973,7 +973,7 @@ input.cap-input-error:focus {
 	 * Fetch terms from the capsule server to be mapped locally.
 	 * Passes taxonomies to get terms from and API key to validate against
 	 *
-	 * @return true|array True if everything went smoothly, array of errors with server post key as the id 
+	 * @return true|array True if everything went smoothly, array of errors with server post key as the id
 	 **/
 	public function get_server_terms() {
 		// Query the servers, hits endpoint via request handler - requires API key
@@ -1033,7 +1033,7 @@ input.cap-input-error:focus {
 	 * @param $server_post_type Post type to associate terms with
 	 */
 	public function process_server_terms($terms, $server_post_type) {
-		
+
 		$post_term_array = array();
 
 		$posts = $this->get_server_term_posts($server_post_type);
@@ -1073,7 +1073,7 @@ input.cap-input-error:focus {
 						if ($existing_data['term_taxonomy'] != $term['taxonomy']) {
 							update_post_meta($post_id, $this->server_term_tax_key, $term['taxonomy']);
 						}
-						
+
 						if ($existing_data['term_slug'] != $term_slug) {
 							update_post_meta($post_id, $this->server_term_slug_key, $term_slug);
 						}
@@ -1193,21 +1193,21 @@ input.cap-input-error:focus {
 	<h2><?php _e('Capsule: Server Projects', 'capsule'); ?></h2>
 	<p class="description"><?php printf(__('When you map a local project to one on a server project, all posts related to that project will be replicated to that server. <a href="%s">Learn More</a>', 'capsule'), esc_url(admin_url('admin.php?page=capsule'))); ?></p>
 	<form method="post">
-<?php 
+<?php
 		$servers = $this->get_servers();
 		foreach ($servers as $server_post) {
 ?>
 			<h3><?php echo esc_html($server_post->post_title); ?></h3>
 <?php
 			$this->show_term_mapping_errors($errors, $server_post->ID);
-			// Default capsule functionality only includes projects here, 
+			// Default capsule functionality only includes projects here,
 			// but support for more taxonomies is present
 			foreach ($taxonomies as $taxonomy) {
 				$tax_obj = get_taxonomy($taxonomy);
 
 				// Get all posts with this taxonomy, doesn't matter which term
 				$posts = $this->get_server_term_posts(
-					$this->post_type_slug($server_post->post_name), 
+					$this->post_type_slug($server_post->post_name),
 					array(
 						'tax_query' => array(
 							array(
@@ -1231,7 +1231,7 @@ input.cap-input-error:focus {
 					</tr>
 				</thead>
 				<tbody>
-<?php 
+<?php
 				foreach ($posts as $post) {
 					// get_the_terms is cached by WP_Query, this isn't as expensive as it looks
 					$terms = get_the_terms($post, $taxonomy);
@@ -1246,11 +1246,11 @@ input.cap-input-error:focus {
 ?>
 				</tbody>
 			</table>
-<?php 
+<?php
 		}
 	}
 ?>
-		
+
 			<p>
 				<input type="submit" class="save-mappings button-primary" value="<?php _e('Save', 'capsule'); ?>">
 			</p>
@@ -1259,13 +1259,13 @@ input.cap-input-error:focus {
 		</form>
 </div>
 
-<?php 
+<?php
 	}
 
 	/**
 	 * Generate markup for a term mapping select box. Adds a 'Create Term Locally' option if no
 	 * term is found that matches the server term name
-	 * 
+	 *
 	 * @param obj $post Post object
 	 * @param string $taxonomy Taxonomy name to select from
 	 * @param arary $terms Terms in the taxonomy
@@ -1305,14 +1305,14 @@ input.cap-input-error:focus {
 
 	/**
 	 * Save taxonomy mappings
-	 * 
+	 *
 	 * @param array $mappings Array of mappings in the following format (only 1 term per taxonomy currently):
-	 * Array ( 
-	 *		[post_id] => Array ( 
+	 * Array (
+	 *		[post_id] => Array (
 	 *			[taxonomy] => term_id
-	 *		) 
+	 *		)
 	 * )
-	 */ 
+	 */
 	function save_mapping($mappings) {
 		if (is_array($mappings)) {
 			foreach ($mappings as $post_id => $mapping) {
@@ -1335,9 +1335,9 @@ input.cap-input-error:focus {
 
 	/**
 	 * Sends post data to an external server
-	 * 
+	 *
 	 * @param $post array array of post data 1:1 to wp_posts table columns
-	 * @param $tax array Array containing all the post taxonomies and tax_input key which corresponds to 
+	 * @param $tax array Array containing all the post taxonomies and tax_input key which corresponds to
 	 *  				 terms in the taxonomies. Need to send the taxonomies seperately if there are no terms being set
 	 * @param $api_key string Api key for a given user of a server
 	 * @param $server_url string URL of the server to send the post to
@@ -1365,7 +1365,7 @@ input.cap-input-error:focus {
 	 **/
 	function insert_post($post_id, $post) {
 		if ((!defined('DOING_AUTOSAVE') || !DOING_AUTOSAVE) && $post->post_status == 'publish') {
-			$postarr = (array) $post;	
+			$postarr = (array) $post;
 
 			//@TODO need to get specific servers to send to, not all of them!
 
@@ -1391,11 +1391,11 @@ input.cap-input-error:focus {
 		}
 	}
 
-	/** 
+	/**
 	 * Check to see if a post has a server term mapping for a given server
-	 * 
+	 *
 	 * @param object $post
-	 * @param object $server 
+	 * @param object $server
 	 *
 	 * @todo revisit this...
 	 **/
@@ -1418,7 +1418,7 @@ input.cap-input-error:focus {
 					),
 					'update_post_term_cache' => false,
 					'update_post_meta_cache' => false,
-					'fields' => 'ids',					
+					'fields' => 'ids',
 				));
 
 				// Cannot use have_posts here as fields=>ids prevents it from working
@@ -1434,11 +1434,11 @@ input.cap-input-error:focus {
 
 	/**
 	 * Format post term mappings to be sent to a server
-	 * 
+	 *
 	 * @param object $post Post being sent to the server
 	 * @param arary $taxonomies array of taxonomies to get data for from $post
 	 * @param string $server_post_type Post of of the term mappings @see post_type_slug()
-	 * 
+	 *
 	 * @return array Array of formatted taxonomy terms ready for transmission to a server
 	 **/
 	function format_terms_to_send($post, $taxonomies, $server_post_type) {
