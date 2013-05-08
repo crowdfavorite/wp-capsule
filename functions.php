@@ -1391,7 +1391,7 @@ input.cap-input-error:focus {
 				}
 			}
 			if ($push) {
-				capsule_server_start();
+				capsule_queue_start();
 			}
 		}
 	}
