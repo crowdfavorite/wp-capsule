@@ -1382,12 +1382,16 @@ input.cap-input-error:focus {
 			$servers = $this->get_servers();
 			$postarr = (array) $post;
 
+			$push = 0;
 			foreach ($servers as $server_post) {
 				// Only send post if theres a term thats been mapped
 				if ($this->has_server_mapping($post, $server_post)) {
 					capsule_queue_add($post_id);
-					capsule_server_start();
+					$push++;
 				}
+			}
+			if ($push) {
+				capsule_server_start();
 			}
 		}
 	}
