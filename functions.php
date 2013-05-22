@@ -386,6 +386,9 @@ class Capsule_Client {
 		<p><?php _e('We\'re saving this information to make it useful in the future, so we\'ve got to be able to find it again. Capsule supports both keyword search and filtering by projects, tags, code languages and date range, whew! When using keyword search you can auto-complete projects, tags, and code languages by using their syntax prefix.', 'capsule'); ?></p>
 		<p><img src="<?php echo get_template_directory_uri(); ?>/docs/filter.jpg" alt="<?php _e('Filters', 'capsule'); ?>" class="capsule-screenshot" /></p>
 		<p><?php _e('When filtering, multiple projects/tags/etc. can be selected and are all populated with auto-complete.', 'capsule'); ?></p>
+
+		<h3><?php _e('Icon and Fluid Apps', 'capsule'); ?></h3>
+		<p><?php _e('Capsule works great with apps like Fluid that give you an application for a website. Need an icon for your app? Find it in the <code>wp-content/themes/capule/ui/assets/icon/</code> dir.', 'capsule'); ?></p>
 	</div>
 	<div class="capsule-doc-col-right">
 		<h3><?php _e('Editing', 'capsule'); ?></h3>
