@@ -621,22 +621,22 @@ input.cap-input-error:focus {
 				<tr id="js-server-item-new" class="<?php echo esc_attr($class); ?>">
 					<td>
 						<div>
-							<input type="text" class="widefat"  name="server_name" value="" placeholder="<?php _e('Server Name', 'capsule-client'); ?>" />
+							<input type="text" class="widefat"  name="server_name" value="" placeholder="<?php _e('Server Name', 'capsule'); ?>" />
 						</div>
 					</td>
 					<td>
 						<div>
-							<input type="text" class="widefat js-cap-server-url" name="server_url" value=""  placeholder="<?php _e('Server URL', 'capsule-client'); ?>" />
+							<input type="text" class="widefat js-cap-server-url" name="server_url" value=""  placeholder="<?php _e('Server URL', 'capsule'); ?>" />
 						</div>
 					</td>
 					<td>
 						<div>
-							<input type="text" class="widefat js-cap-server-api-key" name="server_api_key" value=""  placeholder="<?php _e('API Key', 'capsule-client'); ?>" />
+							<input type="text" class="widefat js-cap-server-api-key" name="server_api_key" value=""  placeholder="<?php _e('API Key', 'capsule'); ?>" />
 						</div>
 					</td>
 					<td>
 						<div>
-							<input type="submit" class="js-cap-add capsule-float-left button" value="<?php  _e('Add Server', 'capsule-client'); ?>" /><span class="capsule-float-left capsule-spinner"></span>
+							<input type="submit" class="js-cap-add capsule-float-left button" value="<?php  _e('Add Server', 'capsule'); ?>" /><span class="capsule-float-left capsule-spinner"></span>
 							<input type="hidden" value="add_server" name="capsule_client_action" />
 							<?php wp_nonce_field('_cap_client_server_management', '_server_nonce', true, true); ?>
 						</div>
