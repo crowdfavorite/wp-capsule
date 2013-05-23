@@ -66,7 +66,10 @@ class Capsule_Client {
 					if (wp_verify_nonce($_POST['_server_nonce'], '_cap_client_server_management')) {
 
 						$test_errors = $this->test_credentials($server_data['api_key'], $server_data['server_url']);
-						if (empty($test_errors)) {
+						$duplicate_errors = $this->duplicate_server_check($server_data['server_name'], $server_data['server_url']);
+						$validation_errors = array_merge($test_errors, $duplicate_errors);
+
+						if (empty($validation_errors)) {
 							$post = $this->add_server($server_data);
 							echo json_encode(array(
 								'result' => 'success',
@@ -75,7 +78,7 @@ class Capsule_Client {
 							die();
 						}
 						else {
-							$errors = $test_errors;
+							$errors = $validation_errors;
 						}
 					}
 					else {
@@ -119,10 +122,13 @@ class Capsule_Client {
 					$data['api_key'] = isset($_POST['api_key']) ? $_POST['api_key'] : '';
 					$data['server_url'] = isset($_POST['server_url']) ? $_POST['server_url'] : '';
 					if (wp_verify_nonce($_POST['_server_nonce'], '_cap_client_server_management')) {
-						if ($server_id = $_POST['server_id']) {
-							if ($server = $this->update_server($server_id, $data)) {
-								$test_errors = $this->test_credentials($server->api_key, $server->url);
-								if (empty($test_errors)) {
+						if ($server_id = $_POST['server_id']) {						
+							$test_errors = $this->test_credentials($data['api_key'], $data['server_url']);
+							$duplicate_errors = $this->duplicate_server_check($data['server_name'], $data['server_url'], $server_id);
+							$validation_errors = array_merge($test_errors, $duplicate_errors);
+
+							if (empty($validation_errors)) {
+								if ($server = $this->update_server($server_id, $data)) {
 									echo json_encode(array(
 										'data' => array(
 											'name' => $server->post_title,
@@ -134,14 +140,14 @@ class Capsule_Client {
 									die();
 								}
 								else {
-									$errors = $test_errors;
+									$errors[] = array(
+										'message' => __('Could not save server.', 'capsule'),
+										'type' => 'genereal',
+									);
 								}
 							}
 							else {
-								$errors[] = array(
-									'message' => __('Could not save server.', 'capsule'),
-									'type' => 'genereal',
-								);
+								$errors = $validation_errors;
 							}
 						}
 						else {
@@ -155,9 +161,9 @@ class Capsule_Client {
 					echo json_encode(array(
 						'result' => 'error',
 						'data' => array(
-							'name' => $server->post_title,
-							'api_key' => $server->api_key,
-							'url' => $server->url,
+							'name' => $data['server_name'],
+							'api_key' => $data['api_key'],
+							'url' => $data['server_url'],
 						),
 						'errors' => $errors,
 					));
@@ -621,7 +627,7 @@ input.cap-input-error:focus {
 				<tr id="js-server-item-new" class="<?php echo esc_attr($class); ?>">
 					<td>
 						<div>
-							<input type="text" class="widefat"  name="server_name" value="" placeholder="<?php _e('Server Name', 'capsule'); ?>" />
+							<input type="text" class="widefat js-cap-server-name"  name="server_name" value="" placeholder="<?php _e('Server Name', 'capsule'); ?>" />
 						</div>
 					</td>
 					<td>
@@ -654,25 +660,33 @@ input.cap-input-error:focus {
 		function capsule_process_server_errors($tr, result, server_id, new_server) {
 			new_server == undefined ? new_server : false;
 			var error_html = '';
-			var $new_error_div = $('<div id="js-cap-error-'+server_id+'" class="capsule-error" style="display:none;"></div>');
+			var err_msg = '';
+			var $new_error_div;
 			capsule_remove_input_errors($tr);
 
 			if (!new_server) {
+				//$tr.fadeIn();
+				
 				$tr.fadeIn();
 			}
 
 			for (var key in result.errors) {
-				error_html += result.errors[key].message;
+				$new_error_div = $('<div class="capsule-error js-cap-error-'+server_id+'" style="display:none;"></div>');
+				error_html = result.errors[key].message;
 				if (result.errors[key].type == 'url') {
 					$('.js-cap-server-url', $tr).addClass('cap-input-error');
 				}
 				if (result.errors[key].type == 'credentials') {
 					$('.js-cap-server-api-key', $tr).addClass('cap-input-error');
 				}
-			}
-			var err_msg = '<b><?php _e('Error: ', 'capsule'); ?></b>' + result.data.name+' - ' + error_html;
-			$new_error_div.html('<p>' + err_msg + '</p>')
+				if (result.errors[key].type == 'name') {
+					$('.js-cap-server-name', $tr).addClass('cap-input-error');
+				}
+				err_msg = '<b><?php _e('Error: ', 'capsule'); ?></b>' + result.data.name+' - ' + error_html;
+				$new_error_div.html('<p>' + err_msg + '</p>')
 				.appendTo('#cap-servers').fadeIn();
+			}
+
 		}
 
 		function capsule_reset_server_form($form) {
@@ -684,6 +698,7 @@ input.cap-input-error:focus {
 		function capsule_remove_input_errors($tr) {
 			$('.js-cap-server-api-key', $tr).removeClass('cap-input-error');
 			$('.js-cap-server-url', $tr).removeClass('cap-input-error');
+			$('.js-cap-server-name', $tr).removeClass('cap-input-error');
 		}
 
 
@@ -701,7 +716,7 @@ input.cap-input-error:focus {
 			e.preventDefault();
 
 			$form.find('input[name="capsule_client_action"]').val('add_server_ajax');
-			$('#js-cap-error-new').hide();
+			$('.js-cap-error-new').hide();
 			capsule_remove_input_errors($tr);
 			$spinner.show();
 
@@ -751,7 +766,7 @@ input.cap-input-error:focus {
 						$('.js-static-server-api-'+server_id).html(result.data.api_key);
 						$('.js-static-server-name-'+server_id).html(result.data.name);
 						$('.js-static-server-url-'+server_id).html(result.data.url);
-						$('#js-cap-error-'+server_id).remove();
+						$('.js-cap-error-'+server_id).remove();
 						$tr.animate({opacity:0}, function() {
 							$('.js-cap-not-editable', $tr).show();
 							$('.js-cap-editable', $tr).hide();
@@ -759,10 +774,10 @@ input.cap-input-error:focus {
 						});
 					}
 					else {
-						$('#js-cap-error-'+server_id).fadeOut(function() {
+						$('.js-cap-error-'+server_id).fadeOut(function() {
 							$(this).remove()
 						});
-						$tr.animate({opacity:0}, function() {
+						$tr.fadeOut(function() {
 							capsule_process_server_errors($tr, result, server_id, false);
 						});
 					}
@@ -817,7 +832,7 @@ input.cap-input-error:focus {
 			.esc_html($server_post->post_title).
 		'</div>
 		<div class="js-cap-editable">
-			<input type="text" class="widefat js-cap-editable cap-editable" id="'.esc_attr('js-server-name-'.$server_post->ID).'" name="'.$name_base.'[server_name]" value="'.esc_attr($server_post->post_title).'" />
+			<input type="text" class="widefat js-cap-editable cap-editable js-cap-server-name" id="'.esc_attr('js-server-name-'.$server_post->ID).'" name="'.$name_base.'[server_name]" value="'.esc_attr($server_post->post_title).'" />
 		</div>
 	</td>
 	<td>
@@ -929,6 +944,36 @@ input.cap-input-error:focus {
 		}
 
 		return false;
+	}
+
+	public function duplicate_server_check($server_name, $server_url, $server_id = 0) {
+		$errors = array();
+
+		$all_servers = $this->get_servers();
+
+		if (is_array($all_servers)) {
+			foreach ($all_servers as $server) {
+				// Dont check against self
+				if ($server->ID == $server_id) {
+					continue;
+				}
+				if (strtolower(trim($server->url, ' \t\n\r\0\x0B/')) == strtolower(trim($server_url, ' \t\n\r\0\x0B/'))) {
+					$errors['url'] = array(
+						'message' => __('Duplicate server url.', 'capsule'),
+						'type' => 'url',
+					);
+				}
+				if (trim($server->post_title) == trim($server_name)) {
+					$errors['name'] = array(
+						'message' => __('Duplicate server name.', 'capsule'),
+						'type' => 'name',
+					);
+				}
+			}
+		}
+
+		return $errors;
+
 	}
 
 	public function test_credentials($api_key, $url) {
