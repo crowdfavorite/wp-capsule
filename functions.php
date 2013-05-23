@@ -188,10 +188,35 @@ class Capsule_Client {
 						}
 					}
 					break;
+				case 'another_project_mapping_ajax':
+					if (isset($_POST['post_id']) && isset($_POST['taxonomy'])) {
+						$taxonomy = $_POST['taxonomy'];
+						$post_id = $_POST['post_id'];
+						$post = get_post($post_id);
+						$terms = $this->get_taxonomy_terms($taxonomy);
+
+						echo $this->term_select_markup($post, $taxonomy, $terms, 0);
+					}
+					die();
+					break;
 				default:
 					break;
 			}
 		}
+	}
+
+	/**
+	 * Return all terms in a group of taxonomies
+	 *
+	 * @param string|array $taxonomies Taxonomy name or list of Taxonomy names
+	 * @return array Array of term objects
+	 **/
+	function get_taxonomy_terms($taxonomies) {
+		return get_terms($taxonomies, array(
+			'hide_empty' => false,
+			'orderby' => 'slug',
+			'order' => 'ASC',
+		));
 	}
 
 	/**
@@ -1211,11 +1236,7 @@ input.cap-input-error:focus {
 		// Get all the terms in taxonomies are mapped and sort them by taxonomy
 		// For easier displaying later
 		$taxonomies = $this->taxonomies_to_map();
-		$terms = get_terms($taxonomies, array(
-			'hide_empty' => false,
-			'orderby' => 'slug',
-			'order' => 'ASC',
-		));
+		$terms = $this->get_taxonomy_terms($taxonomies);
 		$taxonomy_array = array();
 
 		if (is_array($terms)) {
@@ -1292,11 +1313,26 @@ input.cap-input-error:focus {
 				foreach ($posts as $post) {
 					// get_the_terms is cached by WP_Query, this isn't as expensive as it looks
 					$terms = get_the_terms($post, $taxonomy);
-					$selected_id = (is_array($terms) && !empty($terms)) ? array_shift($terms)->term_id : 0;
+					if (is_array($terms) && !empty($terms)) {
+						foreach ($terms as $term) {
+							$selected_ids[] = $term->term_id;
+						}
+					}
+					else {
+						// Set this to none, easier to loop over with single element
+						$selected_ids = array(0);
+					}
 ?>
 					<tr>
 						<td><?php echo esc_html($post->post_title); ?></td>
-						<td><?php echo $this->term_select_markup($post, $taxonomy, $taxonomy_array[$taxonomy], $selected_id); ?></td>
+						<td>
+							<?php
+								foreach ($selected_ids as $selected_id) {
+									echo $this->term_select_markup($post, $taxonomy, $taxonomy_array[$taxonomy], $selected_id);
+								}
+							 ?>
+							<a href="#" data-taxonomy="<?php echo esc_attr($taxonomy); ?>" data-post-id="<?php echo esc_attr($post->ID); ?>" class="js-cap-another-project">+</a>
+						</td>
 					</tr>
 <?php
 				}
@@ -1315,6 +1351,26 @@ input.cap-input-error:focus {
 			<?php wp_nonce_field('_cap_client_save_mapping', '_save_mapping_nonce', true, true); ?>
 		</form>
 </div>
+<script type="text/javascript">
+(function($) {
+	$(function() {
+		$('body').on('click', '.js-cap-another-project', function(e) {
+			var $el = $(this);
+			// Get markup for another select box
+			$.post('<?php echo esc_js(admin_url()); ?>',
+				{
+					capsule_client_action : 'another_project_mapping_ajax',
+					post_id : $el.data('post-id'),
+					taxonomy : $el.data('taxonomy')
+				},
+				function(data) {
+					$el.before(data);
+				}
+			);
+		});
+	});
+})(jQuery);
+</script>
 
 <?php
 	}
@@ -1337,7 +1393,7 @@ input.cap-input-error:focus {
 
 		$output = '
 <input type="hidden" name="'.esc_attr('cap_client_mapping['.$post->ID.']['.$taxonomy.'][server_term]').'" value="'.esc_attr($post->post_title).'">
-<select name="'.esc_attr('cap_client_mapping['.$post->ID.']['.$taxonomy.'][term_id]').'" class="cap-wide-dropdown">
+<select name="'.esc_attr('cap_client_mapping['.$post->ID.']['.$taxonomy.'][term_ids][]').'" class="cap-wide-dropdown">
 	<option value="0">'.__('(not mapped)', 'capsule').'</option>';
 
 		if (is_array($terms) && !empty($terms)) {
@@ -1374,15 +1430,16 @@ input.cap-input-error:focus {
 		if (is_array($mappings)) {
 			foreach ($mappings as $post_id => $mapping) {
 				foreach ($mapping as $taxonomy => $term_data) {
-					$term_id = $term_data['term_id'];
-
-					// This is the create id see term_select_markup
-					if ($term_data['term_id'] == -1) {
-						// Create term
-						$term_id = capsule_create_term($term_data['server_term'], $taxonomy);
+					$terms_to_add = array();
+					foreach ($term_data['term_ids'] as $term_id) {
+						// This is the create id see term_select_markup
+						if ($term_id == -1) {
+							// Create term
+							$term_id = capsule_create_term($term_data['server_term'], $taxonomy);
+						}
+						$terms_to_add[] = (int) $term_id;
 					}
-
-					wp_set_object_terms($post_id, (int) $term_id, $taxonomy);
+					wp_set_object_terms($post_id, $terms_to_add, $taxonomy);
 				}
 			}
 		}
@@ -1566,7 +1623,6 @@ input.cap-input-error:focus {
 				}
 			}
 		}
-
 		return $tax_input;
 	}
 }
