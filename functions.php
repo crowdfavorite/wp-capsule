@@ -1264,6 +1264,11 @@ input.cap-input-error:focus {
 
 .cap-wide-dropdown {
 	width: 80%;
+	margin-bottom: 5px;
+}
+a.cap-another-project {
+	font-weight: 900;
+	
 }
 </style>
 <div class="wrap capsule-admin">
@@ -1331,7 +1336,7 @@ input.cap-input-error:focus {
 									echo $this->term_select_markup($post, $taxonomy, $taxonomy_array[$taxonomy], $selected_id);
 								}
 							 ?>
-							<a href="#" data-taxonomy="<?php echo esc_attr($taxonomy); ?>" data-post-id="<?php echo esc_attr($post->ID); ?>" class="js-cap-another-project">+</a>
+							<a href="#" data-taxonomy="<?php echo esc_attr($taxonomy); ?>" data-post-id="<?php echo esc_attr($post->ID); ?>" class="cap-another-project js-cap-another-project">+</a>
 						</td>
 					</tr>
 <?php
@@ -1392,6 +1397,7 @@ input.cap-input-error:focus {
 		$tax_obj = get_taxonomy($taxonomy);
 
 		$output = '
+
 <input type="hidden" name="'.esc_attr('cap_client_mapping['.$post->ID.']['.$taxonomy.'][server_term]').'" value="'.esc_attr($post->post_title).'">
 <select name="'.esc_attr('cap_client_mapping['.$post->ID.']['.$taxonomy.'][term_ids][]').'" class="cap-wide-dropdown">
 	<option value="0">'.__('(not mapped)', 'capsule').'</option>';
