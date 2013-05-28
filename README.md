@@ -29,3 +29,11 @@ Developers, contribute on [GitHub](https://github.com/crowdfavorite/wp-capsule).
 - Capsule UI: https://github.com/crowdfavorite/wp-capsule-ui
 
 Capsule UI is a submodule of both Capsule and Capsule Server, delivering the UI for both packages.
+
+---
+
+## Changelog
+
+### 1.1 
+- Prevent saving of server data when errors occur. [Github](https://github.com/crowdfavorite/wp-capsule/issues/1)
+- Prevent adding the same server twice (based on URL and name)
