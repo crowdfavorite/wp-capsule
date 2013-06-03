@@ -1318,6 +1318,7 @@ a.cap-another-project {
 				foreach ($posts as $post) {
 					// get_the_terms is cached by WP_Query, this isn't as expensive as it looks
 					$terms = get_the_terms($post, $taxonomy);
+					$selected_ids = array();
 					if (is_array($terms) && !empty($terms)) {
 						foreach ($terms as $term) {
 							$selected_ids[] = $term->term_id;
