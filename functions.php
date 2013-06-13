@@ -1266,9 +1266,11 @@ input.cap-input-error:focus {
 	width: 80%;
 	margin-bottom: 5px;
 }
-a.cap-another-project {
+table.wp-list-table a.cap-another-project {
 	font-weight: 900;
-	
+	height: 23px;
+	margin-left: 3px;
+	line-height: 18px;
 }
 </style>
 <div class="wrap capsule-admin">
@@ -1336,8 +1338,7 @@ a.cap-another-project {
 								foreach ($selected_ids as $selected_id) {
 									echo $this->term_select_markup($post, $taxonomy, $taxonomy_array[$taxonomy], $selected_id);
 								}
-							 ?>
-							<a href="#" data-taxonomy="<?php echo esc_attr($taxonomy); ?>" data-post-id="<?php echo esc_attr($post->ID); ?>" class="cap-another-project js-cap-another-project">+</a>
+							 ?><a href="#" data-taxonomy="<?php echo esc_attr($taxonomy); ?>" data-post-id="<?php echo esc_attr($post->ID); ?>" class="button cap-another-project js-cap-another-project">+</a>
 						</td>
 					</tr>
 <?php
