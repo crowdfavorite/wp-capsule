@@ -34,6 +34,4 @@ Capsule UI is a submodule of both Capsule and Capsule Server, delivering the UI 
 
 ## Changelog
 
-### 1.1 
-- Prevent saving of server data when errors occur. [Github](https://github.com/crowdfavorite/wp-capsule/issues/1)
-- Prevent adding the same server twice (based on URL and name)
+View the [combined changelog](https://github.com/crowdfavorite/wp-capsule-ui/blob/master/CHANGELOG.txt) for Capsule and Capsule Server.
