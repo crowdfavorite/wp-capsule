@@ -478,6 +478,21 @@ echo 'Hello World';
 					<td><?php _e('Command-[', 'capsule'); ?></td>
 					<td><?php _e('Control-[', 'capsule'); ?></td>
 				</tr>
+				<tr>
+					<td><?php _e('Navigate Home', 'capsule'); ?></td>
+					<td><?php _e('Shift-H', 'capsule'); ?></td>
+					<td><?php _e('Shift-H', 'capsule'); ?></td>
+				</tr>
+				<tr>
+					<td><?php _e('Create New Post', 'capsule'); ?></td>
+					<td><?php _e('Shift-N', 'capsule'); ?></td>
+					<td><?php _e('Shift-N', 'capsule'); ?></td>
+				</tr>
+				<tr>
+					<td><?php _e('Set Focus to Search', 'capsule'); ?></td>
+					<td><?php _e('Shift-F', 'capsule'); ?></td>
+					<td><?php _e('Shift-F', 'capsule'); ?></td>
+				</tr>
 			</tbody>
 		</table>
 	</div>
