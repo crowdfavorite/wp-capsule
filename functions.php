@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 include('ui/functions.php');
 
@@ -29,8 +29,17 @@ class Capsule_Client {
 		add_action('init', array($this, 'register_post_types'), 11);
 		add_action('admin_menu', array($this, 'add_menu_pages'));
 
-		add_action('wp_insert_post', array($this,'insert_post'), 10, 2);
-		add_action('admin_notices', array($this,'capsule_admin_notice'));
+		add_action('wp_insert_post', array($this, 'insert_post'), 10, 2);
+		add_action('admin_notices', array($this, 'capsule_admin_notice'));
+
+		add_action('wp_footer', array($this, 'wp_cron'));
+	}
+	
+	public function wp_cron() {
+		if (!wp_next_scheduled('capsule_queue')) {
+			wp_schedule_event(time(), 'hourly', 'capsule_queue');
+		}
+		add_action('capsule_queue', 'capsule_queue_run');
 	}
 
 	// Handles all client actions including those coming in via ajax
@@ -55,9 +64,12 @@ class Capsule_Client {
 						'server_url' => isset($_POST['server_url']) ? $_POST['server_url'] : '',
 					);
 					if (wp_verify_nonce($_POST['_server_nonce'], '_cap_client_server_management')) {
-					
+
 						$test_errors = $this->test_credentials($server_data['api_key'], $server_data['server_url']);
-						if (empty($test_errors)) {
+						$duplicate_errors = $this->duplicate_server_check($server_data['server_name'], $server_data['server_url']);
+						$validation_errors = array_merge($test_errors, $duplicate_errors);
+
+						if (empty($validation_errors)) {
 							$post = $this->add_server($server_data);
 							echo json_encode(array(
 								'result' => 'success',
@@ -66,7 +78,7 @@ class Capsule_Client {
 							die();
 						}
 						else {
-							$errors = $test_errors;
+							$errors = $validation_errors;
 						}
 					}
 					else {
@@ -110,10 +122,13 @@ class Capsule_Client {
 					$data['api_key'] = isset($_POST['api_key']) ? $_POST['api_key'] : '';
 					$data['server_url'] = isset($_POST['server_url']) ? $_POST['server_url'] : '';
 					if (wp_verify_nonce($_POST['_server_nonce'], '_cap_client_server_management')) {
-						if ($server_id = $_POST['server_id']) {
-							if ($server = $this->update_server($server_id, $data)) {
-								$test_errors = $this->test_credentials($server->api_key, $server->url);
-								if (empty($test_errors)) {
+						if ($server_id = $_POST['server_id']) {						
+							$test_errors = $this->test_credentials($data['api_key'], $data['server_url']);
+							$duplicate_errors = $this->duplicate_server_check($data['server_name'], $data['server_url'], $server_id);
+							$validation_errors = array_merge($test_errors, $duplicate_errors);
+
+							if (empty($validation_errors)) {
+								if ($server = $this->update_server($server_id, $data)) {
 									echo json_encode(array(
 										'data' => array(
 											'name' => $server->post_title,
@@ -125,14 +140,14 @@ class Capsule_Client {
 									die();
 								}
 								else {
-									$errors = $test_errors;
+									$errors[] = array(
+										'message' => __('Could not save server.', 'capsule'),
+										'type' => 'genereal',
+									);
 								}
 							}
 							else {
-								$errors[] = array(
-									'message' => __('Could not save server.', 'capsule'),
-									'type' => 'genereal',
-								);
+								$errors = $validation_errors;
 							}
 						}
 						else {
@@ -142,13 +157,13 @@ class Capsule_Client {
 							);
 						}
 					}
-					
+
 					echo json_encode(array(
 						'result' => 'error',
 						'data' => array(
-							'name' => $server->post_title,
-							'api_key' => $server->api_key,
-							'url' => $server->url,
+							'name' => $data['server_name'],
+							'api_key' => $data['api_key'],
+							'url' => $data['server_url'],
 						),
 						'errors' => $errors,
 					));
@@ -168,12 +183,40 @@ class Capsule_Client {
 					break;
 				case 'save_mapping':
 					if (wp_verify_nonce($_POST['_save_mapping_nonce'], '_cap_client_save_mapping')) {
-						$this->save_mapping($_POST['cap_client_mapping']);
+						if (!empty($_POST['cap_client_mapping'])) {
+							$this->save_mapping($_POST['cap_client_mapping']);
+						}
 					}
+					break;
+				case 'another_project_mapping_ajax':
+					if (isset($_POST['post_id']) && isset($_POST['taxonomy'])) {
+						$taxonomy = $_POST['taxonomy'];
+						$post_id = $_POST['post_id'];
+						$post = get_post($post_id);
+						$terms = $this->get_taxonomy_terms($taxonomy);
+
+						echo $this->term_select_markup($post, $taxonomy, $terms, 0);
+					}
+					die();
+					break;
 				default:
 					break;
 			}
 		}
+	}
+
+	/**
+	 * Return all terms in a group of taxonomies
+	 *
+	 * @param string|array $taxonomies Taxonomy name or list of Taxonomy names
+	 * @return array Array of term objects
+	 **/
+	function get_taxonomy_terms($taxonomies) {
+		return get_terms($taxonomies, array(
+			'hide_empty' => false,
+			'orderby' => 'slug',
+			'order' => 'ASC',
+		));
 	}
 
 	/**
@@ -182,14 +225,14 @@ class Capsule_Client {
 	 * array(
 	 *	'server-1' => array(
 	 * 		'api-key' => '12345abc',
-	 *		'url' => 'http://capsule-server-1.com';		
+	 *		'url' => 'http://capsule-server-1.com';
 	 *	),
 	 *	'server-2' => array(
 	 * 		'api-key' => 'A4d*DYnohiO',
-	 *		'url' => 'http://capsule-server-2.com';		
+	 *		'url' => 'http://capsule-server-2.com';
 	 *	)
 	 * )
-	 * 
+	 *
 	 * Potential feature - Filter servers based on owner for multi-user support
 	 **/
 	function get_servers() {
@@ -225,8 +268,8 @@ class Capsule_Client {
 	* Get the post type name thats generated from a post name
 	* Note this does not return the post type of the post, but
 	* the post type which was generated from/for the post
-	* 
-	*/ 
+	*
+	*/
 	public function post_type_slug($post_name) {
 		// 20 Character limit on post type names
 		return substr(sha1($this->post_type_prefix.$post_name), 0, 20);
@@ -235,7 +278,7 @@ class Capsule_Client {
 	/**
 	 * Registers required post types. These include the server post type
 	 * and one post type for each server which stores the term mappings
-	 **/ 
+	 **/
 	public function register_post_types() {
 		// Register the server type
 		$default_args = array(
@@ -245,10 +288,10 @@ class Capsule_Client {
 			'show_in_menu' => false,
 			'query_var' => true,
 			'capability_type' => 'post',
-			'has_archive' => true, 
+			'has_archive' => true,
 			'hierarchical' => false,
 			'menu_position' => null,
-		); 
+		);
 
 		$args = $default_args;
 		$args['label'] = __('Servers', 'capsule');
@@ -259,7 +302,7 @@ class Capsule_Client {
 		$args = array_merge($default_args, array(
 			'taxonomies' => $this->taxonomies_to_map(),
 		));
-		
+
 		// Generate post types for each of the servers, this is where the server
 		// terms are stored. Must have unique, reproducable names.
 		foreach ($servers as $server_post) {
@@ -270,10 +313,10 @@ class Capsule_Client {
 
 	/**
 	 * Get a list of taxonomies to pull from the capsule server and map local
-	 * terms to. 
+	 * terms to.
 	 *
 	 * Filterable with 'capsule_client_taxonomies_to_map'
-	 * 
+	 *
 	 * @return array Array of taxonomy slugs
 	 **/
 	public function taxonomies_to_map() {
@@ -374,6 +417,9 @@ class Capsule_Client {
 		<p><?php _e('We\'re saving this information to make it useful in the future, so we\'ve got to be able to find it again. Capsule supports both keyword search and filtering by projects, tags, code languages and date range, whew! When using keyword search you can auto-complete projects, tags, and code languages by using their syntax prefix.', 'capsule'); ?></p>
 		<p><img src="<?php echo get_template_directory_uri(); ?>/docs/filter.jpg" alt="<?php _e('Filters', 'capsule'); ?>" class="capsule-screenshot" /></p>
 		<p><?php _e('When filtering, multiple projects/tags/etc. can be selected and are all populated with auto-complete.', 'capsule'); ?></p>
+
+		<h3><?php _e('Icon and Fluid Apps', 'capsule'); ?></h3>
+		<p><?php _e('Capsule works great with apps like Fluid that give you an application for a website. Need an icon for your app? Find it in the <code>wp-content/themes/capule/ui/assets/icon/</code> dir.', 'capsule'); ?></p>
 	</div>
 	<div class="capsule-doc-col-right">
 		<h3><?php _e('Editing', 'capsule'); ?></h3>
@@ -431,6 +477,21 @@ echo 'Hello World';
 					<td><?php _e('Outdent current line', 'capsule'); ?></td>
 					<td><?php _e('Command-[', 'capsule'); ?></td>
 					<td><?php _e('Control-[', 'capsule'); ?></td>
+				</tr>
+				<tr>
+					<td><?php _e('Navigate Home', 'capsule'); ?></td>
+					<td><?php _e('Shift-H', 'capsule'); ?></td>
+					<td><?php _e('Shift-H', 'capsule'); ?></td>
+				</tr>
+				<tr>
+					<td><?php _e('Create New Post', 'capsule'); ?></td>
+					<td><?php _e('Shift-N', 'capsule'); ?></td>
+					<td><?php _e('Shift-N', 'capsule'); ?></td>
+				</tr>
+				<tr>
+					<td><?php _e('Set Focus to Search', 'capsule'); ?></td>
+					<td><?php _e('Shift-F', 'capsule'); ?></td>
+					<td><?php _e('Shift-F', 'capsule'); ?></td>
 				</tr>
 			</tbody>
 		</table>
@@ -595,8 +656,8 @@ input.cap-input-error:focus {
 					</tr>
 				</thead>
 				<tbody>
-				<?php 
-					$class = ''; 
+				<?php
+					$class = '';
 					foreach ($servers as $server_post) {
 						$class = ($class == '') ? ' alternate' : '';
 						echo $this->server_row_markup($server_post, $class);
@@ -606,22 +667,22 @@ input.cap-input-error:focus {
 				<tr id="js-server-item-new" class="<?php echo esc_attr($class); ?>">
 					<td>
 						<div>
-							<input type="text" class="widefat"  name="server_name" value="" placeholder="<?php _e('Server Name', 'capsule-client'); ?>" />
+							<input type="text" class="widefat js-cap-server-name"  name="server_name" value="" placeholder="<?php _e('Server Name', 'capsule'); ?>" />
 						</div>
 					</td>
 					<td>
 						<div>
-							<input type="text" class="widefat js-cap-server-url" name="server_url" value=""  placeholder="<?php _e('Server URL', 'capsule-client'); ?>" />
+							<input type="text" class="widefat js-cap-server-url" name="server_url" value=""  placeholder="<?php _e('Server URL', 'capsule'); ?>" />
 						</div>
 					</td>
 					<td>
 						<div>
-							<input type="text" class="widefat js-cap-server-api-key" name="server_api_key" value=""  placeholder="<?php _e('API Key', 'capsule-client'); ?>" />
+							<input type="text" class="widefat js-cap-server-api-key" name="server_api_key" value=""  placeholder="<?php _e('API Key', 'capsule'); ?>" />
 						</div>
 					</td>
 					<td>
 						<div>
-							<input type="submit" class="js-cap-add capsule-float-left button" value="<?php  _e('Add Server', 'capsule-client'); ?>" /><span class="capsule-float-left capsule-spinner"></span>
+							<input type="submit" class="js-cap-add capsule-float-left button" value="<?php  _e('Add Server', 'capsule'); ?>" /><span class="capsule-float-left capsule-spinner"></span>
 							<input type="hidden" value="add_server" name="capsule_client_action" />
 							<?php wp_nonce_field('_cap_client_server_management', '_server_nonce', true, true); ?>
 						</div>
@@ -639,25 +700,33 @@ input.cap-input-error:focus {
 		function capsule_process_server_errors($tr, result, server_id, new_server) {
 			new_server == undefined ? new_server : false;
 			var error_html = '';
-			var $new_error_div = $('<div id="js-cap-error-'+server_id+'" class="capsule-error" style="display:none;"></div>');
+			var err_msg = '';
+			var $new_error_div;
 			capsule_remove_input_errors($tr);
 
 			if (!new_server) {
+				//$tr.fadeIn();
+				
 				$tr.fadeIn();
 			}
 
 			for (var key in result.errors) {
-				error_html += result.errors[key].message;
+				$new_error_div = $('<div class="capsule-error js-cap-error-'+server_id+'" style="display:none;"></div>');
+				error_html = result.errors[key].message;
 				if (result.errors[key].type == 'url') {
 					$('.js-cap-server-url', $tr).addClass('cap-input-error');
 				}
 				if (result.errors[key].type == 'credentials') {
 					$('.js-cap-server-api-key', $tr).addClass('cap-input-error');
 				}
-			}
-			var err_msg = '<b><?php _e('Error: ', 'capsule'); ?></b>' + result.data.name+' - ' + error_html;
-			$new_error_div.html('<p>' + err_msg + '</p>')
+				if (result.errors[key].type == 'name') {
+					$('.js-cap-server-name', $tr).addClass('cap-input-error');
+				}
+				err_msg = '<b><?php _e('Error: ', 'capsule'); ?></b>' + result.data.name+' - ' + error_html;
+				$new_error_div.html('<p>' + err_msg + '</p>')
 				.appendTo('#cap-servers').fadeIn();
+			}
+
 		}
 
 		function capsule_reset_server_form($form) {
@@ -669,6 +738,7 @@ input.cap-input-error:focus {
 		function capsule_remove_input_errors($tr) {
 			$('.js-cap-server-api-key', $tr).removeClass('cap-input-error');
 			$('.js-cap-server-url', $tr).removeClass('cap-input-error');
+			$('.js-cap-server-name', $tr).removeClass('cap-input-error');
 		}
 
 
@@ -686,7 +756,7 @@ input.cap-input-error:focus {
 			e.preventDefault();
 
 			$form.find('input[name="capsule_client_action"]').val('add_server_ajax');
-			$('#js-cap-error-new').hide();
+			$('.js-cap-error-new').hide();
 			capsule_remove_input_errors($tr);
 			$spinner.show();
 
@@ -712,7 +782,7 @@ input.cap-input-error:focus {
 			var $form = $('form#js-cap-servers');
 			var $tr = $('tr#js-server-item-'+server_id);
 			var $spinner = $(this).siblings('.capsule-spinner');
-			
+
 			e.preventDefault();
 			$spinner.show();
 
@@ -736,18 +806,18 @@ input.cap-input-error:focus {
 						$('.js-static-server-api-'+server_id).html(result.data.api_key);
 						$('.js-static-server-name-'+server_id).html(result.data.name);
 						$('.js-static-server-url-'+server_id).html(result.data.url);
-						$('#js-cap-error-'+server_id).remove();
-						$tr.animate({opacity:0}, function() { 
+						$('.js-cap-error-'+server_id).remove();
+						$tr.animate({opacity:0}, function() {
 							$('.js-cap-not-editable', $tr).show();
 							$('.js-cap-editable', $tr).hide();
 							$tr.animate({opacity:1});
 						});
 					}
 					else {
-						$('#js-cap-error-'+server_id).fadeOut(function() {
+						$('.js-cap-error-'+server_id).fadeOut(function() {
 							$(this).remove()
 						});
-						$tr.animate({opacity:0}, function() { 
+						$tr.fadeOut(function() {
 							capsule_process_server_errors($tr, result, server_id, false);
 						});
 					}
@@ -779,7 +849,7 @@ input.cap-input-error:focus {
 })(jQuery);
 </script>
 <?php
-	}	
+	}
 
 	/**
 	 * Markup for a 'row' representing a server.
@@ -802,7 +872,7 @@ input.cap-input-error:focus {
 			.esc_html($server_post->post_title).
 		'</div>
 		<div class="js-cap-editable">
-			<input type="text" class="widefat js-cap-editable cap-editable" id="'.esc_attr('js-server-name-'.$server_post->ID).'" name="'.$name_base.'[server_name]" value="'.esc_attr($server_post->post_title).'" />
+			<input type="text" class="widefat js-cap-editable cap-editable js-cap-server-name" id="'.esc_attr('js-server-name-'.$server_post->ID).'" name="'.$name_base.'[server_name]" value="'.esc_attr($server_post->post_title).'" />
 		</div>
 	</td>
 	<td>
@@ -871,7 +941,7 @@ input.cap-input-error:focus {
 
 	/**
 	 * Delete a server post.
-	 * 
+	 *
 	 * @param in $server_id ID of the post to delete
 	 * @return mixed False on failure (from wp_delete_post)
 	 **/
@@ -897,7 +967,7 @@ input.cap-input-error:focus {
 		}
 
 		$post_arr = array(
-			'ID' => $server_id, 
+			'ID' => $server_id,
 		);
 		if (isset($data['server_name'])) {
 			$post_arr['post_title'] = $data['server_name'];
@@ -905,7 +975,7 @@ input.cap-input-error:focus {
 		$result = wp_update_post($post_arr);
 		if ($result && !is_wp_error($result)) {
 			if (isset($data['api_key'])) {
-				update_post_meta($server_id, $this->server_api_key, $data['api_key']); 
+				update_post_meta($server_id, $this->server_api_key, $data['api_key']);
 			}
 			if (isset($data['server_url'])) {
 				update_post_meta($server_id, $this->server_url_key, $data['server_url']);
@@ -914,6 +984,36 @@ input.cap-input-error:focus {
 		}
 
 		return false;
+	}
+
+	public function duplicate_server_check($server_name, $server_url, $server_id = 0) {
+		$errors = array();
+
+		$all_servers = $this->get_servers();
+
+		if (is_array($all_servers)) {
+			foreach ($all_servers as $server) {
+				// Dont check against self
+				if ($server->ID == $server_id) {
+					continue;
+				}
+				if (strtolower(trim($server->url, ' \t\n\r\0\x0B/')) == strtolower(trim($server_url, ' \t\n\r\0\x0B/'))) {
+					$errors['url'] = array(
+						'message' => __('Duplicate server url.', 'capsule'),
+						'type' => 'url',
+					);
+				}
+				if (trim($server->post_title) == trim($server_name)) {
+					$errors['name'] = array(
+						'message' => __('Duplicate server name.', 'capsule'),
+						'type' => 'name',
+					);
+				}
+			}
+		}
+
+		return $errors;
+
 	}
 
 	public function test_credentials($api_key, $url) {
@@ -970,7 +1070,7 @@ input.cap-input-error:focus {
 	 * Fetch terms from the capsule server to be mapped locally.
 	 * Passes taxonomies to get terms from and API key to validate against
 	 *
-	 * @return true|array True if everything went smoothly, array of errors with server post key as the id 
+	 * @return true|array True if everything went smoothly, array of errors with server post key as the id
 	 **/
 	public function get_server_terms() {
 		// Query the servers, hits endpoint via request handler - requires API key
@@ -1030,7 +1130,7 @@ input.cap-input-error:focus {
 	 * @param $server_post_type Post type to associate terms with
 	 */
 	public function process_server_terms($terms, $server_post_type) {
-		
+
 		$post_term_array = array();
 
 		$posts = $this->get_server_term_posts($server_post_type);
@@ -1070,7 +1170,7 @@ input.cap-input-error:focus {
 						if ($existing_data['term_taxonomy'] != $term['taxonomy']) {
 							update_post_meta($post_id, $this->server_term_tax_key, $term['taxonomy']);
 						}
-						
+
 						if ($existing_data['term_slug'] != $term_slug) {
 							update_post_meta($post_id, $this->server_term_slug_key, $term_slug);
 						}
@@ -1151,11 +1251,7 @@ input.cap-input-error:focus {
 		// Get all the terms in taxonomies are mapped and sort them by taxonomy
 		// For easier displaying later
 		$taxonomies = $this->taxonomies_to_map();
-		$terms = get_terms($taxonomies, array(
-			'hide_empty' => false,
-			'orderby' => 'slug',
-			'order' => 'ASC',
-		));
+		$terms = $this->get_taxonomy_terms($taxonomies);
 		$taxonomy_array = array();
 
 		if (is_array($terms)) {
@@ -1183,6 +1279,13 @@ input.cap-input-error:focus {
 
 .cap-wide-dropdown {
 	width: 80%;
+	margin-bottom: 5px;
+}
+table.wp-list-table a.cap-another-project {
+	font-weight: 900;
+	height: 23px;
+	margin-left: 3px;
+	line-height: 18px;
 }
 </style>
 <div class="wrap capsule-admin">
@@ -1190,21 +1293,21 @@ input.cap-input-error:focus {
 	<h2><?php _e('Capsule: Server Projects', 'capsule'); ?></h2>
 	<p class="description"><?php printf(__('When you map a local project to one on a server project, all posts related to that project will be replicated to that server. <a href="%s">Learn More</a>', 'capsule'), esc_url(admin_url('admin.php?page=capsule'))); ?></p>
 	<form method="post">
-<?php 
+<?php
 		$servers = $this->get_servers();
 		foreach ($servers as $server_post) {
 ?>
 			<h3><?php echo esc_html($server_post->post_title); ?></h3>
 <?php
 			$this->show_term_mapping_errors($errors, $server_post->ID);
-			// Default capsule functionality only includes projects here, 
+			// Default capsule functionality only includes projects here,
 			// but support for more taxonomies is present
 			foreach ($taxonomies as $taxonomy) {
 				$tax_obj = get_taxonomy($taxonomy);
 
 				// Get all posts with this taxonomy, doesn't matter which term
 				$posts = $this->get_server_term_posts(
-					$this->post_type_slug($server_post->post_name), 
+					$this->post_type_slug($server_post->post_name),
 					array(
 						'tax_query' => array(
 							array(
@@ -1228,26 +1331,41 @@ input.cap-input-error:focus {
 					</tr>
 				</thead>
 				<tbody>
-<?php 
+<?php
 				foreach ($posts as $post) {
 					// get_the_terms is cached by WP_Query, this isn't as expensive as it looks
 					$terms = get_the_terms($post, $taxonomy);
-					$selected_id = (is_array($terms) && !empty($terms)) ? array_shift($terms)->term_id : 0;
+					$selected_ids = array();
+					if (is_array($terms) && !empty($terms)) {
+						foreach ($terms as $term) {
+							$selected_ids[] = $term->term_id;
+						}
+					}
+					else {
+						// Set this to none, easier to loop over with single element
+						$selected_ids = array(0);
+					}
 ?>
 					<tr>
 						<td><?php echo esc_html($post->post_title); ?></td>
-						<td><?php echo $this->term_select_markup($post, $taxonomy, $taxonomy_array[$taxonomy], $selected_id); ?></td>
+						<td>
+							<?php
+								foreach ($selected_ids as $selected_id) {
+									echo $this->term_select_markup($post, $taxonomy, $taxonomy_array[$taxonomy], $selected_id);
+								}
+							 ?><a href="#" data-taxonomy="<?php echo esc_attr($taxonomy); ?>" data-post-id="<?php echo esc_attr($post->ID); ?>" class="button cap-another-project js-cap-another-project">+</a>
+						</td>
 					</tr>
 <?php
 				}
 ?>
 				</tbody>
 			</table>
-<?php 
+<?php
 		}
 	}
 ?>
-		
+
 			<p>
 				<input type="submit" class="save-mappings button-primary" value="<?php _e('Save', 'capsule'); ?>">
 			</p>
@@ -1255,14 +1373,34 @@ input.cap-input-error:focus {
 			<?php wp_nonce_field('_cap_client_save_mapping', '_save_mapping_nonce', true, true); ?>
 		</form>
 </div>
+<script type="text/javascript">
+(function($) {
+	$(function() {
+		$('body').on('click', '.js-cap-another-project', function(e) {
+			var $el = $(this);
+			// Get markup for another select box
+			$.post('<?php echo esc_js(admin_url()); ?>',
+				{
+					capsule_client_action : 'another_project_mapping_ajax',
+					post_id : $el.data('post-id'),
+					taxonomy : $el.data('taxonomy')
+				},
+				function(data) {
+					$el.before(data);
+				}
+			);
+		});
+	});
+})(jQuery);
+</script>
 
-<?php 
+<?php
 	}
 
 	/**
 	 * Generate markup for a term mapping select box. Adds a 'Create Term Locally' option if no
 	 * term is found that matches the server term name
-	 * 
+	 *
 	 * @param obj $post Post object
 	 * @param string $taxonomy Taxonomy name to select from
 	 * @param arary $terms Terms in the taxonomy
@@ -1276,15 +1414,18 @@ input.cap-input-error:focus {
 		$tax_obj = get_taxonomy($taxonomy);
 
 		$output = '
+
 <input type="hidden" name="'.esc_attr('cap_client_mapping['.$post->ID.']['.$taxonomy.'][server_term]').'" value="'.esc_attr($post->post_title).'">
-<select name="'.esc_attr('cap_client_mapping['.$post->ID.']['.$taxonomy.'][term_id]').'" class="cap-wide-dropdown">
+<select name="'.esc_attr('cap_client_mapping['.$post->ID.']['.$taxonomy.'][term_ids][]').'" class="cap-wide-dropdown">
 	<option value="0">'.__('(not mapped)', 'capsule').'</option>';
 
-		foreach ($terms as $term) {
-			if ($term->name == $post->post_title) {
-				$match = true;
+		if (is_array($terms) && !empty($terms)) {
+			foreach ($terms as $term) {
+				if ($term->name == $post->post_title) {
+					$match = true;
+				}
+				$options .= '<option value="'.esc_attr($term->term_id).'"'.selected($selected_id, $term->term_id, false).'>'.esc_html($term->name).'</option>';
 			}
-			$options .= '<option value="'.esc_attr($term->term_id).'"'.selected($selected_id, $term->term_id, false).'>'.esc_html($term->name).'</option>';
 		}
 		$options = '<optgroup label="'.sprintf(__('Local %s', 'capsule'), $tax_obj->labels->name).'">'.$options.'</optgroup>';
 
@@ -1300,27 +1441,28 @@ input.cap-input-error:focus {
 
 	/**
 	 * Save taxonomy mappings
-	 * 
+	 *
 	 * @param array $mappings Array of mappings in the following format (only 1 term per taxonomy currently):
-	 * Array ( 
-	 *		[post_id] => Array ( 
+	 * Array (
+	 *		[post_id] => Array (
 	 *			[taxonomy] => term_id
-	 *		) 
+	 *		)
 	 * )
-	 */ 
+	 */
 	function save_mapping($mappings) {
 		if (is_array($mappings)) {
 			foreach ($mappings as $post_id => $mapping) {
 				foreach ($mapping as $taxonomy => $term_data) {
-					$term_id = $term_data['term_id'];
-
-					// This is the create id see term_select_markup
-					if ($term_data['term_id'] == -1) {
-						// Create term
-						$term_id = capsule_create_term($term_data['server_term'], $taxonomy);
+					$terms_to_add = array();
+					foreach ($term_data['term_ids'] as $term_id) {
+						// This is the create id see term_select_markup
+						if ($term_id == -1) {
+							// Create term
+							$term_id = capsule_create_term($term_data['server_term'], $taxonomy);
+						}
+						$terms_to_add[] = (int) $term_id;
 					}
-
-					wp_set_object_terms($post_id, (int) $term_id, $taxonomy);
+					wp_set_object_terms($post_id, $terms_to_add, $taxonomy);
 				}
 			}
 		}
@@ -1330,9 +1472,9 @@ input.cap-input-error:focus {
 
 	/**
 	 * Sends post data to an external server
-	 * 
+	 *
 	 * @param $post array array of post data 1:1 to wp_posts table columns
-	 * @param $tax array Array containing all the post taxonomies and tax_input key which corresponds to 
+	 * @param $tax array Array containing all the post taxonomies and tax_input key which corresponds to
 	 *  				 terms in the taxonomies. Need to send the taxonomies seperately if there are no terms being set
 	 * @param $api_key string Api key for a given user of a server
 	 * @param $server_url string URL of the server to send the post to
@@ -1350,8 +1492,11 @@ input.cap-input-error:focus {
 			),
 			'sslverify' => false,
 		);
-		wp_remote_post($server_url, $args);
-		//@TODO response
+		$response = wp_remote_post($server_url, $args);
+		if (!is_wp_error($response) && isset($response['body'])) {
+			return json_decode($response['body']);
+		}
+		return false;
 	}
 
 	/**
@@ -1360,37 +1505,30 @@ input.cap-input-error:focus {
 	 **/
 	function insert_post($post_id, $post) {
 		if ((!defined('DOING_AUTOSAVE') || !DOING_AUTOSAVE) && $post->post_status == 'publish') {
-			$postarr = (array) $post;	
-
-			//@TODO need to get specific servers to send to, not all of them!
-
 			// Check if there are any posts in the post type
 			$taxonomies = get_object_taxonomies($post->post_type);
-
 			$servers = $this->get_servers();
+			$postarr = (array) $post;
 
+			$push = 0;
 			foreach ($servers as $server_post) {
 				// Only send post if theres a term thats been mapped
 				if ($this->has_server_mapping($post, $server_post)) {
-					$tax_input = $this->format_terms_to_send($post, $taxonomies, $this->post_type_slug($server_post->post_name));
-					$mapped_taxonomies = $this->taxonomies_to_map();
-
-					$tax = compact('taxonomies', 'tax_input', 'mapped_taxonomies');
-
-					$api_key = get_post_meta($server_post->ID, $this->server_api_key, true);
-					$endpoint = get_post_meta($server_post->ID, $this->server_url_key, true);
-
-					$this->send_post($postarr, $tax, $api_key, $endpoint);
+					capsule_queue_add($post_id);
+					$push++;
 				}
+			}
+			if ($push) {
+				capsule_queue_start();
 			}
 		}
 	}
 
-	/** 
+	/**
 	 * Check to see if a post has a server term mapping for a given server
-	 * 
+	 *
 	 * @param object $post
-	 * @param object $server 
+	 * @param object $server
 	 *
 	 * @todo revisit this...
 	 **/
@@ -1413,7 +1551,7 @@ input.cap-input-error:focus {
 					),
 					'update_post_term_cache' => false,
 					'update_post_meta_cache' => false,
-					'fields' => 'ids',					
+					'fields' => 'ids',
 				));
 
 				// Cannot use have_posts here as fields=>ids prevents it from working
@@ -1429,11 +1567,11 @@ input.cap-input-error:focus {
 
 	/**
 	 * Format post term mappings to be sent to a server
-	 * 
+	 *
 	 * @param object $post Post being sent to the server
 	 * @param arary $taxonomies array of taxonomies to get data for from $post
 	 * @param string $server_post_type Post of of the term mappings @see post_type_slug()
-	 * 
+	 *
 	 * @return array Array of formatted taxonomy terms ready for transmission to a server
 	 **/
 	function format_terms_to_send($post, $taxonomies, $server_post_type) {
@@ -1508,7 +1646,6 @@ input.cap-input-error:focus {
 				}
 			}
 		}
-
 		return $tax_input;
 	}
 }
