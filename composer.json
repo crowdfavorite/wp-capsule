@@ -1,0 +1,22 @@
+{
+    "config": {
+        "vendor-dir": "./"
+    },
+    "repositories": [
+		{
+            "type": "package",
+            "package": {
+                "name": "ui",
+                "version": "1.0",
+                "source": {
+                    "url": "https://github.com/crowdfavorite/wp-capsule-ui.git",
+                    "type": "git",
+                    "reference": "develop"
+                }
+            }
+        }
+    ],
+    "require": {
+		"ui": "~1.0"
+    }
+}
