@@ -1,0 +1,177 @@
+// -----------------------------------------------------------
+// Main file: SASS variables, mixins, fonts, and @imports
+// -----------------------------------------------------------
+
+// --------------------------------------------------
+// Variables
+// --------------------------------------------------
+
+// Colors
+$white: #fff;
+$gray-light: #333;
+$gray: #222;
+$gray-dark: #111;
+$black: #323333;
+
+// Typography
+
+$font-sans: 'SourceSansProRegular';
+$font-sans-semibold: 'SourceSansProSemibold';
+$font-sans-bold: 'SourceSansProBold';
+$font-mono: 'SourceCodeProRegular';
+$font-icon: 'Fontello';
+
+@font-face {
+	font-family: 'SourceSansProSemibold';
+	font-style: normal;
+	font-weight: 700;
+	src: url('../fonts/source-sans-pro/SourceSansPro-Semibold-webfont.eot');
+	src: url('../fonts/source-sans-pro/SourceSansPro-Semibold-webfont.eot?#iefix') format('embedded-opentype'),
+		 url('../fonts/source-sans-pro/SourceSansPro-Semibold-webfont.woff') format('woff'),
+		 url('../fonts/source-sans-pro/SourceSansPro-Semibold-webfont.ttf') format('truetype'),
+		 url('../fonts/source-sans-pro/SourceSansPro-Semibold-webfont.svg#SourceSansProSemibold') format('svg');
+}
+@font-face {
+	font-family: 'SourceSansProRegular';
+	font-style: normal;
+	font-weight: 700;
+	src: url('../fonts/source-sans-pro/SourceSansPro-Regular-webfont.eot');
+	src: url('../fonts/source-sans-pro/SourceSansPro-Regular-webfont.eot?#iefix') format('embedded-opentype'),
+		 url('../fonts/source-sans-pro/SourceSansPro-Regular-webfont.woff') format('woff'),
+		 url('../fonts/source-sans-pro/SourceSansPro-Regular-webfont.ttf') format('truetype'),
+		 url('../fonts/source-sans-pro/SourceSansPro-Regular-webfont.svg#SourceSansProRegular') format('svg');
+}
+@font-face {
+	font-family: 'SourceSansProBold';
+	font-style: normal;
+	font-weight: 700;
+	src: url('../fonts/source-sans-pro/SourceSansPro-Bold-webfont.eot');
+	src: url('../fonts/source-sans-pro/SourceSansPro-Bold-webfont.eot?#iefix') format('embedded-opentype'),
+		 url('../fonts/source-sans-pro/SourceSansPro-Bold-webfont.woff') format('woff'),
+		 url('../fonts/source-sans-pro/SourceSansPro-Bold-webfont.ttf') format('truetype'),
+		 url('../fonts/source-sans-pro/SourceSansPro-Bold-webfont.svg#SourceSansProBold') format('svg');
+}
+@font-face {
+	font-family: 'SourceCodeProRegular';
+	font-style: normal;
+	font-weight: normal;
+	src: url('../fonts/source-code-pro/SourceCodePro-Regular-webfont.eot');
+	src: url('../fonts/source-code-pro/SourceCodePro-Regular-webfont.eot?#iefix') format('embedded-opentype'),
+		 url('../fonts/source-code-pro/SourceCodePro-Regular-webfont.woff') format('woff'),
+		 url('../fonts/source-code-pro/SourceCodePro-Regular-webfont.ttf') format('truetype'),
+		 url('../fonts/source-code-pro/SourceCodePro-Regular-webfont.svg#SourceCodeProRegular') format('svg');
+}
+@font-face {
+	font-family: 'Fontello';
+	font-style: normal;
+	font-weight: normal;
+	src: url('../fonts/fontello/fontello.eot');
+	src: url('../fonts/fontello/fontello.eot?#iefix') format('embedded-opentype'),
+		 url('../fonts/fontello/fontello.woff') format('woff'),
+		 url('../fonts/fontello/fontello.ttf') format('truetype'),
+		 url('../fonts/fontello/fontello.svg') format('svg');
+}
+
+
+
+
+// --------------------------------------------------
+// Generic Mixins
+// --------------------------------------------------
+
+@mixin border-radius($radius: 3px) {
+	-moz-border-radius: $radius; /* FF1+ */
+	-webkit-border-radius: $radius; /* Saf3+, Chrome */
+	border-radius: $radius; /* Standard. IE9+ */
+	/**
+	 * @bugfix border-radius background bleed
+	 * @see http://tumble.sneak.co.nz/post/928998513/fixing-the-background-bleed
+	 */
+	-webkit-background-clip: padding-box;
+}
+
+@mixin box-shadow($first: 0 3px 3px #666) {
+	-moz-box-shadow: $first; /* FF3.5+ */
+	-webkit-box-shadow: $first; /* Saf3+, Chrome */
+	box-shadow: $first; /* Standard. Opera 10.5, IE9+ */
+}
+
+@mixin transition ($transition: 0.1s ease) {
+	-webkit-transition: $transition;
+	-moz-transition: $transition;
+	-o-transition: $transition;
+	-ms-transition: $transition;
+	transition: $transition;
+}
+
+@mixin transform($x: 1, $y: -2em) {
+	-webkit-transform: translate($x, $y);
+	-moz-transform: translate($x, $y);
+	-o-transform: translate($x, $y);
+	-ms-transform: translate($x, $y);
+	transform: translate($x, $y);
+}
+
+// --------------------------------------------------
+// Image Versioning Functions: use these for all image references in SCSS.
+// --------------------------------------------------
+
+// Image Version Number
+$version: "?ver=1.1";
+
+// Image URL
+@function url_ver($path) {
+	@return url($path + $version);
+}
+
+// Example Use of the Function
+// .box {
+//		background: url_ver('path/to/image.png') no-repeat 0 0;
+//		background-image: url_ver('path/to/stuff');
+// }
+
+// Outputs:
+// .box {
+//		background: url("path/to/image.png?ver=1.0") no-repeat 0 0;
+//		background-image: url("path/to/stuff?ver=1.0");
+// }
+
+
+// Want to use the asset folder path variable?
+$assetpath: "/wp-content/themes/capsule/assets/img/";
+
+@function path_url_ver($path) {
+	@return url($assetpath + $path + $version);
+}
+
+// Example Use of the Function
+// .box {
+//		background: path_url_ver("image.png") no-repeat 0 0;
+//		background-image: path_url_ver("image.jpg");
+// }
+
+// Outputs:
+// .box {
+//		background: url("/wp-content/themes/theme-name/assets/img/image.png?ver=1.0") no-repeat 0 0;
+//		background-image: url("/wp-content/themes/theme-name/assets/img/image.jpg?ver=1.0");
+// }
+
+
+// --------------------------------------------------
+// Styles: everything gets included from here.
+// --------------------------------------------------
+
+// RESET — Normalize, Boilerplate, Formalize
+@import "reset";
+
+// Helper Classes & Debug Styles
+@import "utility";
+
+// Global Header
+@import "header";
+
+// Global Footer
+@import "footer";
+
+// Global Content
+@import "content";
