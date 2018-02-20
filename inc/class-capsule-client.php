@@ -53,6 +53,8 @@ class Capsule_Client {
 	 */
 	public $server_url_key = '_cap_server_url';
 
+	const MAX_SERVERS = 50;
+
 	/**
 	 * Constructor.
 	 */
@@ -383,7 +385,7 @@ class Capsule_Client {
 	public function get_servers() {
 		$query = new WP_Query( array(
 			'post_type'      => 'server',
-			'posts_per_page' => -1,
+			'posts_per_page' => self::MAX_SERVERS,
 			'order'          => 'ASC',
 			'orderby'        => 'name',
 		));
