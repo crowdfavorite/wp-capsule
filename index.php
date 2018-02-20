@@ -1,6 +1,7 @@
 <?php
-
 /**
+ * Capsule entry point.
+ *
  * @package capsule
  *
  * This file is part of the Capsule Theme for WordPress
@@ -12,8 +13,8 @@
  * **********************************************************************
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * **********************************************************************
  */
 
-include('ui/index.php');
+require 'ui/index.php';

@@ -1,0 +1,144 @@
+.capsule-welcome {
+	background: #222;
+	color: #fff;
+	width: 100%;
+}
+.capsule-welcome h1 {
+	color: #fff;
+	font-weight: normal;
+	line-height: 100%;
+	margin: 0;
+	padding: 15px 0 10px 15px;
+}
+.capsule-welcome p {
+	font-weight: normal;
+	line-height: 100%;
+	margin: 0;
+	padding: 0 0 15px 15px;
+}
+.capsule-admin h3 {
+	margin-top: 25px;
+}
+.capsule-admin hr {
+	border: 0;
+	border-top: 1px solid #222;
+	clear: both;
+	margin: 0 100px 10px;
+}
+.capsule-screenshot {
+	border: 1px solid #ccc;
+	padding: 2px;
+	width: 90%;
+}
+.capsule-doc-col-left {
+	clear: left;
+	float: left;
+	margin-right: 30px;
+	margin-bottom: 30px;
+	max-width: 500px;
+	width: 45%;
+}
+.capsule-doc-col-right {
+	clear: right;
+	float: left;
+	margin-bottom: 30px;
+	max-width: 500px;
+	width: 45%;
+}
+/*
+.capsule-welcome {
+	background: #222;
+	color: #fff;
+	margin: 30px 10px 10px 0;
+	padding: 15px;
+}
+.capsule-welcome h1 {
+	font-weight: normal;
+	line-height: 100%;
+	margin: 0 0 10px 0;
+}
+.capsule-welcome p {
+	font-weight: normal;
+	line-height: 100%;
+	margin: 0;
+}
+.capsule-welcome a,
+.capsule-welcome a:visited {
+	color: #f8f8f8;
+}
+*/
+
+#cap-servers {
+	padding-top: 10px;
+}
+#cap-servers td {
+	padding: 5px;
+}
+.cap-api-key {
+	font-family: monospace;
+	white-space: nowrap;
+}
+.cap-delete,
+.cap-delete:visited {
+	color: #BC0B0B;
+}
+}
+.cap-delete:hover,
+.cap-delete:active {
+	color: #f00;
+}
+.cap-editable {
+	display: none;
+	margin-bottom: 2px;
+}
+.cap-not-editable {
+	margin-top: 3px;
+	margin-left: 4px;
+}
+div.cap-edit-server-actions {
+	margin: 0 0 3px 0;
+}
+.capsule-error {
+	background: #FFEBE8;
+	border: 1px solid #c00;
+	-moz-border-radius: 3px; /* FF1+ */
+	-webkit-border-radius: 3px; /* Saf3+, Chrome */
+	border-radius: 3px; /* Standard. IE9+ */
+	color: #900;
+	margin: 5px 0px 5px 0px;
+	padding: 10px 6px;
+}
+.capsule-error p {
+	line-height: 150%;
+	margin: 0;
+	padding: 0;
+}
+.capsule-spinner {
+	background: url(/wp-admin/images/loading.gif) no-repeat center center;
+	background-size: 16px;
+	margin: 5px 0 0 5px;
+	height: 16px;
+	width: 16px;
+	display: none;
+}
+
+.capsule-float-left {
+	float: left;
+}
+
+input.cap-input-error,
+input.cap-input-error:focus {
+	border: 1px solid #c00;
+}
+
+.cap-wide-dropdown {
+	width: 80%;
+	margin-bottom: 5px;
+}
+
+table.wp-list-table a.cap-another-project {
+	font-weight: 900;
+	height: 23px;
+	margin-left: 3px;
+	line-height: 18px;
+}
