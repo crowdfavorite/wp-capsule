@@ -1,0 +1,325 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!-- encoding: utf-8 -->
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="is" lang="is">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>Linkify test</title>
+<!--
+  CDN links:
+  <link  href="http://github.com/jquery/qunit/raw/master/qunit/qunit.css" rel="stylesheet" media="screen" />
+  <script src="http://github.com/jquery/qunit/raw/master/qunit/qunit.js"></script>
+  <script src="http://code.jquery.com/jquery-1.4.2.min.js"></script>
+-->
+  <link  href="../../qunit/qunit/qunit.css" rel="stylesheet" media="screen" />
+  <script src="../../qunit/qunit/qunit.js"></script>
+
+  <!-- links to scripts to test -->
+  <script src="../../jquery/1.4/jquery-1.4.js"></script>
+  <script src="jquery.linkify-1.0.js"></script>
+  <script src="plugins/jquery.linkify-1.0-twitter.js"></script>
+
+<script>
+  /* ==================================================================
+      Documentation: http://docs.jquery.com/QUnit#API_documentation
+    ================================================================== */
+
+  jQuery(function($){
+
+    var $ = jQuery,
+        msie7 = $.browser.msie  &&  parseInt($.browser.version, 10)<8;
+    $('#warning').remove();
+
+    var testEach = function(i){
+            var p = $(this),
+                a = p.find('a'),
+                pUrl = p.attr('data-href'),
+                pLinktext = p.attr('data-linktext'),
+                isOk;
+            if ( msie7 )
+            {
+              // accommodate for the fact that in MSIE7 .attr('href') reports a normalized version of the URL - appending a trailing "/" on the end of the path...
+              var pUrlIE7 = p.attr('data-href-ie7');
+              if (pUrlIE7) 
+              {
+                pLinktext = pLinktext || pUrl;
+                pUrl = pUrlIE7;
+              }
+            }
+
+            isOk = !pUrl ?
+                      a.length === 0:
+                      a.length === pUrl.split(',').length
+                        &&  $.map(a, function(a){ return $(a).attr('href')||''; }).join(',') === pUrl
+                        &&  $.map(a, function(a){ return $(a).text(); }).join(',') === (pLinktext||pUrl);
+            ok( isOk,  p.data('orgHtml')+'\n    ==>    '+this.innerHTML )
+          },
+
+        prepTest = function (selector) {
+            var cont = $(selector);
+                pees = cont.find('p').each(function () { $(this).data('orgHtml', this.innerHTML); });
+            expect( pees.length );
+            return cont;
+          },
+
+        pluginBackup;
+
+
+    test('Ensure Linkify presence', function () {
+        ok( $.fn.linkify, 'Linkify present');
+        ok( $.fn.linkify.plugins, 'Plugins present');
+      });
+
+
+    // 1) all plugins should be used by default
+    test('With plugins (all by default)', function () {
+        prepTest('#wplugin-detailed').linkify().find('p').each(testEach);
+      });
+    // 1b) Explicitly specify that all plugins should be used
+    test('With all plugins (\'*\')', function () {
+        prepTest('#wplugin').linkify('*').find('p').each(testEach);
+      });
+    test('With all plugins ({ use:\'*\' })', function () {
+        prepTest('#wplugin').linkify({ use:'*' }).find('p').each(testEach);
+      });
+
+    // 2) try selecting plugins-by-name
+    test('With Twitter plugins (String)', function () {
+        prepTest('#wplugin').linkify('twitterUser, twitterHashtag').find('p').each(testEach);
+      });
+    test('With Twitter plugins (config.use String)', function () {
+        prepTest('#wplugin').linkify({ use:'twitterUser, twitterHashtag' }).find('p').each(testEach);
+      });
+    test('With Twitter plugins (config.use Array)', function () {
+        prepTest('#wplugin').linkify({ use:['twitterUser', 'twitterHashtag'] }).find('p').each(testEach);
+      });
+
+    // 3) invalid plugin names should be silently disregarded
+    test('Mixing in some bogus plugins (String)', function () {
+        prepTest('#wplugin').linkify('bogus,twitterUser , twitterHashtag ').find('p').each(testEach);
+      });
+    test('Mixing in some bogus plugins (config.use String)', function () {
+        prepTest('#wplugin').linkify({ use:'bogus,twitterUser ,twitterHashtag' }).find('p').each(testEach);
+      });
+    test('Mixing in some bogus plugins (config.use Array)', function () {
+        prepTest('#wplugin').linkify({ use:['bogus', 'twitterUser', 'twitterHashtag'] }).find('p').each(testEach);
+      });
+
+    // disable plugins while running initial tests
+    test('No plugins (plugins disabled)', function () {
+        pluginBackup = $.fn.linkify.plugins;
+        $.fn.linkify.plugins = {};
+        prepTest('#basic').linkify().find('p').each(testEach);
+      });
+
+    test('No plugins (\'\')', function () {
+        // re-enable plugins
+        $.fn.linkify.plugins = pluginBackup;
+        prepTest('#noplugin').linkify('').find('p').each(testEach);
+      });
+    test('No plugins ({ use: \'\' })', function () {
+        // re-enable plugins
+        $.fn.linkify.plugins = pluginBackup;
+        prepTest('#noplugin').linkify({ use: '' }).find('p').each(testEach);
+      });
+
+    // try only supplying an invalid plugin name
+    test('Only bogus plugins (String)', function () {
+        prepTest('#noplugin').linkify('bogus').find('p').each(testEach);
+      });
+    test('Only bogus plugins (config.use String)', function () {
+        prepTest('#noplugin').linkify({ use:'bogus' }).find('p').each(testEach);
+      });
+    test('Only bogus plugins (config.use Array)', function () {
+        prepTest('#noplugin').linkify({ use:['bogus'] }).find('p').each(testEach);
+      });
+    test('Empty plugin string (\'\') should not default to "all"', function () {
+        prepTest('#noplugin').linkify('').find('p').each(testEach);
+      });
+    test('`Use` array with empty plugin string ([\'\']) should not default to "all"', function () {
+        prepTest('#noplugin').linkify({ use: [''] }).find('p').each(testEach);
+      });
+    test('Empty `use` array ([]) should not default to "all"', function () {
+        prepTest('#noplugin').linkify({ use: [] }).find('p').each(testEach);
+      });
+
+    var testLinks = function(links, selector){ 
+            same( links.toArray(), $(selector||'#basic').find('a:not(.preexisting)').toArray() );
+          };
+    var testLinks2 = function(links){  
+            testLinks(links, '#wplugin');
+          };
+
+    // try using the callback
+    test('First parameter is a handleLinks callback', function () {
+        expect(1);
+        $('#basic').linkify(testLinks);
+      });
+    test('Second parameter is a handleLinks callback', function () {
+        expect(1);
+        $('#basic').linkify('', testLinks);
+      });
+    test('Second parameter handleLinks callback should *NOT* run when first param .isPlainObject()', function () {
+        expect(1);
+        ok(true, 'dummy test - because Qunit doesn\'t support `except(0);`');
+        $('#basic').linkify({}, testLinks);
+      });
+    test('Second parameter handleLinks callback - with all plugins', function () {
+        expect(1);
+        $('#wplugin').linkify(undefined, testLinks2);
+      });
+    test('Second parameter handleLinks callback - with named plugins', function () {
+        expect(1);
+        $('#wplugin').linkify('twitterUser, twitterHashtag', testLinks2);
+      });
+    test('handleLinks setting, with named plugins', function () {
+        expect(1);
+        $('#wplugin').linkify({  use: 'twitterUser, twitterHashtag',  handleLinks: testLinks2  });
+      });
+
+    // Make sure adjacent spaces aren't swallowed.
+    test('Make sure adjacent spaces aren\'t swallowed', function () {
+        expect(4);
+        var textAfter = $('<'+'p>aaa http://www.foo.is bbb @user ccc #hashtag ddd email@foo.is eee<'+'/p>').linkify('mailto,twitterUser,twitterHashtag').text();
+        ok( /aaa .+? bbb/.test(textAfter), 'spaces before and after http: link are preserved' );
+        ok( /bbb .+? ccc/.test(textAfter), 'spaces before and after @twitterUser are preserved' );
+        ok( /ccc .+? ddd/.test(textAfter), 'spaces before and after #twitterHashtag are preserved' );
+        ok( /ddd .+? eee/.test(textAfter), 'spaces before and after mailto: address are preserved' );
+      });
+
+
+    // Test the built-in mailto plugin
+    test('Test the mailto plugin', function () {
+        prepTest('#mailto').linkify('mailto').find('p').each(testEach);
+      });
+
+
+  });
+
+
+</script>
+
+</head>
+<body>
+  <p id="warning"><strong>Warning:</strong> If you see this message you might have to change the <code>&lt;script /></code> links to point to <em>your</em> copies of jQuery and Qunit.</p>
+
+  <h1 id="qunit-header">Testing Linkify + Twitter plugin</h1>
+  <h2 id="qunit-banner"></h2>
+  <div id="qunit-testrunner-toolbar"></div>
+  <h2 id="qunit-userAgent"></h2>
+  <ol id="qunit-tests"><li></li></ol>
+
+
+  <!-- test data goes in here -->
+  <div id="main" style="display: none;">
+    <!--
+      Each <p> element's is linkified and then searched for links afterwards
+      the presence of data-href="" implies that a link should be created. No data-href="" implies that no links is expected
+      the value of data-href="" contains the expected href value of the created link.
+    -->
+    <!-- No plugins - just hyperlinks -->
+    <div id="basic">
+      <p data-href="http://www.foo.is" data-href-ie7="http://www.foo.is/">http://www.foo.is</p>
+      <p data-href="http://www.foo.is/">http://www.foo.is/ asdf </p>
+      <p data-href="http://www.foo.is:8080" data-href-ie7="http://www.foo.is:8080/">http://www.foo.is:8080. asd</p>
+      <p data-href="http://www.foo.is:8080,http://www.foo.is/#foo" data-href-ie7="http://www.foo.is:8080/,http://www.foo.is/#foo">http://www.foo.is:8080. asd (http://www.foo.is/#foo)...</p>
+      <p data-href="http://www.foo.is:8080/path/?foo=1#arg">http://www.foo.is:8080/path/?foo=1#arg #asdasdf</p>
+      <p data-href="http://www.foo.is/#foo">http://www.foo.is/#foo ?asddf</p>
+      <p data-href="http://www.foo.is/">should I visit http://www.foo.is/? Sure</p>
+      <p data-href="http://www.foo.is/?foo=1;bar=1">http://www.foo.is/?foo=1;bar=1</p>
+      <p data-href="http://www.foo.is" data-href-ie7="http://www.foo.is/" data-linktext="www.foo.is"> www.foo.is </p>
+      <p data-href="http://www.foo.is/" data-linktext="www.foo.is/"> www.foo.is/ </p>
+      <p data-href="http://www.foo.is/path" data-linktext="www.foo.is/path"> www.foo.is/path </p>
+      <p data-href="http://www.foo.is" data-href-ie7="http://www.foo.is/">Lorem ipsum, "http://www.foo.is" dolor sit amet,</p>
+      <p data-href="https://www.foo.is" data-href-ie7="https://www.foo.is/">&lt;a href="https://www.foo.is"&gt;foo&lt;/a&gt;</p>
+      <p data-href="http://www.foo.is" data-href-ie7="http://www.foo.is/">http://www.foo.is.</p>
+      <p data-href="http://www.foo.is/b/sh?foo=1#w4f" data-linktext="www.foo.is/b/sh?foo=1#w4f">sed do<b>www.foo.is/b/sh?foo=1#w4f</b> tempor</p>
+      <p data-href="http://www.foo.is/b/sh?foo=1#w4f" data-linktext="www.foo.is/b/sh?foo=1#w4f">sed do www.foo.is/b/sh?foo=1#w4f tempor</p>
+      <p data-href="mailto:notreallyanemailaddressbutwhocares">mailto:notreallyanemailaddressbutwhocares<b>lorem ipsum dolor</b></p>
+      <p data-href="mailto:really@an.email.addr">blah mailto:really@an.email.addr blah</p>
+      <p data-href="ftp://www.foo.is" data-href-ie7="ftp://www.foo.is/">&lt;ftp://www.foo.is></p>
+      <p data-href="http://www.foo.is" data-href-ie7="http://www.foo.is/"><a href="http://www.foo.is" class="preexisting">http://www.foo.is</a></p>
+      <p data-href="http://www.fo" data-href-ie7="http://www.fo/">this "http://www.fo"o.is"</p>
+      <p>tetur.www.foo.is elit,</p>
+      <p>teturhttp://www.foo.is elit,</p>
+      <p>nomailto://www.foo.is elit,</p>
+      <p data-href="http://www.foo.is" data-href-ie7="http://www.foo.is/">tetur (http://www.foo.is) elit,</p>
+      <p><button>www.foo.is</button></p>
+      <p><textarea>www.foo.is</textarea></p>
+      <p data-href="mailto:foo@bar.com">Not a URL mailto:foo@bar.com. no</p>
+      <p data-href="http://foo.is/,http://foo2.is/">http://foo.is/ http://foo2.is/</p>
+      <p data-href="http://foo.is/,http://www.foo2.is/" data-linktext="http://foo.is/,www.foo2.is/">http://foo.is/ www.foo2.is/</p>
+      <p data-href="http://www.foo.is/,http://www.foo2.is/" data-linktext="www.foo.is/,www.foo2.is/">www.foo.is/ www.foo2.is/</p>
+    </div>
+
+    <div id="wplugin">
+      <p data-href="http://www.foo.is/">http://www.foo.is/</p>
+      <p data-href="http://www.foo.is/,http://www.twitter.com/username" data-linktext="http://www.foo.is/,@username">blah http://www.foo.is/ @username blah</p>
+      <p data-href="http://www.foo.is/,http://www.twitter.com/search?q=%23hashtag" data-linktext="http://www.foo.is/,#hashtag">blah &lt;http://www.foo.is/&gt; blah #hashtag blah</p>
+      <p data-href="http://www.twitter.com/search?q=%23hashtag" data-linktext="#hashtag">#hashtag</p>
+    </div>
+
+    <div id="wplugin-detailed">
+      <p data-href="http://www.foo.is/,http://www.twitter.com/search?q=%23hashtag" data-linktext="http://www.foo.is/,#hashtag">blah (http://www.foo.is/) (#hashtag) blah</p>
+      <p data-href="http://www.twitter.com/username" data-linktext="@username">@username</p>
+      <p data-href="http://www.twitter.com/username" data-linktext="@username">blah @username blah</p>
+      <p data-href="http://www.twitter.com/username" data-linktext="@username">(@username)</p>
+      <p data-href="http://www.twitter.com/search?q=%23hashtag" data-linktext="#hashtag">blah #hashtag blah</p>
+      <p data-href="http://www.twitter.com/search?q=%23hashtag" data-linktext="#hashtag">blah (#hashtag)</p>
+      <p># hashtag</p>
+      <p data-href="http://www.twitter.com/user1,http://www.twitter.com/user2" data-linktext="@user1,@user2">@user1 @user2</p>
+      <p data-href="http://www.twitter.com/user1,http://www.twitter.com/user2" data-linktext="@user1,@user2">@user1 text @user2</p>
+      <p data-href="http://www.twitter.com/search?q=%23hash1,http://www.twitter.com/search?q=%23hash2" data-linktext="#hash1,#hash2">#hash1 #hash2</p>
+      <p data-href="http://www.twitter.com/search?q=%23hash1,http://www.twitter.com/search?q=%23hash2" data-linktext="#hash1,#hash2">#hash1  text #hash2</p>
+      <p data-href="http://www.twitter.com/search?q=%23h" data-linktext="#h">#h</p>
+      <p data-href="http://www.twitter.com/search?q=%23_foo" data-linktext="#_foo">#_foo</p>
+      <p data-href="http://www.twitter.com/search?q=%23fo2" data-linktext="#fo2">*#fo2</p>
+      <p data-href="http://www.twitter.com/search?q=%23fo3" data-linktext="#fo3">.#fo3</p>
+      <p data-href="http://www.twitter.com/search?q=%23f%C3%BA" data-linktext="#fú">#fú</p>
+      <p data-href="http://www.twitter.com/search?q=%23f%C3%BA%C3%BA" data-linktext="#fúú">#fúú</p>
+      <p data-href="http://www.twitter.com/search?q=%23123f" data-linktext="#123f">#123f</p>
+      <p>#123</p>
+      <p data-href="http://www.twitter.com/search?q=%23foo" data-linktext="#foo">-#foo</p>
+      <p data-href="http://www.twitter.com/search?q=%23foo" data-linktext="#foo">#foo-bar text</p>
+      <p data-href="http://www.twitter.com/search?q=%23foo" data-linktext="#foo">#foo- text</p>
+      <p>#-foo</p>
+      <p data-href="http://www.twitter.com/search?q=%23%C3%BA%C3%BA" data-linktext="#úú">aaa #úú aaa</p>
+      <p data-href="http://www.twitter.com/search?q=%23%C3%BA%C3%BA" data-linktext="#úú">aaa #úú- aaa</p>
+    </div>
+
+    <div id="noplugin">
+      <p data-href="http://www.foo.is" data-href-ie7="http://www.foo.is/">http://www.foo.is</p>
+      <p>@username</p>
+      <p>blah @username blah</p>
+      <p>(@username)</p>
+      <p>#hashtag</p>
+      <p>blah #hashtag blah</p>
+    </div>
+
+    <div id="mailto">
+      <p data-href="mailto:f4oo@bar.com" data-linktext="f4oo@bar.com">f4oo@bar.com</p>
+      <p data-href="mailto:f4oo@bar.com" data-linktext="f4oo@bar.com">asdd&lt;f4oo@bar.com&gt;asdff</p>
+      <p data-href="mailto:f4oo@bar.com" data-linktext="f4oo@bar.com">asdf asdd&lt;f4oo@bar.com&gt; asdff</p>
+      <p data-href="mailto:foo4@bar.com" data-linktext="foo4@bar.com">my e-mail is foo4@bar.com.</p>
+      <p data-href="mailto:foo@bar4.com" data-linktext="foo@bar4.com">my e-mail is "foo@bar4.com"</p>
+      <p data-href="mailto:foo.bar@bar.c4.com" data-linktext="foo.bar@bar.c4.com">my e-mail is "foo.bar@bar.c4.com"</p>
+      <p data-href="mailto:foo+bar@bar.com" data-linktext="foo+bar@bar.com">foo+bar@bar.com</p>
+      <p data-href="mailto:foo+bar@bar.com" data-linktext="foo+bar@bar.com">my e-mail is foo+bar@bar.com.</p>
+      <p data-href="mailto:foo+bar@bar.com" data-linktext="foo+bar@bar.com">my e-mail is foo+bar@bar.com. asdf asdf .</p>
+      <p data-href="mailto:hing@sil.ly" data-linktext="hing@sil.ly">Not an email some"hing@sil.ly. yes</p>
+      <p data-href="mailto:foo@bar.com">Not an email mailto:foo@bar.com. yes</p>
+      <p>@twitteruser</p>
+      <p>And @twitteruser.</p>
+      <p>And @twitteruser.com</p>
+      <p>something@silly</p>
+      <p>this is something@silly. yes</p>
+      <p data-href="mailto:f4oo@bar.com,mailto:f2oo@bar.com" data-linktext="f4oo@bar.com,f2oo@bar.com">f4oo@bar.com f2oo@bar.com</p>
+      <p data-href="mailto:f4oo@bar.com,mailto:f2oo@bar.com" data-linktext="f4oo@bar.com,f2oo@bar.com">f4oo@bar.com text f2oo@bar.com</p>
+      <p data-href="mailto:f4oo@bar.com,mailto:f2oo@bar.com" data-linktext="f4oo@bar.com,f2oo@bar.com">text f4oo@bar.com text f2oo@bar.com text</p>
+    </div>
+
+  </div>
+
+
+</body>
+</html>
