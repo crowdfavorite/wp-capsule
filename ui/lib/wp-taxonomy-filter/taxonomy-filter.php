@@ -111,7 +111,7 @@ function cftf_enqueue_scripts() {
 	wp_enqueue_script( 'jquery-ui-datepicker' );
 	wp_enqueue_script( 'jquery' );
 	wp_enqueue_script( 'chosen', $url . 'lib/chosen/chosen.jquery.min.js', array( 'jquery' ), null, true );
-	wp_enqueue_script( 'cftf', $url . '/taxonomy-filter.js', array( 'jquery', 'chosen', 'jquery-ui-datepicker' ), '1.0', true );
+	wp_enqueue_script( 'cftf', $url . '/taxonomy-filter.js', array( 'jquery', 'chosen', 'jquery-ui-datepicker' ), '20180206.1250', true );
 
 	wp_enqueue_style( 'chosen', $url . '/lib/chosen/chosen.css', array(), null, 'all' );
 }
