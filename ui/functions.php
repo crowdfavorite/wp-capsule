@@ -767,7 +767,7 @@ function capsule_queue_post_to_server( $post_id ) {
 				$server_statuses = is_array( $server_statuses ) ? $server_statuses : array();
 
 				$server_statuses[ $server_post->ID ] = array(
-					'gmt_time'  => gmmktime(),
+					'gmt_time'  => current_time( 'timestamp', true ),
 					'permalink' => $permalink,
 				);
 				update_post_meta( $post_id, '_cap_client_server_statuses', $server_statuses );
