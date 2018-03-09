@@ -123,3 +123,6 @@ require_once('markdown_extended.php');
 // Convert markdown formatted text in $markdown to HTML
 $html = MarkdownExtended($markdown);
 ```
+
+## License
+PHP Markdown Extra Extended is licensed under the [MIT License](http://opensource.org/licenses/MIT). See the LICENSE file for details.
