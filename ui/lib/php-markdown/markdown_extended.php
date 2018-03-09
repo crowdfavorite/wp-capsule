@@ -12,14 +12,16 @@ class MarkdownExtraExtended_Parser extends MarkdownExtra_Parser {
 	var $block_tags_re = 'figure|figcaption|p|div|h[1-6]|blockquote|pre|table|dl|ol|ul|address|form|fieldset|iframe|hr|legend';
 	var $default_classes;
 		
-	function MarkdownExtraExtended_Parser($default_classes = array()) {
+	function __construct( $default_classes = array() ) {
 	    $default_classes = $default_classes;
 		
 		$this->block_gamut += array(
 			"doFencedFigures" => 7,
 		);
-		
-		parent::MarkdownExtra_Parser();
+		$this->span_gamut += array(
+			"doStrikethroughs" => -35
+		);
+		parent::__construct();
 	}
 	
 	function transform($text) {	
@@ -136,7 +138,7 @@ class MarkdownExtraExtended_Parser extends MarkdownExtra_Parser {
 	function _doFencedFigures_callback($matches) {
 		# get figcaption
 		$topcaption = empty($matches[2]) ? null : $this->runBlockGamut($matches[2]);
-		$bottomcaption = empty($matches[4]) ? null : $this->runBlockGamut($matches[4]);
+		$bottomcaption = empty($matches[5]) ? null : $this->runBlockGamut($matches[5]);
 		$figure = $matches[3];
 		$figure = $this->runBlockGamut($figure); # recurse
 
@@ -156,6 +158,20 @@ class MarkdownExtraExtended_Parser extends MarkdownExtra_Parser {
 		}
 		$res .= "</figure>";		
 		return "\n". $this->hashBlock($res)."\n\n";
+	}
+	function doStrikethroughs($text) {
+	#
+	# Replace ~~some deleted text~~ with <del>some deleted text</del>
+	#
+		$text = preg_replace_callback('{
+				~~([^~]+)~~
+			}xm',
+			array(&$this, '_doStrikethroughs_callback'), $text);
+		return $text;
+	}
+	function _doStrikethroughs_callback($matches) {
+		$res = "<del>" . $matches[1] . "</del>";
+		return $this->hashBlock($res);
 	}
 }
 ?>

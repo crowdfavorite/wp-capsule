@@ -2,3 +2,4 @@ node_modules/
 build/
 composer/
 composer.lock
+!lib/ace/build/
