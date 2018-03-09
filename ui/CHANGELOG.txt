@@ -1,7 +1,8 @@
-## Develop
+## Version 1.2
 
-- Fixed an issue with WordPress trunk (3.7) which prevented client-server communications
-- Add fluid-icon for automatic app icon when using Fluid on Mac OS X
+- remove the git submodules structure
+- update libraries, code cleanup
+- fix various PHP notices
 
 ## Version 1.1.1
 
