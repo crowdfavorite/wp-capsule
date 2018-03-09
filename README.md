@@ -28,7 +28,8 @@ Developers, contribute on [GitHub](https://github.com/crowdfavorite/wp-capsule).
 - Capsule Server: https://github.com/crowdfavorite/wp-capsule-server
 - Capsule UI: https://github.com/crowdfavorite/wp-capsule-ui
 
-Capsule UI is a submodule of both Capsule and Capsule Server, delivering the UI for both packages.
+Capsule UI is a subrepo of both Capsule and Capsule Server, delivering the UI for both packages.
+Read more about Git subrepo at https://github.com/ingydotnet/git-subrepo
 
 ---
 
