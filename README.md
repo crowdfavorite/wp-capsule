@@ -6,7 +6,7 @@ _The developer's code journal._
 
 This is a WordPress theme. Install it as usual to turn a WordPress instance into a Capsule code journal. [Learn more.](http://crowdfavorite.com/capsule/)
 
-Minimum required WordPress version: 3.5
+Minimum required WordPress version: 4.1
 
 Target browser compatibility:
 
