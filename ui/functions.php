@@ -13,7 +13,7 @@ define( 'CAPSULE_TAX_PREFIX_CODE', '`' );
 show_admin_bar( false );
 remove_post_type_support( 'post', 'post-formats' );
 
-require_once 'lib/wp-taxonomy-filter/taxonomy-filter.php';
+require_once dirname( __FILE__ ) . '/lib/wp-taxonomy-filter/taxonomy-filter.php';
 
 /**
  * Test if this is a Capsule server.
