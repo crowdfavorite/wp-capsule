@@ -5,7 +5,7 @@
  * @package capsule
  */
 
-define( 'CAPSULE_URL_VERSION', '2.3' );
+define( 'CAPSULE_URL_VERSION', '2.4' );
 define( 'CAPSULE_TAX_PREFIX_PROJECT', '@' );
 define( 'CAPSULE_TAX_PREFIX_TAG', '#' );
 define( 'CAPSULE_TAX_PREFIX_CODE', '`' );
