@@ -162,7 +162,7 @@ function cfgk_request_handler() {
 				}
 
 				// Redirect properly, with a message id.
-				wp_redirect(
+				wp_safe_redirect(
 					basename( $_SERVER['SCRIPT_NAME'] ) .
 					sprintf( '?page=%1$s&updated=true&message=%2%s', $page, $message_id )
 				);
@@ -170,7 +170,7 @@ function cfgk_request_handler() {
 			}
 
 			// Nothing updated.
-			wp_redirect( basename( $_SERVER['SCRIPT_NAME'] ) . '?page=' . $page );
+			wp_safe_redirect( basename( $_SERVER['SCRIPT_NAME'] ) . '?page=' . $page );
 			exit;
 		default:
 			break;
