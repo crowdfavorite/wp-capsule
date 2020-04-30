@@ -21,14 +21,14 @@
 		</ul>
 		<p><?php esc_html_e( 'Simply include these in the content of your post and Capsule will find them and store them as standard WordPress taxonomy terms for your post.', 'capsule' ); ?></p>
 		<p>
-			<?php esc_html_e( 'When creating projects or tags please be aware that these should explicitly not include a space character in their name. The reasoning behind this is that the parser cannot properly identify a project or tag containing a space character when trying to reference them in your capsule(document).', 'capsule' ); ?>
+			<?php esc_html_e( 'When creating projects or tags please be aware that these should explicitly not include a space character in their name. The reasoning behind this is that the parser cannot properly identify a project or tag containing a space character when trying to reference them in your capsule (document).', 'capsule' ); ?>
 		</p>
 		<p>
 			<?php esc_html_e( 'Consider the following example:', 'capsule' ); ?>
 		</p>
 		<ol>
 			<li><?php esc_html_e( 'You have a project named “Project X”', 'capsule' ); ?></li>
-			<li><?php esc_html_e( 'You are writing a new capsule(document)', 'capsule' ); ?></li>
+			<li><?php esc_html_e( 'You are writing a new capsule (document)', 'capsule' ); ?></li>
 			<li><?php esc_html_e( 'When trying to reference your project by using the @ symbol, you would write “@Project X”', 'capsule' ); ?></li>
 			<li><?php esc_html_e( 'The parser reads this input as follows:', 'capsule' ); ?>
 				<ol>
