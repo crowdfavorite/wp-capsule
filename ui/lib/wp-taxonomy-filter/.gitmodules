@@ -1,0 +1,3 @@
+[submodule "lib/chosen"]
+	path = lib/chosen
+	url = git://github.com/crowdfavorite/chosen.git 

@@ -1,0 +1,122 @@
+// ----------------------------------------
+// Utility/Helper Classes
+// ----------------------------------------
+
+// From HTML5 Boilerplate (since these are utility, they belong in here rather in _reset.scss)
+
+/* ==|== non-semantic helper classes ========================================
+   Please define your styles before this section.
+   ========================================================================== */
+
+/* For image replacement */
+.ir { border: 0; font: 0/0 a; text-shadow: none; color: transparent; background-color: transparent; }
+
+/* Hide from both screenreaders and browsers: h5bp.com/u */
+.hidden { display: none !important; visibility: hidden; }
+
+/* Hide only visually, but have it available for screenreaders: h5bp.com/v */
+.visuallyhidden { border: 0; clip: rect(0 0 0 0); height: 1px; margin: -1px; overflow: hidden; padding: 0; position: absolute; width: 1px; }
+
+/* Extends the .visuallyhidden class to allow the element to be focusable when navigated to via the keyboard: h5bp.com/p */
+.visuallyhidden.focusable:active, .visuallyhidden.focusable:focus { clip: auto; height: auto; margin: 0; overflow: visible; position: static; width: auto; }
+
+/* Hide visually and from screenreaders, but maintain layout */
+.invisible { visibility: hidden; }
+
+/* Contain floats: h5bp.com/q */
+.clearfix:before, .clearfix:after { content: ""; display: table; }
+.clearfix:after { clear: both; }
+.clearfix { *zoom: 1; }
+
+/* 	Other Non-semantic Helpers
+	------------------------------------------------------- */
+
+.border-box {
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+}
+
+/** WordPress compatibility styles
+ -------------------------------------------------- */
+.alignleft,
+.alignright {
+	margin-top: 4px;
+}
+.alignleft {
+	float: left;
+	margin-right: 20px;
+	margin-bottom: 15px;
+}
+.alignright {
+	float: right;
+	margin-left: 20px;
+	margin-bottom: 15px;
+}
+.aligncenter {
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+}
+/**
+ * Captioned images
+ * Caption shortcode filtered.
+ */
+.wp-caption {
+	overflow: hidden;
+}
+.wp-caption dt {
+	margin: 0;
+}
+.wp-caption img {
+	display: block;
+	margin: 0;
+	padding: 0;
+	border: 0;
+}
+.wp-caption dd {
+	font-size: .9rem;
+	padding: 2px 8px 3px 8px;
+	margin: 1px 0 0 0;
+}
+.sticky {
+	/* Add styles here if you wish to callout sticky posts */
+}w
+
+/* --------------------------------------------------
+ * Standard / Utility Classes
+-------------------------------------------------- */
+
+/* Pagination */
+.pagination {
+	min-height: 20px;
+	margin: 30px 0;
+
+	.prev,
+	.next {
+		display: block;
+		line-height: 0.8rem;
+		width: 48%;
+	}
+	.next {
+		float: right;
+		text-align: right;
+	}
+}
+
+/* --------------------------------------------------
+ * Custom Utility Classes
+-------------------------------------------------- */
+
+.none {
+	color: #999;
+	text-shadow: 1px 1px $white;
+}
+.transparent {
+	opacity: 0;
+}
+.spinner {
+	/* background image set in functions.php */
+	height: 100%;
+	width: 100%;
+}
