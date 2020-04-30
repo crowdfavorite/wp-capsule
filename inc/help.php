@@ -20,15 +20,28 @@
 			<li><?php esc_html_e( 'Tags: #example, #example-tag, #example.com', 'capsule' ); ?></li>
 		</ul>
 		<p><?php esc_html_e( 'Simply include these in the content of your post and Capsule will find them and store them as standard WordPress taxonomy terms for your post.', 'capsule' ); ?></p>
-
+		<p>
+			<?php esc_html_e( 'When creating projects or tags please be aware that these should explicitly not include a space character in their name. The reasoning behind this is that the parser cannot properly identify a project or tag containing a space character when trying to reference them in your capsule (document).', 'capsule' ); ?>
+		</p>
+		<p>
+			<?php esc_html_e( 'Consider the following example:', 'capsule' ); ?>
+		</p>
+		<ol>
+			<li><?php esc_html_e( 'You have a project named “Project X”', 'capsule' ); ?></li>
+			<li><?php esc_html_e( 'You are writing a new capsule (document)', 'capsule' ); ?></li>
+			<li><?php esc_html_e( 'When trying to reference your project by using the @ symbol, you would write “@Project X”', 'capsule' ); ?></li>
+			<li><?php esc_html_e( 'The parser reads this input as follows:', 'capsule' ); ?>
+				<ol>
+					<li><?php esc_html_e( 'Assign this capsule to the project named “Project”', 'capsule' ); ?></li>
+					<li><?php esc_html_e( 'What is left will be added to the content of your capsule, i.e: “ X”', 'capsule' ); ?></li>
+				</ol>
+			</li>
+		</ol>
 		<h3><?php esc_html_e( 'Search', 'capsule' ); ?></h3>
 		<p><img src="<?php echo esc_url( get_template_directory_uri() ); ?>/docs/search.jpg" alt="<?php esc_html_e( 'Search', 'capsule' ); ?>" class="capsule-screenshot" /></p>
 		<p><?php esc_html_e( 'We\'re saving this information to make it useful in the future, so we\'ve got to be able to find it again. Capsule supports both keyword search and filtering by projects, tags, code languages and date range, whew! When using keyword search you can auto-complete projects, tags, and code languages by using their syntax prefix.', 'capsule' ); ?></p>
 		<p><img src="<?php echo esc_url( get_template_directory_uri() ); ?>/docs/filter.jpg" alt="<?php esc_html_e( 'Filters', 'capsule' ); ?>" class="capsule-screenshot" /></p>
 		<p><?php esc_html_e( 'When filtering, multiple projects/tags/etc. can be selected and are all populated with auto-complete.', 'capsule' ); ?></p>
-
-		<h3><?php esc_html_e( 'Icon and Fluid Apps', 'capsule' ); ?></h3>
-		<p><?php esc_html_e( 'Capsule works great with apps like Fluid that give you an application for a website. Need an icon for your app? Find it in the <code>wp-content/themes/capule/ui/assets/icon/</code> dir.', 'capsule' ); ?></p>
 	</div>
 	<div class="capsule-doc-col-right">
 		<h3><?php esc_html_e( 'Editing', 'capsule' ); ?></h3>
@@ -104,6 +117,8 @@ echo 'Hello World';
 				</tr>
 			</tbody>
 		</table>
+		<h3><?php esc_html_e( 'Icon and Fluid Apps', 'capsule' ); ?></h3>
+		<p><?php esc_html_e( 'Capsule works great with apps like Fluid that give you an application for a website. Need an icon for your app? Find it in the <code>wp-content/themes/capule/ui/assets/icon/</code> dir.', 'capsule' ); ?></p>
 	</div>
 	<br style="clear: both;">
 	<hr>
