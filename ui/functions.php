@@ -672,7 +672,7 @@ function capsule_queue_start() {
 		'capsule_action' => 'queue_run',
 		'api_key'        => capsule_queue_api_key(),
 	), site_url( 'index.php' ) );
-	wp_remote_get(
+	wp_safe_remote_get(
 		$url,
 		array(
 			'blocking'  => false,
@@ -707,7 +707,7 @@ function capsule_queue_run() {
 			'post_id'        => $queue[ $i ],
 			'api_key'        => capsule_queue_api_key(),
 		), site_url( 'index.php' ) );
-		wp_remote_get(
+		wp_safe_remote_get(
 			$url,
 			array(
 				'blocking'  => false,

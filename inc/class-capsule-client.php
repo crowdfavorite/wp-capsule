@@ -848,7 +848,7 @@ class Capsule_Client {
 			'sslverify' => false,
 		);
 
-		$request = wp_remote_post( $url, $args );
+		$request = wp_safe_remote_post( $url, $args );
 		// Check for errors.
 		if ( is_wp_error( $request ) ) {
 			foreach ( $request->errors as $key => $wp_errors ) {
@@ -907,7 +907,7 @@ class Capsule_Client {
 				'timeout'   => 30,
 			);
 
-			$request = wp_remote_post( $server_post->url, $args );
+			$request = wp_safe_remote_post( $server_post->url, $args );
 			// Check for errors.
 			if ( is_wp_error( $request ) ) {
 				foreach ( $request->errors as $key => $wp_errors ) {
@@ -1304,7 +1304,7 @@ class Capsule_Client {
 			'sslverify' => false,
 		);
 
-		$response = wp_remote_post( $server_url, $args );
+		$response = wp_safe_remote_post( $server_url, $args );
 		if ( ! is_wp_error( $response ) && isset( $response['body'] ) ) {
 			return json_decode( $response['body'] );
 		}
