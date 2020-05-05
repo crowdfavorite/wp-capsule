@@ -48,7 +48,7 @@
 		<!-- 1050 x 450 -->
 		<p><img src="<?php echo esc_url( get_template_directory_uri() ); ?>/docs/editing.jpg" alt="<?php esc_html_e( 'Editing', 'capsule' ); ?>" class="capsule-screenshot" /></p>
 		<p><?php esc_html_e( 'Bring up the editor for a post by clicking the Edit icon or double-clicking on the post content.', 'capsule' ); ?></p>
-		<p><?php esc_html_e( 'Capsule supports <a href="http://michelf.ca/projects/php-markdown/extra/">Markdown Extra</a> syntax with one minor nuance. Since we are using hashtag notation to create tags for our posts, to create a title using Markdown syntax Capsule requires a space between the &quot;#&quot; and the title text. Example:', 'capsule' ); ?></p>
+		<p><?php esc_html_e( 'Capsule supports Markdown Extra syntax with one minor nuance. Since we are using hashtag notation to create tags for our posts, to create a title using Markdown syntax Capsule requires a space between the &quot;#&quot; and the title text. Example:', 'capsule' ); ?></p>
 		<ul>
 			<li><?php esc_html_e( 'Title: # I am a Title!', 'capsule' ); ?></li>
 			<li><?php esc_html_e( 'Tag: #i-am-a-tag', 'capsule' ); ?></li>
@@ -118,7 +118,7 @@ echo 'Hello World';
 			</tbody>
 		</table>
 		<h3><?php esc_html_e( 'Icon and Fluid Apps', 'capsule' ); ?></h3>
-		<p><?php esc_html_e( 'Capsule works great with apps like Fluid that give you an application for a website. Need an icon for your app? Find it in the <code>wp-content/themes/capule/ui/assets/icon/</code> dir.', 'capsule' ); ?></p>
+		<p><?php esc_html_e( 'Capsule works great with apps like Fluid that give you an application for a website. Need an icon for your app? Find it in the wp-content/themes/capule/ui/assets/icon/ dir.', 'capsule' ); ?></p>
 	</div>
 	<br style="clear: both;">
 	<hr>
@@ -138,14 +138,18 @@ echo 'Hello World';
 	</div>
 	<div class="capsule-doc-col-right">
 		<h3><?php esc_html_e( 'Capsule Server', 'capsule' ); ?></h3>
-		<p><?php esc_html_e( 'Anyone can set up a <a href="http://crowdfavorite.com/capsule/">Capsule Server</a>. It is free, Open Source and built on WordPress; just like Capsule.', 'capsule' ); ?></p>
+		<p><?php esc_html_e( 'Anyone can set up a Capsule Server. It is free, Open Source and built on WordPress; just like Capsule.', 'capsule' ); ?></p>
 		<p><?php esc_html_e( 'Add users to your Capsule Server and they will be able to connect their Capsule journals to your Server.', 'capsule' ); ?></p>
+		<h3><?php esc_html_e( 'Using dnsmasq', 'capsule' ); ?></h3>
+		<p><?php esc_html_e( 'Many local development environments take advantage of dnsmasq to have pretty links for their local projects. However, please be aware that there is a common issue affecting cURL usage on environments with dnsmasq running as a service.', 'capsule' ); ?></p>
+		<p><?php esc_html_e( 'As WP Capsule uses cURL to sync capsules, you might find that your local instance is not able to properly send information over to your defined WP Capsule Server.', 'capsule' ); ?></p>
+		<p><?php esc_html_e( 'To check if your local domain properly resolves, use the terminal command dig, followed by your local URL (eg: dig mywebsite.localhost). In the response section of the output you should see an A record pointing to 127.0.0.1.', 'capsule' ); ?></p>
 	</div>
 	<br style="clear: both;">
 	<hr>
 	<div class="capsule-doc-col-left">
 		<h3><?php esc_html_e( 'Credits', 'capsule' ); ?></h3>
-		<p><?php esc_html_e( 'Capsule was conceived and executed by the brilliant and devastatingly good-looking men and women at <a href="http://crowdfavorite.com">Crowd Favorite</a>.', 'capsule' ); ?></p>
+		<p><?php esc_html_e( 'Capsule was conceived and executed by the brilliant and devastatingly good-looking men and women at Crowd Favorite.', 'capsule' ); ?></p>
 		<p><?php esc_html_e( 'Capsule is released under the GPL v2 license.', 'capsule' ); ?></p>
 	</div>
 	<div class="capsule-doc-col-right">
