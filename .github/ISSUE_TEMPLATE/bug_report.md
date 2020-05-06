@@ -1,8 +1,9 @@
 ---
 name: Bug report
 about: Tell us about a bug you may have identified in WP Capsule.
-
+labels: bug
 ---
+
 Before opening:
 
 - [Search for duplicate or closed issues](https://github.com/crowdfavorite/wp-capsule/issues?utf8=%E2%9C%93&q=is%3Aissue)

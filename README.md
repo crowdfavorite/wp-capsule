@@ -8,7 +8,7 @@
 
 
 <p align="center">
-  _The developer's code journal._
+  <i>The developer's code journal.</i>
   <br>
   <a href="DOCUMENTATION.md"><strong>Explore WP Capsule docs »</strong></a>
   <br>
