@@ -16,7 +16,7 @@
   <a href="https://github.com/crowdfavorite/wp-capsule/issues/new?template=bug_report.md&labels=bug">Report bug</a>
   ·
   <a href="https://github.com/crowdfavorite/wp-capsule/issues/new?template=feature_request.md&labels=feature">Request feature</a>
-  ·
+  .
   <a href="https://github.com/crowdfavorite/wp-capsule-server/">Check out WP Capsule Server</a>
 </p>
 
@@ -40,6 +40,9 @@
 This is a WordPress theme. Install it as usual to turn a WordPress instance into a Capsule code journal.
 
 - [Download the latest release.](https://github.com/crowdfavorite/wp-capsule/releases/)
+
+or
+
 - Clone the repo: `git clone https://github.com/crowdfavorite/wp-capsule.git` in your `wp-content/themes` folder
 
 Read the _Welcome_ page (available in your WordPress dashboard at `wp-admin/admin.php?page=capsule`) for more information.
