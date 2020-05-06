@@ -58,7 +58,7 @@ class CapsuleClient
 	 */
 	public $server_url_key = '_cap_server_url';
 
-	private const MAX_SERVERS = 50;
+	const MAX_SERVERS = 50; //phpcs:ignore
 
 	/**
 	 * Constructor.
