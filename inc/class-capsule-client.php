@@ -4,14 +4,17 @@
  * Capsule client implementation.
  *
  * @package capsule
+ * @phpcs:disable PSR1.Methods.CamelCapsMethodName.NotCamelCaps
  */
+
+namespace CrowdFavorite\Capsule;
 
 /**
  * Capsule Client class.
  *
  * Class here is mostly for namespacing of methods and properties
  */
-class Capsule_Client
+class CapsuleClient
 {
 	/**
 	 * Post type prefix.
@@ -55,7 +58,7 @@ class Capsule_Client
 	 */
 	public $server_url_key = '_cap_server_url';
 
-	const MAX_SERVERS = 50;
+	private const MAX_SERVERS = 50;
 
 	/**
 	 * Constructor.
@@ -111,7 +114,12 @@ class Capsule_Client
 	 */
 	public function admin_scripts_and_styles($hook)
 	{
-		wp_enqueue_style('capsule-admin', get_template_directory_uri() . '/assets/css/admin.css', false, '20180215.1845');
+		wp_enqueue_style(
+			'capsule-admin',
+			get_template_directory_uri() . '/assets/css/admin.css',
+			false,
+			'20180215.1845'
+		);
 
 		if ('capsule_page_capsule-servers' === $hook) {
 			wp_register_script(
@@ -138,7 +146,7 @@ class Capsule_Client
 	 */
 	public function request_handler()
 	{
-		$action = ( ! empty($_REQUEST['capsule_client_action']) ) ? $_REQUEST['capsule_client_action'] : '';
+		$action = ( ! empty($_REQUEST['capsule_client_action']) ) ? $_REQUEST['capsule_client_action'] : ''; //phpcs:ignore
 		if (empty($action)) {
 			return;
 		}
@@ -393,7 +401,7 @@ class Capsule_Client
 	 **/
 	public function get_servers()
 	{
-		$query = new WP_Query(array(
+		$query = new \WP_Query(array(
 			'post_type'      => 'server',
 			'posts_per_page' => self::MAX_SERVERS,
 			'order'          => 'ASC',
@@ -414,7 +422,7 @@ class Capsule_Client
 	 * Process server data.
 	 *
 	 * @param object|integer $server Post object or post id.
-	 * @return object|null           Post object with additional API key and URL. Return null if the server does not exist.
+	 * @return object|null Post object with additional API key and URL. Return null if the server does not exist.
 	 */
 	public function process_server($server)
 	{
@@ -594,7 +602,11 @@ class Capsule_Client
 				echo wp_kses_post(
 					sprintf(
 						// Translators: %s is the Capsule admin page URL.
-						__('Connect to one or more Capsule Servers to replicate selected content to those servers. <a href="%s">Learn More</a>', 'capsule'),
+						__(
+							'Connect to one or more Capsule Servers to replicate selected content to those servers.
+							<a href="%s">Learn More</a>',
+							'capsule'
+						),
 						esc_url(admin_url('admin.php?page=capsule'))
 					)
 				);
@@ -631,24 +643,54 @@ class Capsule_Client
 						<tr id="js-server-item-new" class="<?php echo esc_attr($class); ?>">
 							<td>
 								<div>
-									<input type="text" class="widefat js-cap-server-name"  name="server_name" value="" placeholder="<?php esc_html_e('Server Name', 'capsule'); ?>" />
+									<input
+										type="text"
+										class="widefat js-cap-server-name"
+										name="server_name"
+										value=""
+										placeholder="<?php esc_html_e('Server Name', 'capsule'); ?>"
+									/>
 								</div>
 							</td>
 							<td>
 								<div>
-									<input type="text" class="widefat js-cap-server-url" name="server_url" value=""  placeholder="<?php esc_html_e('Server URL', 'capsule'); ?>" />
+									<input
+										type="text"
+										class="widefat js-cap-server-url"
+										name="server_url"
+										value=""
+										placeholder="<?php esc_html_e('Server URL', 'capsule'); ?>"
+									/>
 								</div>
 							</td>
 							<td>
 								<div>
-									<input type="text" class="widefat js-cap-server-api-key" name="server_api_key" value=""  placeholder="<?php esc_html_e('API Key', 'capsule'); ?>" />
+									<input
+										type="text"
+										class="widefat js-cap-server-api-key"
+										name="server_api_key"
+										value=""
+										placeholder="<?php esc_html_e('API Key', 'capsule'); ?>"
+									/>
 								</div>
 							</td>
 							<td>
 								<div>
-									<input type="submit" class="js-cap-add capsule-float-left button" value="<?php esc_html_e('Add Server', 'capsule'); ?>" /><span class="capsule-float-left capsule-spinner"></span>
+									<input
+										type="submit"
+										class="js-cap-add capsule-float-left button"
+										value="<?php esc_html_e('Add Server', 'capsule'); ?>"
+									/>
+									<span class="capsule-float-left capsule-spinner"></span>
 									<input type="hidden" value="add_server" name="capsule_client_action" />
-									<?php wp_nonce_field('_cap_client_server_management', '_server_nonce', true, true); ?>
+									<?php
+									wp_nonce_field(
+										'_cap_client_server_management',
+										'_server_nonce',
+										true,
+										true
+									);
+									?>
 								</div>
 							</td>
 						</tr>
@@ -675,55 +717,67 @@ class Capsule_Client
 		// wp_nonce_url does esc_html.
 		$delete_url = wp_nonce_url($delete_url, '_cap_client_delete_server');
 		$name_base  = 'servers[' . $server_post->ID . ']';
+		$class_name = 'js-static-server-name-' . $server_post->ID;
+		$class_url = 'js-static-server-url-' . $server_post->ID;
+		$class_api = 'js-static-server-api-' . $server_post->ID;
 		?>
-<tr id="<?php echo esc_attr('js-server-item-' . $server_post->ID); ?>" class="<?php echo esc_attr('server-item' . $class); ?>">
-	<td>
-		<div class="js-cap-not-editable cap-not-editable <?php echo esc_attr('js-static-server-name-' . $server_post->ID); ?>">
-			<?php echo esc_html($server_post->post_title); ?>
-		</div>
-		<div class="js-cap-editable">
-			<input type="text" class="widefat js-cap-editable cap-editable js-cap-server-name"
-				id="<?php echo esc_attr('js-server-name-' . $server_post->ID); ?>"
-				name="<?php echo esc_attr($name_base) . '[server_name]'; ?>"
-				value="<?php echo esc_attr($server_post->post_title); ?>" />
-		</div>
-	</td>
-	<td>
-		<div class="js-cap-not-editable cap-not-editable <?php echo esc_attr('js-static-server-url-' . $server_post->ID); ?>">
-			<?php echo esc_html($server_post->url); ?>
-		</div>
-		<div class="js-cap-editable">
-			<input type="text" class="widefat js-cap-editable cap-editable js-cap-server-url"
-				id="<?php echo esc_attr('js-server-url-' . $server_post->ID); ?>"
-				name="<?php echo esc_attr($name_base) . '[server_url]'; ?>"
-				value="<?php echo esc_attr($server_post->url); ?>" />
-		</div>
-	</td>
-	<td>
-		<div class="cap-api-key js-cap-not-editable cap-not-editable <?php echo esc_attr('js-static-server-api-' . $server_post->ID); ?>">
-			<?php echo esc_html($server_post->api_key); ?>
-		</div>
-		<div class="js-cap-editable cap-editable">
-			<input type="text" class="widefat js-cap-editable js-cap-server-api-key"
-				id="<?php echo esc_attr('js-server-api_key-' . $server_post->ID); ?>"
-				name="<?php echo esc_attr($name_base) . '[api_key]'; ?>"
-				value="<?php echo esc_attr($server_post->api_key); ?>" />
-		</div>
-	</td>
-	<td>
-		<div class="js-cap-not-editable cap-not-editable cap-edit-server-actions">
-			<a href="#" class="js-cap-edit-server" data-server_id="<?php echo (int) $server_post->ID; ?>"><?php esc_html_e('Edit', 'capsule'); ?></a> |
-			<a href="<?php echo esc_url_raw($delete_url); ?>"
-				data-server_id="<?php echo (int) $server_post->ID; ?>"
-				class="delete js-server-delete cap-delete"><?php esc_html_e('Delete', 'capsule'); ?></a>
-		</div>
-		<div class="js-cap-editable cap-editable">
-			<a href="#" class="capsule-float-left js-cap-save-server button-primary"
-				data-server_id="<?php echo (int) $server_post->ID; ?>"><?php esc_html_e('Save', 'capsule'); ?>
-			</a><span class="capsule-float-left capsule-spinner"></span>
-		</div>
-	</td>
-</tr>
+		<tr
+			id="<?php echo esc_attr('js-server-item-' . $server_post->ID); ?>"
+			class="<?php echo esc_attr('server-item' . $class); ?>"
+		>
+			<td>
+				<div class="js-cap-not-editable cap-not-editable <?php echo esc_attr($class_name); ?>">
+					<?php echo esc_html($server_post->post_title); ?>
+				</div>
+				<div class="js-cap-editable">
+					<input type="text" class="widefat js-cap-editable cap-editable js-cap-server-name"
+						id="<?php echo esc_attr('js-server-name-' . $server_post->ID); ?>"
+						name="<?php echo esc_attr($name_base) . '[server_name]'; ?>"
+						value="<?php echo esc_attr($server_post->post_title); ?>" />
+				</div>
+			</td>
+			<td>
+				<div class="js-cap-not-editable cap-not-editable <?php echo esc_attr($class_url); ?>">
+					<?php echo esc_html($server_post->url); ?>
+				</div>
+				<div class="js-cap-editable">
+					<input type="text" class="widefat js-cap-editable cap-editable js-cap-server-url"
+						id="<?php echo esc_attr('js-server-url-' . $server_post->ID); ?>"
+						name="<?php echo esc_attr($name_base) . '[server_url]'; ?>"
+						value="<?php echo esc_attr($server_post->url); ?>" />
+				</div>
+			</td>
+			<td>
+				<div class="cap-api-key js-cap-not-editable cap-not-editable <?php echo esc_attr($class_api); ?>">
+					<?php echo esc_html($server_post->api_key); ?>
+				</div>
+				<div class="js-cap-editable cap-editable">
+					<input type="text" class="widefat js-cap-editable js-cap-server-api-key"
+						id="<?php echo esc_attr('js-server-api_key-' . $server_post->ID); ?>"
+						name="<?php echo esc_attr($name_base) . '[api_key]'; ?>"
+						value="<?php echo esc_attr($server_post->api_key); ?>" />
+				</div>
+			</td>
+			<td>
+				<div class="js-cap-not-editable cap-not-editable cap-edit-server-actions">
+					<a
+						href="#"
+						class="js-cap-edit-server"
+						data-server_id="<?php echo (int) $server_post->ID; ?>"
+					>
+						<?php esc_html_e('Edit', 'capsule'); ?>
+					</a> |
+					<a href="<?php echo esc_url_raw($delete_url); ?>"
+						data-server_id="<?php echo (int) $server_post->ID; ?>"
+						class="delete js-server-delete cap-delete"><?php esc_html_e('Delete', 'capsule'); ?></a>
+				</div>
+				<div class="js-cap-editable cap-editable">
+					<a href="#" class="capsule-float-left js-cap-save-server button-primary"
+						data-server_id="<?php echo (int) $server_post->ID; ?>"><?php esc_html_e('Save', 'capsule'); ?>
+					</a><span class="capsule-float-left capsule-spinner"></span>
+				</div>
+			</td>
+		</tr>
 		<?php
 	}
 
@@ -833,7 +887,9 @@ class Capsule_Client
 				if ((int) $server->ID === (int) $server_id) {
 					continue;
 				}
-				if (strtolower(trim($server->url, ' \t\n\r\0\x0B/')) === strtolower(trim($server_url, ' \t\n\r\0\x0B/'))) {
+				if (
+					strtolower(trim($server->url, ' \t\n\r\0\x0B/')) === strtolower(trim($server_url, ' \t\n\r\0\x0B/'))
+				) {
 					$errors['url'] = array(
 						'message' => __('Duplicate server url.', 'capsule'),
 						'type'    => 'url',
@@ -892,7 +948,11 @@ class Capsule_Client
 		} elseif (200 !== (int) $request['response']['code']) {
 			$errors[] = array(
 				// Translators: %1$s is the response code, %2$s is the error message.
-				'message' => sprintf(__('Server said "%1$s : %2$s".', 'capsule'), $request['response']['code'], $request['response']['message']),
+				'message' => sprintf(
+					__('Server said "%1$s : %2$s".', 'capsule'),
+					$request['response']['code'],
+					$request['response']['message']
+				),
 				'type'    => 'url',
 			);
 		} elseif ('authorized' !== $request['body']) {
@@ -943,12 +1003,16 @@ class Capsule_Client
 			} elseif (200 !== (int) $request['response']['code']) {
 				$errors[ $server_post->ID ][] = sprintf(
 					// Translators: %1$s is the response code, %2$s is the error message.
-					__('Server said: "%1$s:%2$s" Please check the server credentials and connectivity and try again.', 'capsule'),
+					__(
+						'Server said: "%1$s:%2$s" Please check the server credentials and connectivity and try again.',
+						'capsule'
+					),
 					$request['response']['code'],
 					$request['response']['message']
 				);
 			} else {
-				// Response is an object with taxonomies as keys with values of objects with terms (ID, name, slug, description).
+				// Response is an object with taxonomies as keys
+				// with values of objects with terms (ID, name, slug, description).
 				$terms = json_decode($request['body']);
 				$this->process_server_terms((array) $terms, $this->post_type_slug($server_post->post_name));
 			}
@@ -1012,7 +1076,10 @@ class Capsule_Client
 						// Check for any differences, if there is update as necessary.
 						$existing_data = $post_term_array[ $array_key ];
 						$post_id       = $existing_data['post']->ID;
-						if ($existing_data['term_name'] !== $term['name'] || $existing_data['term_description'] !== $term['description']) {
+						if (
+							$existing_data['term_name'] !== $term['name'] ||
+							$existing_data['term_description'] !== $term['description']
+						) {
 							$existing_data['post']->post_title   = $term['name'];
 							$existing_data['post']->post_content = $term['description'];
 							wp_update_post($existing_data['post']);
@@ -1070,7 +1137,7 @@ class Capsule_Client
 		);
 
 		$query_args = array_merge($defaults, $args);
-		$post_query = new WP_Query($query_args);
+		$post_query = new \WP_Query($query_args);
 
 		if (is_array($post_query->posts)) {
 			return $post_query->posts;
@@ -1113,7 +1180,9 @@ class Capsule_Client
 		// for easier displaying later.
 		$taxonomies     = $this->taxonomies_to_map();
 		$terms          = $this->get_taxonomy_terms($taxonomies);
-		$taxonomy_array = array();
+		$taxonomy_array = [
+			'projects' => []
+		];
 
 		if (is_array($terms)) {
 			foreach ($terms as $term) {
@@ -1130,7 +1199,12 @@ class Capsule_Client
 		echo wp_kses_post(
 			sprintf(
 				// Translators: %s is the Capsule admin page URL.
-				__('When you map a local project to one on a server project, all posts related to that project will be replicated to that server. <a href="%s">Learn More</a>', 'capsule'),
+				__(
+					'When you map a local project to one on a server project,
+					all posts related to that project will be replicated to that server.
+					<a href="%s">Learn More</a>',
+					'capsule'
+				),
 				esc_url(admin_url('admin.php?page=capsule'))
 			)
 		);
@@ -1248,9 +1322,23 @@ class Capsule_Client
 				<td><?php echo esc_html($post->post_title); ?></td>
 				<td>
 					<?php foreach ($selected_ids as $selected_id) : ?>
-						<?php $this->term_select_markup($post, $taxonomy, $taxonomy_array[ $taxonomy ], $selected_id); ?>
+						<?php
+						$this->term_select_markup(
+							$post,
+							$taxonomy,
+							$taxonomy_array[$taxonomy],
+							$selected_id
+						);
+						?>
 					<?php endforeach; ?>
-					<a href="#" data-taxonomy="<?php echo esc_attr($taxonomy); ?>" data-post-id="<?php echo esc_attr($post->ID); ?>" class="button cap-another-project js-cap-another-project">+</a>
+					<a
+						href="#"
+						data-taxonomy="<?php echo esc_attr($taxonomy); ?>"
+						data-post-id="<?php echo esc_attr($post->ID); ?>"
+						class="button cap-another-project js-cap-another-project"
+					>
+						+
+					</a>
 				</td>
 			</tr>
 		<?php endforeach; ?>
@@ -1318,8 +1406,7 @@ class Capsule_Client
 	 * Sends post data to an external server
 	 *
 	 * @param array  $post       Array of post data 1:1 to wp_posts table columns.
-	 * @param array  $tax        Array containing all the post taxonomies and tax_input key which corresponds to
-	 *                           terms in the taxonomies. Need to send the taxonomies seperately if there are no terms being set.
+	 * @param array  $tax        Array containing post taxonomies and terms in the taxonomies.
 	 * @param string $api_key    Api key for a given user of a server.
 	 * @param string $server_url URL of the server to send the post to.
 	 * @return @TODO
@@ -1390,7 +1477,7 @@ class Capsule_Client
 		foreach ($mapped_taxonomies as $taxonomy) {
 			$post_terms = wp_get_object_terms($post->ID, $taxonomy, array( 'fields' => 'slugs' ));
 			if (! empty($post_terms)) {
-				$query = new WP_Query(array(
+				$query = new \WP_Query(array(
 					'post_type'              => $this->post_type_slug($server->post_name),
 					'tax_query'              => array(
 						array(
@@ -1448,7 +1535,7 @@ class Capsule_Client
 						}
 
 						// There may be one local term mapped to many server terms, so we handle them all.
-						$term_object_query = new WP_Query(array(
+						$term_object_query = new \WP_Query(array(
 							'posts_per_page'         => -1,
 							'post_type'              => $server_post_type,
 							'post_status'            => 'publish',
@@ -1468,12 +1555,20 @@ class Capsule_Client
 						if (! empty($term_object_query->posts)) {
 							foreach ($term_object_query->posts as $term_mapping_post_id) {
 								if (is_taxonomy_hierarchical($taxonomy)) {
-									$server_term_id = get_post_meta($term_mapping_post_id, $this->server_term_id_key, true);
+									$server_term_id = get_post_meta(
+										$term_mapping_post_id,
+										$this->server_term_id_key,
+										true
+									);
 									if ($server_term_id) {
 										$tax_input[ $taxonomy ][] = $server_term_id;
 									}
 								} else {
-									$server_term_slug = get_post_meta($term_mapping_post_id, $this->server_term_slug_key, true);
+									$server_term_slug = get_post_meta(
+										$term_mapping_post_id,
+										$this->server_term_slug_key,
+										true
+									);
 									if ($server_term_slug) {
 										$tax_input[ $taxonomy ][] = $server_term_slug;
 									}

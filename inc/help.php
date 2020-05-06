@@ -1,3 +1,12 @@
+<?php
+
+/**
+ * View Template for Capsule Admin Page
+ *
+ * @phpcs:disable Generic.Files.LineLength
+ */
+
+?>
 <div class="wrap capsule-admin">
 	<div class="capsule-welcome">
 		<h1><?php esc_html_e('Capsule', 'capsule'); ?></h1>
