@@ -136,7 +136,7 @@ echo 'Hello World';
 		<p><?php esc_html_e('While Capsule is a tool for an individual developer, it is also a tool for team collaboration. You can connect to one or more Capsule Servers and replicate selected posts to those servers.', 'capsule'); ?></p>
 		<ol>
 			<li>
-				<a href="<?php echo esc_url(admin_url('admin.php?page=capsule-servers')); ?>"><?php esc_html_e('Add a Capsule Server', 'capsule'); ?></a> <?php esc_html_e('you must have an account on the Capsule Server)', 'capsule'); ?>
+				<a href="<?php echo esc_url(admin_url('admin.php?page=capsule-servers')); ?>"><?php esc_html_e('Add a Capsule Server', 'capsule'); ?></a> <?php esc_html_e('(you must have an account on the Capsule Server)', 'capsule'); ?>
 			</li>
 			<li>
 				<a href="<?php echo esc_url(admin_url('admin.php?page=capsule-projects')); ?>"><?php esc_html_e('Connect to the Server\'s Projects', 'capsule'); ?></a>
