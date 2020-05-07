@@ -16,7 +16,7 @@
   <a href="https://github.com/crowdfavorite/wp-capsule/issues/new?template=bug_report.md&labels=bug">Report bug</a>
   ·
   <a href="https://github.com/crowdfavorite/wp-capsule/issues/new?template=feature_request.md&labels=feature">Request feature</a>
-  .
+  ·
   <a href="https://github.com/crowdfavorite/wp-capsule-server/">Check out WP Capsule Server</a>
 </p>
 
