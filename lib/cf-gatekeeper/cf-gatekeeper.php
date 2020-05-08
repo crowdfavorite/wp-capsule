@@ -3,7 +3,7 @@
  * Plugin Name: CF Gatekeeper
  * Description: Redirect to login page if the user is not logged in.
  * Author: CrowdFavorite
- * Author URI: http://crowdfavorite.com
+ * Author URI: https://crowdfavorite.com
  * Version: 1.8.3-dev
  *
  * @package cf-gatekeeper
@@ -23,6 +23,9 @@ require_once dirname( __FILE__ ) . '/class-cf-user-api.php';
  * @return void
  */
 function cf_gatekeeper() {
+	if ( defined( 'WP_CLI' ) && WP_CLI ) {
+		return;
+	}
 
 	if ( ! is_user_logged_in() ) {
 		CF_User_API::key_login();
