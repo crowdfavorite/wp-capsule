@@ -1,0 +1,89 @@
+This library aids in building a working form that can filter posts by taxonomy terms, author and date range. Results are rendered using your theme's search template. 
+
+# Usage
+
+## Passing arguments
+
+There is a function `cftf_build_form` which accepts a list of arguments to automatically generate a form. See the function declaration for a complete list of argument options. Using this function with all filters enabled always outputs the taxonomy filters first, followed by the date range, author and submit button.
+
+
+## Build your own
+Instead of passing parameters to the `cftf_build_form` function, you can build your own form to change ordering or add additional HTML within the form. An exmple is provided below.
+
+
+## Examples
+
+## Filter any post in multiple categories
+
+	cftf_build_form(array(
+		'taxonomies' => array(
+			'category' => array(
+				'multiple' => true,
+			),
+		),
+	));
+
+## Filter by a single author, single category, multiple tags, and a date range.
+
+	cftf_build_form(array(
+		'date' => 1,
+		'date_options' => array(
+			'start' => array(
+				'id' => 'start_input'
+			)
+		),
+		'author' => 1,
+		'taxonomies' => array(
+			'category' => array(
+				'multiple' => false,
+				'selected' => array('Category 1'),
+		
+			),
+			'post_tag' => array(
+				'multiple' => true,
+				'prefix' => '#',
+			),
+		),
+	));
+
+## Manually buid the form above with input wrappers and in reverse order
+
+	<?php CF_Taxonomy_Filter::start_form(); ?>
+	<div id="submit">
+	<?php CF_Taxonomy_Filter::submit_button(); ?>
+	</div>
+	<div id="authors">
+	<?php CF_Taxonomy_Filter::author_select(array()); ?>
+	</div>
+	<div id="date-range">
+	<?php CF_Taxonomy_Filter::date_filter(array(
+			'start' => array(
+				'id' => 'start_input'
+			)
+		)); ?>
+	</div>
+	<div id="taxonomies">
+	<?php 
+	CF_Taxonomy_Filter::tax_filter('post_tag', array(
+		'multiple' => true,
+		'prefix' => '#',
+	));
+	CF_Taxonomy_Filter::tax_filter('category', array(
+		'multiple' => false,
+		'selected' => array('Category 1'),
+	));
+	?>
+	</div>
+	<?php CF_Taxonomy_Filter::end_form(); ?>
+
+
+# Filters
+
+## cftf_allowed_attributes
+This filter controls which attributes can be added to various HTML elements based on passed in parameters
+
+## cftf_users
+The user options allow for a custom user search query, however `cftf_users` will return the list of users from the query prior to being displayed
+
+## cftf_url
+In case you've placed your file in a non traditional place
