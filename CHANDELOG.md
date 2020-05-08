@@ -1,15 +1,28 @@
-## Version 1.2
+## Version 1.3.0
+- fixed warning when editing posts in the backend
+- replace icon
+- rewrite URLs to SSL variants(https)
+- PSR-12 code style enforce
+- fixed a bug where projects and tags were being registered from codeblocks or docblocks
+- fixed a bug where `` $` `` or `$'` broke the codeblock interface
+- Added "open in new" icon to webfont files. Updated how icons are added. Improved accessibility of main menu and articles utility menu items.
+- update issue templates to add labels
+- update php-markdown lib to ignore parsing of heading tags without a space eg: #test
+- added phpcs ruleset, license file, security policy, code of conduct, contributing guidelines, changelog file, templates for pull requests and issues, support information
+- Replaced wp_redirect with wp_safe_redirect
+- Replaced wp_remote_* with wp_safe_remote_*
+- updated documentation
+- added wp-capsule-ui as a git subtree, removing 3rd-party git subrepo usage
 
+## Version 1.2
 - remove the git submodules structure
 - update libraries, code cleanup
 - fix various PHP notices
 
 ## Version 1.1.1
-
 - include jQuery Hotkeys in the optimized.js file
 
 ## Version 1.1
-
 - add keyboard shortcuts for Home, New Post, focus to Search field
 - background queue for sending posts to Capsule Server (saves are now non-blocking UI actions, also supports offline usage)
 - add favicon and icon for use with Fluid app

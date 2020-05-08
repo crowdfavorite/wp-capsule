@@ -205,7 +205,7 @@ class CapsuleClient
 					}
 				} else {
 					$errors[] = array(
-						'message' => __('Could not save server data', 'capsule'),
+						'message' => esc_html__('Could not save server data', 'capsule'),
 						'type'    => 'general',
 					);
 				}
@@ -474,7 +474,7 @@ class CapsuleClient
 		);
 
 		$args          = $default_args;
-		$args['label'] = __('Servers', 'capsule');
+		$args['label'] = esc_html__('Servers', 'capsule');
 
 		register_post_type('server', $args);
 
@@ -518,8 +518,8 @@ class CapsuleClient
 		global $menu;
 		$menu['3'] = array( '', 'read', 'separator-capsule', '', 'wp-menu-separator' );
 		add_menu_page(
-			__('Capsule', 'capsule'),
-			__('Capsule', 'capsule'),
+			esc_html__('Capsule', 'capsule'),
+			esc_html__('Capsule', 'capsule'),
 			'read',
 			'capsule',
 			array( $this, 'capsule_help' ),
@@ -530,16 +530,16 @@ class CapsuleClient
 		ksort($menu);
 		add_submenu_page(
 			'capsule',
-			__('Servers', 'capsule'),
-			__('Servers', 'capsule'),
+			esc_html__('Servers', 'capsule'),
+			esc_html__('Servers', 'capsule'),
 			'manage_options',
 			'capsule-servers',
 			array( $this, 'server_management_page' )
 		);
 		add_submenu_page(
 			'capsule',
-			__('Projects', 'capsule'),
-			__('Projects', 'capsule'),
+			esc_html__('Projects', 'capsule'),
+			esc_html__('Projects', 'capsule'),
 			'manage_options',
 			'capsule-projects',
 			array( $this, 'term_mapping_page' )
@@ -891,13 +891,13 @@ class CapsuleClient
 					strtolower(trim($server->url, ' \t\n\r\0\x0B/')) === strtolower(trim($server_url, ' \t\n\r\0\x0B/'))
 				) {
 					$errors['url'] = array(
-						'message' => __('Duplicate server url.', 'capsule'),
+						'message' => esc_html__('Duplicate server url.', 'capsule'),
 						'type'    => 'url',
 					);
 				}
 				if (trim($server->post_title) === trim($server_name)) {
 					$errors['name'] = array(
-						'message' => __('Duplicate server name.', 'capsule'),
+						'message' => esc_html__('Duplicate server name.', 'capsule'),
 						'type'    => 'name',
 					);
 				}
@@ -942,14 +942,14 @@ class CapsuleClient
 		} elseif (401 === $request['response']['code']) {
 			$errors[] = array(
 				// Translators: %s is the API key.
-				'message' => sprintf(__('Unauthorized using the api key \'<em>%s</em>\'.', 'capsule'), $api_key),
+				'message' => sprintf(esc_html__('Unauthorized using the api key \'%s\'.', 'capsule'), $api_key),
 				'type'    => 'credentials',
 			);
 		} elseif (200 !== (int) $request['response']['code']) {
 			$errors[] = array(
 				// Translators: %1$s is the response code, %2$s is the error message.
 				'message' => sprintf(
-					__('Server said "%1$s : %2$s".', 'capsule'),
+					esc_html__('Server said "%1$s : %2$s".', 'capsule'),
 					$request['response']['code'],
 					$request['response']['message']
 				),
@@ -958,7 +958,7 @@ class CapsuleClient
 		} elseif ('authorized' !== $request['body']) {
 			// Request successful, should return 'authorized'.
 			$errors[] = array(
-				'message' => __('Server theme not active', 'capsule'),
+				'message' => esc_html__('Server theme not active', 'capsule'),
 				'type'    => 'url',
 			);
 		}
@@ -1003,7 +1003,7 @@ class CapsuleClient
 			} elseif (200 !== (int) $request['response']['code']) {
 				$errors[ $server_post->ID ][] = sprintf(
 					// Translators: %1$s is the response code, %2$s is the error message.
-					__(
+					esc_html__(
 						'Server said: "%1$s:%2$s" Please check the server credentials and connectivity and try again.',
 						'capsule'
 					),
@@ -1364,7 +1364,7 @@ class CapsuleClient
 		$match   = false;
 		$tax_obj = get_taxonomy($taxonomy);
 		// Translators: %s is the taxonomy name.
-		$group_label = sprintf(__('Local %s', 'capsule'), $tax_obj->labels->name);
+		$group_label = sprintf(esc_html__('Local %s', 'capsule'), $tax_obj->labels->name);
 		include get_template_directory() . '/inc/term-select.php';
 	}
 
