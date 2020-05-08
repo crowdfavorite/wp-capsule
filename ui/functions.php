@@ -5,7 +5,7 @@
  * @package capsule
  */
 
-define( 'CAPSULE_URL_VERSION', '2.4' );
+define( 'CAPSULE_URL_VERSION', '2.3' );
 define( 'CAPSULE_TAX_PREFIX_PROJECT', '@' );
 define( 'CAPSULE_TAX_PREFIX_TAG', '#' );
 define( 'CAPSULE_TAX_PREFIX_CODE', '`' );
@@ -13,7 +13,7 @@ define( 'CAPSULE_TAX_PREFIX_CODE', '`' );
 show_admin_bar( false );
 remove_post_type_support( 'post', 'post-formats' );
 
-require_once dirname( __FILE__ ) . '/lib/wp-taxonomy-filter/taxonomy-filter.php';
+require_once 'lib/wp-taxonomy-filter/taxonomy-filter.php';
 
 /**
  * Test if this is a Capsule server.

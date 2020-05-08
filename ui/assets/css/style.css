@@ -31,7 +31,7 @@
   font-style: normal;
   font-weight: normal;
   src: url("../fonts/fontello/fontello.eot");
-  src: url("../fonts/fontello/fontello.eot?#iefix") format("embedded-opentype"), url("../fonts/fontello/fontello.woff") format("woff"), url("../fonts/fontello/fontello.ttf") format("truetype"), url("../fonts/fontello/fontello.svg") format("svg"); }
+  src: url("../fonts/fontello/fontello.eot?#iefix") format("embedded-opentype"), url("../fonts/fontello/fontello.woff") format("woff"), url('../fonts/fontello/fontello.woff2') format('woff2'), url("../fonts/fontello/fontello.ttf") format("truetype"), url("../fonts/fontello/fontello.svg") format("svg"); }
 
 /*
  * HTML5 Boilerplate
@@ -533,6 +533,61 @@ w
   height: 100%;
   width: 100%; }
 
+.sr-only {
+    border: 0;
+    clip: rect(0, 0, 0, 0);
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    padding: 0;
+    position: absolute;
+    width: 1px;
+}
+.sr-only-focusable:active,
+.sr-only-focusable:focus {
+    clip: auto;
+    height: auto;
+    margin: 0;
+    overflow: visible;
+    position: static;
+    width: auto;
+}
+
+/* --------------------------------------------------
+ * Icons
+-------------------------------------------------- */
+[class^="capsule-icon-"]:before, [class*=" capsule-icon-"]:before {
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-font-smoothing: antialiased;
+    display: inline-block;
+    font-family: "Fontello";
+    font-style: normal;
+    font-variant: normal;
+    font-weight: normal;
+    margin-left: .2em;
+    margin-right: .2em;
+    speak: none;
+    text-align: center;
+    text-decoration: inherit;
+    text-transform: none;
+    width: 1em;
+}
+
+.capsule-icon-numbersign:before { content: '\e801'; }
+.capsule-icon-star-empty:before { content: '\e802'; }
+.capsule-icon-star-full:before { content: '\e803'; }
+.capsule-icon-drive:before { content: '\e804'; }
+.capsule-icon-edit:before { content: '\e805'; }
+.capsule-icon-trash:before { content: '\e806'; }
+.capsule-icon-globe:before { content: '\e807'; }
+.capsule-icon-home:before { content: '\e808'; }
+.capsule-icon-x-circle:before { content: '\e809'; }
+.capsule-icon-plus-circle:before { content: '\e80a'; }
+.capsule-icon-cog-wheel:before { content: '\e80b'; }
+.capsule-icon-magnifying-glass:before { content: '\e80c'; }
+.capsule-icon-open-in-new:before { content: '\e80e'; }
+.capsule-icon-circle:before { content: '\e831'; }
+
 #header {
   font-family: 'SourceSansProRegular';
   margin: 0; }
@@ -777,7 +832,6 @@ ul.search_results {
     .main-nav a:hover, .main-nav a:visited {
       color: white; }
     .main-nav a.icon {
-      font-family: "Fontello";
       font-size: 23px;
       -webkit-font-smoothing: subpixel-antialiased; }
     .main-nav a.projects {
@@ -1028,7 +1082,6 @@ article {
   .post-menu span {
     display: none;
     height: 30px;
-    font-family: "Fontello";
     font-size: 18px;
     text-align: center;
     text-decoration: none;
@@ -1121,7 +1174,6 @@ nav.post-menu span.post-sticky-loading {
 
 article.edit header .post-close-link {
   color: white;
-  font-family: "Fontello";
   font-size: 18px;
   height: 30px;
   overflow: hidden;
@@ -1390,7 +1442,6 @@ article.edit header .post-close-link {
   .content .push-server-meta .trigger {
     cursor: pointer;
     display: block;
-    font-family: "Fontello";
     font-size: 18px;
     height: 23px;
     position: relative; }

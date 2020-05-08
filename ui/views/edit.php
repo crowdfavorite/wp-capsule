@@ -32,7 +32,9 @@
 			</p>
 		</div>
 		<header>
-			<a href="#" class="post-close-link" title="<?php esc_html_e( 'Close', 'capsule' ); ?>">&#59393;</a>
+			<a href="#" class="post-close-link capsule-icon-x-circle" title="<?php esc_html_e( 'Close', 'capsule' ); ?>">
+				<span class="sr-only"><?php esc_html_e( 'Close', 'capsule' ); ?></span>
+			</a>
 		</header>
 		<div id="ace-editor-<?php echo (int) $post->ID; ?>" class="ace-editor"></div>
 	</div>

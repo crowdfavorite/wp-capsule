@@ -23,9 +23,6 @@ require_once dirname( __FILE__ ) . '/class-cf-user-api.php';
  * @return void
  */
 function cf_gatekeeper() {
-	if ( defined( 'WP_CLI' ) && WP_CLI ) {
-		return;
-	}
 
 	if ( ! is_user_logged_in() ) {
 		CF_User_API::key_login();
