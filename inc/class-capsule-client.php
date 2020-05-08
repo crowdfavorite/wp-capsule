@@ -372,11 +372,11 @@ class Capsule_Client {
 	 * array(
 	 *    'server-1' => array(
 	 *        'api-key' => '12345abc',
-	 *        'url' => 'http://capsule-server-1.com';
+	 *        'url' => 'https://capsule-server-1.com';
 	 *    ),
 	 *    'server-2' => array(
 	 *        'api-key' => 'A4d*DYnohiO',
-	 *        'url' => 'http://capsule-server-2.com';
+	 *        'url' => 'https://capsule-server-2.com';
 	 *    )
 	 * )
 	 *
