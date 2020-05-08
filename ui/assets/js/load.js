@@ -1,1 +1,0 @@
-require(['cf/js/capsule']);
