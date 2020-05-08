@@ -22,7 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 ###
 
 requirejs = require 'requirejs'
-{minify} = require 'uglify-js'
+uglifyjs = require 'uglify-js'
 fs = require 'fs'
 temp = require 'temp'
 
@@ -116,7 +116,7 @@ concatAppJS = (outfile = './assets/js/optimized.js') ->
       console.log "concatenating #{jsfile} - #{stats.size} bytes"
       fs.appendFileSync(outfile, fs.readFileSync(jsfile))
     else
-      min = minify(jsfile, uglifyOptions).code
+      min = uglifyjs.minify(fs.readFileSync(jsfile, 'utf8')).code
       console.log "minifying #{jsfile} - #{stats.size} bytes became #{min.length} bytes"
       fs.appendFileSync(outfile, min)
       min = null
