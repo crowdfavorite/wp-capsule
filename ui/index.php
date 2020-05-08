@@ -105,15 +105,40 @@ $title = apply_filters( 'capsule_page_title', $title );
 	<nav class="main-nav">
 		<ul>
 			<?php do_action( 'capsule_main_nav_before' ); ?>
-			<li><a href="<?php echo esc_url( home_url( '/' ) ); ?>" class="home icon">&#59392;</a></li>
-			<li><a href="<?php echo esc_url( admin_url( 'post-new.php' ) ); ?>" class="post-new-link icon">&#59396;</a></li>
-			<li><a href="#projects" class="projects">@</a></li>
-			<li><a href="#tags" class="tags icon">#</a></li>
+			<li>
+				<a href="<?php echo esc_url( home_url( '/' ) ); ?>" class="home icon capsule-icon-home" title="<?php esc_attr_e( 'Home', 'capsule' ); ?>">
+					<span class="sr-only"><?php esc_html_e( 'Home', 'capsule' ); ?></span>
+				</a>
+			</li>
+			<li>
+				<a href="<?php echo esc_url( admin_url( 'post-new.php' ) ); ?>" class="post-new-link icon capsule-icon-plus-circle" title="<?php esc_attr_e( 'Post New', 'capsule' ); ?>">
+					<span class="sr-only"><?php esc_html_e( 'Post New', 'capsule' ); ?></span>
+				</a>
+			</li>
+			<li>
+				<a href="#projects" class="projects" title="<?php esc_attr_e( 'Projects', 'capsule' ); ?>">
+					@
+					<span class="sr-only"><?php esc_html_e( 'Projects', 'capsule' ); ?></span>
+				</a>
+			</li>
+			<li>
+				<a href="#tags" class="tags icon capsule-icon-numbersign" title="<?php esc_attr_e( 'Tags', 'capsule' ); ?>">
+					<span class="sr-only"><?php esc_html_e( 'Tags', 'capsule' ); ?></span>
+				</a>
+			</li>
 			<?php if ( ! empty( $cap_servers ) ) : ?>
-			<li><a href="#servers" class="servers icon">&#59254;</a></li>
+			<li>
+				<a href="#servers" class="servers icon capsule-icon-globe" title="<?php esc_attr_e( 'Servers', 'capsule' ); ?>">
+					<span class="sr-only"><?php esc_html_e( 'Servers', 'capsule' ); ?></span>
+				</a>
+			</li>
 			<?php endif; ?>
 
-			<li><a href="<?php echo esc_url( admin_url( 'admin.php?page=capsule' ) ); ?>" class="icon">&#59400;</a></li>
+			<li>
+				<a href="<?php echo esc_url( admin_url( 'admin.php?page=capsule' ) ); ?>" class="icon capsule-icon-cog-wheel" title="<?php esc_attr_e( 'Capsule Help', 'capsule' ); ?>">
+					<span class="sr-only"><?php esc_html_e( 'Capsule Help', 'capsule' ); ?></span>
+				</a>
+			</li>
 			<?php do_action( 'capsule_main_nav_after' ); ?>
 			<li><span class="spacer"></span></li>
 		</ul>
@@ -200,7 +225,12 @@ $title = apply_filters( 'capsule_page_title', $title );
 	?>
 	<?php foreach ( $cap_servers as $cap_server ) : ?>
 		<?php $server = $cap_client->process_server( $cap_server ); ?>
-		<li><a href="<?php echo esc_url( $server->url ); ?>"><?php echo esc_html( $server->post_title ); ?></a></li>
+		<li>
+			<a href="<?php echo esc_url( $server->url ); ?>" target="_blank">
+				<i class="capsule-icon-open-in-new"></i>
+				<?php echo esc_html( $server->post_title ); ?>
+			</a>
+		</li>
 	<?php endforeach; ?>
 	</ul>
 </div>

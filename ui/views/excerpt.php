@@ -23,7 +23,7 @@ if ( ! $is_capsule_server ) {
 		</a>
 		<?php if ( ! empty( $pushed ) ) : ?>
 		<div class="push-server-meta">
-			<span class="trigger">&#59254;</span>
+			<span class="trigger capsule-icon-drive"></span>
 			<?php echo wp_kses_post( $pushed ); ?>
 		</div>
 		<?php endif; ?>
@@ -45,11 +45,19 @@ if ( ! $is_capsule_server ) {
 		<?php the_content(); ?>
 		<nav class="post-menu">
 			<?php do_action( 'capsule_post_menu_before', get_the_ID() ); ?>
-			<a href="#" class="post-sticky-link" title="<?php esc_html_e( 'Star', 'capsule' ); ?>">&#57391;</a>
-			<a href="#" class="post-unsticky-link" title="<?php esc_html_e( 'Un-Star', 'capsule' ); ?>">&#57393;</a>
-			<span class="post-sticky-loading" title="<?php esc_html_e( 'Loading...', 'capsule' ); ?>">&#59441;</span>
-			<?php edit_post_link( '&#57535;', '', '' ); ?>
-			<a href="#" class="post-delete-link" title="<?php esc_html_e( 'Trash', 'capsule' ); ?>">&#59177;</a>
+			<a href="#" class="post-sticky-link capsule-icon-star-full" title="<?php esc_html_e( 'Star', 'capsule' ); ?>">
+				<span class="sr-only"><?php esc_html_e( 'Star', 'capsule' ); ?></span>
+			</a>
+			<a href="#" class="post-unsticky-link capsule-icon-star-empty" title="<?php esc_html_e( 'Un-Star', 'capsule' ); ?>">
+				<span class="sr-only"><?php esc_html_e( 'Un-Star', 'capsule' ); ?></span>
+			</a>
+			<span class="post-sticky-loading capsule-icon-circle" title="<?php esc_html_e( 'Loading...', 'capsule' ); ?>">
+				<span class="sr-only"><?php esc_html_e( 'Loading...', 'capsule' ); ?></span>
+			</span>
+			<?php edit_post_link( '', '', '', 0, 'post-edit-link capsule-icon-edit' ); ?>
+			<a href="#" class="post-delete-link capsule-icon-trash" title="<?php esc_html_e( 'Trash', 'capsule' ); ?>">
+				<span class="sr-only"><?php esc_html_e( 'Trash', 'capsule' ); ?></span>
+			</a>
 			<?php do_action( 'capsule_post_menu_after', get_the_ID() ); ?>
 		</nav>
 		<div class="post-toggle"></div>

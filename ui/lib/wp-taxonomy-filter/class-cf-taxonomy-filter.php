@@ -158,7 +158,7 @@ class CF_Taxonomy_Filter {
 		$multiple = ( $args['multiple'] ) ? 'multiple' : '';
 		// Build the select form element.
 		?>
-		<select name="<?php echo esc_attr( 'cfct_tax[' . $taxonomy . '][]' ); ?>" <?php echo wp_kses( self::build_attrib_string( $args ), array() ); ?> <?php echo esc_attr( $multiple ); ?>>
+		<select name="<?php echo esc_attr( 'cfct_tax[' . $taxonomy . '][]' ); ?>" <?php echo wp_kses( self::build_attrib_string( $args ), array() ); ?> <?php echo esc_attr( $multiple ); ?> />
 			<!-- Empty option for single select removal for Chosen. -->
 			<option value=""></option>
 			<?php foreach ( $terms as $term ) : ?>
@@ -213,7 +213,7 @@ class CF_Taxonomy_Filter {
 		}
 		$multiple = ( $args['multiple'] ) ? 'multiple' : '';
 		?>
-		<select name="cftf_authors[]" <?php echo wp_kses( self::build_attrib_string( $args ), array() ); ?> <?php echo esc_attr( $multiple ); ?>>
+		<select name="cftf_authors[]" <?php echo wp_kses( self::build_attrib_string( $args ), array() ); ?> <?php echo esc_attr( $multiple ); ?> />
 			<!-- Empty option for single select removal support. -->
 			<option value=""></option>
 			<?php foreach ( $users as $user ) : ?>
