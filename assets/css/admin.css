@@ -45,29 +45,6 @@
 	max-width: 500px;
 	width: 45%;
 }
-/*
-.capsule-welcome {
-	background: #222;
-	color: #fff;
-	margin: 30px 10px 10px 0;
-	padding: 15px;
-}
-.capsule-welcome h1 {
-	font-weight: normal;
-	line-height: 100%;
-	margin: 0 0 10px 0;
-}
-.capsule-welcome p {
-	font-weight: normal;
-	line-height: 100%;
-	margin: 0;
-}
-.capsule-welcome a,
-.capsule-welcome a:visited {
-	color: #f8f8f8;
-}
-*/
-
 #cap-servers {
 	padding-top: 10px;
 }
@@ -81,7 +58,6 @@
 .cap-delete,
 .cap-delete:visited {
 	color: #BC0B0B;
-}
 }
 .cap-delete:hover,
 .cap-delete:active {
@@ -121,21 +97,17 @@ div.cap-edit-server-actions {
 	width: 16px;
 	display: none;
 }
-
 .capsule-float-left {
 	float: left;
 }
-
 input.cap-input-error,
 input.cap-input-error:focus {
 	border: 1px solid #c00;
 }
-
 .cap-wide-dropdown {
 	width: 80%;
 	margin-bottom: 5px;
 }
-
 table.wp-list-table a.cap-another-project {
 	font-weight: 900;
 	height: 23px;

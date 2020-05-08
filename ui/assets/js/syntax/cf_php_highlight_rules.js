@@ -47,7 +47,7 @@ var HtmlHighlightRules = require("ace/mode/html_highlight_rules").HtmlHighlightR
 
 var PhpLangHighlightRules = function() {
     var docComment = DocCommentHighlightRules;
-    // http://php.net/quickref.php
+    // https://php.net/quickref.php
     var builtinFunctions = lang.arrayToMap(
         ('abs|acos|acosh|addcslashes|addslashes|aggregate|aggregate_info|aggregate_methods|aggregate_methods_by_list|aggregate_methods_by_regexp|' +
         'aggregate_properties|aggregate_properties_by_list|aggregate_properties_by_regexp|aggregation_info|amqpconnection|amqpexchange|amqpqueue|' +
@@ -841,14 +841,14 @@ var PhpLangHighlightRules = function() {
         'ziparchive_unchangeindex|ziparchive_unchangename|zlib_get_coding_type').split('|')
     );
 
-    // http://php.net/manual/en/reserved.keywords.php
+    // https://php.net/manual/en/reserved.keywords.php
     var keywords = lang.arrayToMap(
         ('abstract|and|array|as|break|case|catch|class|clone|const|continue|declare|default|do|else|elseif|enddeclare|endfor|endforeach|endif|' +
         'endswitch|endwhile|extends|final|for|foreach|function|global|goto|if|implements|interface|instanceof|namespace|new|or|private|protected|' +
         'public|static|switch|throw|try|use|var|while|xor').split('|')
     );
 
-    // http://php.net/manual/en/reserved.keywords.php
+    // https://php.net/manual/en/reserved.keywords.php
     var languageConstructs = lang.arrayToMap(
         ('die|echo|empty|exit|eval|include|include_once|isset|list|require|require_once|return|print|unset').split('|')
     );
@@ -862,7 +862,7 @@ var PhpLangHighlightRules = function() {
         '$http_response_header|$argc|$argv').split('|')
     );
 
-    // Discovery done by downloading 'Many HTML files' from:  http://php.net/download-docs.php
+    // Discovery done by downloading 'Many HTML files' from:  https://php.net/download-docs.php
     // Then search for files containing 'deprecated' (case-insensitive) and look at each file that turns up.
     var builtinFunctionsDeprecated = lang.arrayToMap(
         ('key_exists|cairo_matrix_create_scale|cairo_matrix_create_translate|call_user_method|call_user_method_array|com_addref|com_get|' +

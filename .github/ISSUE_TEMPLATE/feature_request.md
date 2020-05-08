@@ -1,7 +1,7 @@
 ---
 name: Feature request
 about: Suggest an idea for a new feature in WP Capsule.
-
+labels: feature
 ---
 
 Before opening:
