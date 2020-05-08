@@ -68,6 +68,7 @@ $font-icon: 'Fontello';
 	src: url('../fonts/fontello/fontello.eot');
 	src: url('../fonts/fontello/fontello.eot?#iefix') format('embedded-opentype'),
 		 url('../fonts/fontello/fontello.woff') format('woff'),
+		 url('../fonts/fontello/fontello.woff2') format('woff2'),
 		 url('../fonts/fontello/fontello.ttf') format('truetype'),
 		 url('../fonts/fontello/fontello.svg') format('svg');
 }
@@ -85,7 +86,7 @@ $font-icon: 'Fontello';
 	border-radius: $radius; /* Standard. IE9+ */
 	/**
 	 * @bugfix border-radius background bleed
-	 * @see http://tumble.sneak.co.nz/post/928998513/fixing-the-background-bleed
+	 * @see https://tumble.sneak.co.nz/post/928998513/fixing-the-background-bleed
 	 */
 	-webkit-background-clip: padding-box;
 }
@@ -166,6 +167,8 @@ $assetpath: "/wp-content/themes/capsule/assets/img/";
 
 // Helper Classes & Debug Styles
 @import "utility";
+
+@import "icons";
 
 // Global Header
 @import "header";

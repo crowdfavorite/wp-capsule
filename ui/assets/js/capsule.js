@@ -1,14 +1,15 @@
-define('cf/js/capsule', ['require', 'exports', 'module', 
+define('cf/js/capsule', ['require', 'exports', 'module',
 		'jquery',
-		'ace/ace', 
-		'ace/mode/text', 'ace/lib/dom', 'ace/tokenizer', 
-		'cf/js/syntax/cf_php_highlight_rules', 'cf/js/syntax/cfmarkdown', 
+		'ace/ace',
+		'ace/mode/text', 'ace/lib/dom', 'ace/tokenizer',
+		'cf/js/syntax/cf_php_highlight_rules', 'cf/js/syntax/cfmarkdown', 'cf/js/syntax/cfsh',
 		'cf/js/static_highlight', 'ace/theme/textmate'
-	],  
+	],
 function(require, exports, module, $) {
 "use strict";
 	var ace = require('ace/ace');
 	var aceconfig = require('ace/config');
+
 	aceconfig.set('packaged', true);
 	aceconfig.set('basePath', requirejsL10n.ace + '/build/src-min');
 	window.editors = {},
@@ -21,7 +22,7 @@ function(require, exports, module, $) {
 		}
 		return '<div class="spinner"><span>' + text + '</span></div>';
 	};
-	
+
 	Capsule.authCheck = function(response) {
 		if (typeof response.result != 'undefined' && response.result == 'unauthorized') {
 			alert(response.msg);
@@ -30,7 +31,7 @@ function(require, exports, module, $) {
 		}
 		return true;
 	};
-	
+
 	Capsule.get = function(url, args, callback, type) {
 		$.get(url, args, function(response) {
 			if (Capsule.authCheck(response)) {
@@ -38,7 +39,7 @@ function(require, exports, module, $) {
 			}
 		}, type);
 	};
-	
+
 	Capsule.post = function(url, args, callback, type) {
 		$.post(url, args, function(response) {
 			if (Capsule.authCheck(response)) {
@@ -46,7 +47,7 @@ function(require, exports, module, $) {
 			}
 		}, type);
 	};
-	
+
 	Capsule.loadExcerpt = function($article, postId) {
 		$article.addClass('unstyled').children().addClass('transparent').end()
 			.append(Capsule.spinner());
@@ -96,7 +97,7 @@ function(require, exports, module, $) {
 			'json'
 		);
 	};
-	
+
 	Capsule.createPost = function($article) {
 		$article.addClass('unstyled').children().addClass('transparent').end()
 			.append(Capsule.spinner());
@@ -116,7 +117,7 @@ function(require, exports, module, $) {
 			'json'
 		);
 	};
-	
+
 	Capsule.watchForEditorChanges = function(postId, $article, suppress_time_display) {
 		if (typeof $article == 'undefined') {
 			$article = $('#post-edit-' + postId);
@@ -167,7 +168,8 @@ function(require, exports, module, $) {
 			$article.addClass('saving');
 		}
 		// strip code blocks before extracting projects and tags
-		var prose = content.replace(/^```([^]+?)^```/mg, '')
+		var prose = content.replace(/^```([\s\S]+)^```/mg, '')
+				.replace(/^\/\*([\s\S]+)^\*\//mg, '')
 				.replace(/<pre>([^]+?)<\/pre>/mg, '')
 				.replace(/<code>([^]+?)<\/code>/mg, ''),
 			projects = twttr.txt.extractMentions(prose),
@@ -225,7 +227,7 @@ function(require, exports, module, $) {
 			'json'
 		);
 	};
-	
+
 	Capsule.undeletePost = function(postId, $article) {
 		$article.addClass('unstyled').children().addClass('transparent').end()
 			.append(Capsule.spinner());
@@ -250,7 +252,7 @@ function(require, exports, module, $) {
 			'json'
 		);
 	};
-	
+
 	Capsule.stickPost = function(postId, $article) {
 		$article.addClass('sticky-loading');
 		Capsule.post(
@@ -270,7 +272,7 @@ function(require, exports, module, $) {
 			'json'
 		);
 	};
-	
+
 	Capsule.unstickPost = function(postId, $article) {
 		$article.addClass('sticky-loading');
 		Capsule.post(
@@ -292,7 +294,7 @@ function(require, exports, module, $) {
 			'json'
 		);
 	};
-	
+
 	Capsule.initEditor = function(postId, content) {
 		window.Capsule.CFMarkdownMode = require("cf/js/syntax/cfmarkdown").Mode;
 		window.editors[postId] = ace.edit('ace-editor-' + postId);
@@ -360,7 +362,7 @@ function(require, exports, module, $) {
 		Capsule.watchForEditorChanges(postId, undefined, true);
 		window.editors[postId].focus();
 	};
-	
+
 	Capsule.sizeEditor = function() {
 		$('.ace-editor:not(.resized)').each(function() {
 			$(this).height(
@@ -378,7 +380,7 @@ function(require, exports, module, $) {
 			}
 		});
 	};
-	
+
 	Capsule.extractCodeLanguages = function(content) {
 		var block = new RegExp("^```[a-zA-Z]+\\s*$", "gm"),
 			tag = new RegExp("[a-zA-Z]+", ""),
@@ -391,13 +393,13 @@ function(require, exports, module, $) {
 		}
 		return tags;
 	};
-	
+
 	Capsule.postExpandable = function($article) {
 		if ($article.find('.post-content:first')[0].scrollHeight > $article[0].scrollHeight) {
 			$article.addClass('toggleable');
 		}
 	};
-	
+
 	Capsule.highlightCodeSyntax = function($elem) {
 		if (typeof $elem == 'undefined') {
 			$elem = $('article:not(.edit) .post-content');
@@ -405,7 +407,7 @@ function(require, exports, module, $) {
 		$elem.each(function() {
 			var block = $(this);
 			block.find("pre>code").each(function(i) {
-				var el = $(this), 
+				var el = $(this),
 					data, lang, requirelang,
 					newlines = [""];
 				// markdown uses <br> for leading blank
@@ -419,7 +421,7 @@ function(require, exports, module, $) {
 				if (data.substr(-1) === "\n") {
 					data = data.substr(0, data.length - 1);
 				}
-	
+
 				lang = el.attr('class');
 				if (lang) {
 					lang = lang.match(/language-([-_a-z0-9]+)/i);
@@ -434,7 +436,7 @@ function(require, exports, module, $) {
 					lang = "code";
 				}
 				if (lang === "code" || lang === "bash") {
-					requirelang = "text";
+					requirelang = "cfsh";
 				}
 				else {
 					requirelang = lang;
@@ -453,12 +455,12 @@ function(require, exports, module, $) {
 							}
 							highlighted = highlighter.render(data, mode, theme, 1, lang);
 							el.closest("pre").replaceWith(highlighted.html);
-						}                        
+						}
 					};
-
+					var namespacedLang = ('cfsh' === requirelang) ? 'cf/js/syntax/cfsh' : 'ace/mode/' + requirelang;
 					var requirements = [
-						'cf/js/static_highlight', 'ace/theme/textmate', 
-						'ace/mode/' + requirelang, 'ace/lib/dom', 'ace/tokenizer', 
+						'cf/js/static_highlight', 'ace/theme/textmate',
+						namespacedLang, 'ace/lib/dom', 'ace/tokenizer',
 						'cf/js/syntax/cf_php_highlight_rules'
 					];
 					require(requirements,
@@ -613,6 +615,7 @@ function(require, exports, module, $) {
 			source: '#tags'
 		}).end().find('.servers').sidr({
 			name: 'sidr-servers',
+			renaming: false,
 			source: '#servers'
 		});
 		$(':not(.edit) .post-content').linkify();
