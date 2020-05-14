@@ -1,0 +1,50 @@
+{
+  "name": "capsule-software-licensing",
+  "version": "1.0.0",
+  "description": "Capsule software licensing.",
+  "main": "index.js",
+  "scripts": {
+    "watch": "webpack --watch",
+    "build": "webpack --mode development",
+    "deploy": "webpack --mode production"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/crowdfavorite/wp-capsule.git"
+  },
+  "author": "MediaRon LLC",
+  "license": "GPL-3.0-or-later",
+  "bugs": {
+    "url": "https://github.com/crowdfavorite/wp-capsule/issues"
+  },
+  "homepage": "https://crowdfavorite.com",
+  "devDependencies": {
+    "@babel/cli": "^7.1.0",
+    "@babel/core": "^7.1.0",
+    "@babel/preset-env": "^7.1.0",
+    "@babel/preset-react": "^7.0.0",
+    "axios": "^0.19.2",
+    "babel-loader": "^8.0.2",
+    "css-loader": "^1.0.1",
+    "file-loader": "^6.0.0",
+    "gulp": "^4.0.2",
+    "gulp-clean-css": "^4.3.0",
+    "gulp-postcss": "^8.0.0",
+    "gulp-purgecss": "^2.1.0",
+    "gulp-sass": "^4.0.2",
+    "mini-css-extract-plugin": "^0.9.0",
+    "node-sass": "^4.13.1",
+    "optimize-css-assets-webpack-plugin": "^5.0.3",
+    "postcss-loader": "^3.0.0",
+    "react": "^16.13.0",
+    "react-dom": "^16.13.0",
+    "react-router-dom": "^5.1.2",
+    "sass-loader": "^8.0.2",
+    "style-loader": "^0.23.1",
+    "sweetalert2": "^9.10.11",
+    "url-loader": "^4.1.0",
+    "webpack": "^4.41.6",
+    "webpack-cli": "^3.1.1",
+    "webpack-dev-server": "^3.10.3"
+  }
+}

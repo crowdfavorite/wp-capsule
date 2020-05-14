@@ -16,6 +16,7 @@ show_admin_bar(false);
 remove_post_type_support('post', 'post-formats');
 
 require_once dirname(__FILE__) . '/lib/wp-taxonomy-filter/taxonomy-filter.php';
+require_once dirname(__FILE__) . '/updater/updater.php';
 
 /**
  * Test if this is a Capsule server.
@@ -867,7 +868,7 @@ function capsule_wp_editor_warning()
 	<div class="capsule-editor-warning">
 		<h3><?php esc_html_e('Whoa Cowboy!', 'capsule'); ?></h3>
 		<p>
-			<b><?php esc_html_e('<b>Capsule is designed for front-end editing only.', 'capsule'); ?></b>
+			<b><?php esc_html_e('Capsule is designed for front-end editing only.', 'capsule'); ?></b>
 			<br>
 			<?php
 			esc_html_e(
