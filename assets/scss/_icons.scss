@@ -1,0 +1,34 @@
+/* --------------------------------------------------
+ * Icons
+-------------------------------------------------- */
+[class^="capsule-icon-"]:before, [class*=" capsule-icon-"]:before {
+	-moz-osx-font-smoothing: grayscale;
+	-webkit-font-smoothing: antialiased;
+	display: inline-block;
+	font-family: "Fontello";
+	font-style: normal;
+	font-variant: normal;
+	font-weight: normal;
+	margin-left: .2em;
+	margin-right: .2em;
+	speak: none;
+	text-align: center;
+	text-decoration: inherit;
+	text-transform: none;
+	width: 1em;
+}
+
+.capsule-icon-numbersign:before { content: '\e801'; }
+.capsule-icon-star-empty:before { content: '\e802'; }
+.capsule-icon-star-full:before { content: '\e803'; }
+.capsule-icon-drive:before { content: '\e804'; }
+.capsule-icon-edit:before { content: '\e805'; }
+.capsule-icon-trash:before { content: '\e806'; }
+.capsule-icon-globe:before { content: '\e807'; }
+.capsule-icon-home:before { content: '\e808'; }
+.capsule-icon-x-circle:before { content: '\e809'; }
+.capsule-icon-plus-circle:before { content: '\e80a'; }
+.capsule-icon-cog-wheel:before { content: '\e80b'; }
+.capsule-icon-magnifying-glass:before { content: '\e80c'; }
+.capsule-icon-open-in-new:before { content: '\e80e'; }
+.capsule-icon-circle:before { content: '\e831'; }
