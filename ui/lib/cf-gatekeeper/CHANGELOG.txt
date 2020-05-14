@@ -1,0 +1,44 @@
+# CF Gatekeeper Changelog
+
+## 1.8.3
+- Better support for multisite login page recognition
+
+## 1.8.2
+- Fix use of deprecated get_usermeta function
+
+## 1.8.1
+- Changed default capability check from publish_posts to read
+- Fixed bug which would return an array for the api key for feeds
+
+## 1.8
+- Cleanup unused code
+- Gatekeeper is now Always on when plugin is active
+- Removed settings screen for always on approach
+- API Key existence check and generation on admin_init not plugin activation
+- Adds filter to capability to check `cf_gatekeeper_capability`, checks publish_posts by default
+- Adjust action and priority in which gatekeeper fires to allow for setup of post types, filters etc...
+- Add filter `cf_gatekeeper_enabled` to allow conditional control over gatekeeper activation
+
+## 1.6
+
+- Setup plugin to Enable blocking whenever the plugin is active
+- Removed all Admin interfaces, and options for enabling blocking
+- Tested successfully on WordPress 3.1.2
+
+## 1.5.2
+- Added readme file
+- Tested successfully on WordPress 3.0
+
+## 1.5.1
+- *BUGFIX* 
+	- Fix random fatal error on plugin activation because some versions of WordPress pass an object instead of an integer value, as the results of a query.  
+	- Added explicit checks for `is_object` and `is_int` to avoid Fatal Error
+
+##1.5 
+- Changed name from "Gatekeeper" to "CF Gatekeeper"
+- Adding a check for the function that's run on plugin activation, it was throwing fatal errors (only on activation) b/c the object wasn't defined yet.
+- Change plugin so that it's not enabled by default.  You must go to the settings page, and click to enable it.
+	- Add appropriate checks for plugin being enabled/disabled.
+	- Add `do_action` functions on plugin enabling/disabling so that we can hook on those actions.
+	- Add a message action, so that sites can add custom instructions upon disable/enable.
+		

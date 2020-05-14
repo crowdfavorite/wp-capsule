@@ -1,0 +1,87 @@
+$capsule-slbody_color: #121116;
+$capsule-slaccent_color: #c3640f;
+$capsule-slsecondary_color: #333;
+$capsule-slsuccess_color: #d4edda;
+$capsule-slsuccess_border_color: #c3e6cb;
+$capsule-slerror_color: #f8d7da;
+$capsule-slerror_border_color: #f5c6cb;
+$capsule-slsuccess_text_color: #155724;
+$capsule-slerror_text_color: #721c24;
+$capsule-sldanger_background_color: #721c24;
+$capsule-sldanger_text_color: #FFFFFF;
+$capsule-sltable_heading_background_color: $capsule-slaccent_color;
+$capsule-sltable_heading_text_color: #FFFFFF;
+$capsule-sltable_body_odd_background_color: #f1f1f1;
+$capsule-sltable_body_even_background_color: #FFFFFF;
+$capsule-sledit_color: #2e7c33;
+$capsule-sldelete_color: #721c24;
+
+/* Button Base Styles */
+.capsule-sl-button {
+	padding: 10px 20px;
+	border-radius: 5px;
+	background: $capsule-slaccent_color;
+	color: #FFF;
+	cursor: pointer;
+	border: 1px solid #E0E4E9;
+	transition: background-color 0.5s ease;
+	&:hover {
+		background: lighten( $capsule-slaccent_color, 10%);
+	}
+	&.capsule-sl-button-secondary {
+		background: $capsule-slsecondary_color;
+		color: #FFF;
+		&:hover {
+			background: lighten( $capsule-slsecondary_color, 20%);
+		}
+	}
+	&.capsule-sl-button-danger {
+		background: $capsule-sldanger_background_color;
+		color: $capsule-sldanger_text_color;
+		&:hover {
+			background: lighten( $capsule-sldanger_background_color, 10%);
+		}
+	}
+	&.capsule-sl-button-edit {
+		background: $capsule-sledit_color;
+		color: #FFF;
+		&:hover {
+			background: lighten( $capsule-sledit_color, 20% );
+		}
+	}
+	&.capsule-sl-button-delete {
+		background: $capsule-sldelete_color;
+		color: #FFF;
+		&:hover {
+			background: lighten( $capsule-sldelete_color, 20% );
+		}
+	}
+	&.capsule-sl-button-save {
+		color: #FFF;
+		&:hover {
+			color: #FFF;
+		}
+	}
+}
+
+/* Status classes */
+.capsule-sl-status {
+	margin: 2em 0;
+	border:4px solid #FFF;
+	padding: 10px 20px;
+	color: #FFF;
+	border-radius: .25rem;
+	&.capsule-sl-success {
+		color: $capsule-slsuccess_text_color;
+		background: $capsule-slsuccess_color;
+		border-color: $capsule-slsuccess_border_color;
+	}
+	&.capsule-sl-error {
+		color: $capsule-slerror_text_color;
+		background: $capsule-slerror_color;
+		border-color: $capsule-slerror_border_color;
+	}
+}
+.capsule-sl-field--checkbox {
+	margin: 1em 0;
+}
