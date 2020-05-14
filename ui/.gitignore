@@ -1,6 +1,0 @@
-node_modules/
-build/
-composer/
-composer.lock
-package-lock.json
-!lib/ace/build/
