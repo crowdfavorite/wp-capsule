@@ -6,6 +6,7 @@
  * @package capsule
  */
 
+require_once 'config.php';
 require_once 'ui/functions.php';
 require_once 'inc/class-capsule-client.php';
 
