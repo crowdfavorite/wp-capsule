@@ -1,3 +1,6 @@
+## Version 1.4.0
+ - added EDD licensing/updating
+
 ## Version 1.3.0
 - fixed warning when editing posts in the backend
 - replace icon
