@@ -1,7 +1,7 @@
 {
-  "name": "edd-software-licensing-example",
+  "name": "capsule-software-licensing",
   "version": "1.0.0",
-  "description": "An example of EDD and software licensing.",
+  "description": "Capsule software licensing.",
   "main": "index.js",
   "scripts": {
     "watch": "webpack --watch",
@@ -10,14 +10,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ronalfy/edd-software-licensing-example.git"
+    "url": "git+https://github.com/crowdfavorite/wp-capsule.git"
   },
   "author": "MediaRon LLC",
   "license": "GPL-3.0-or-later",
   "bugs": {
-    "url": "https://github.com/ronalfy/edd-software-licensing-example/issues"
+    "url": "https://github.com/crowdfavorite/wp-capsule/issues"
   },
-  "homepage": "https://mediaron.com",
+  "homepage": "https://crowdfavorite.com",
   "devDependencies": {
     "@babel/cli": "^7.1.0",
     "@babel/core": "^7.1.0",

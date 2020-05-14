@@ -28,7 +28,7 @@ jQuery(($) => {
 			if (blockUI) {
 				$.blockUI({
 					message: `
-						<div id="capsule-sl-logo-loading" aria-label="${__('Loading', 'edd-software-licensing-example')}">
+						<div id="capsule-sl-logo-loading" aria-label="${__('Loading', 'capsule')}">
 							<img src="${capsule_sl_admin.loading}" style="max-width: 200px;" /><br />
 						</div>`,
 					css: {
@@ -81,7 +81,7 @@ jQuery(($) => {
 					},
 					(response) => {
 						$.unblockUI();
-						alert(__('Could not complete request', 'edd-software-licensing-example'));
+						alert(__('Could not complete request', 'capsule'));
 					});
 		},
 		/**
@@ -121,13 +121,13 @@ jQuery(($) => {
 				e.preventDefault();
 
 				Swal.fire({
-					title: __( 'Revoke License?', 'edd-software-licensing-example' ),
-					text: __( 'You can always enter your license again later.', 'edd-software-licensing-example' ),
+					title: __( 'Revoke License?', 'capsule' ),
+					text: __( 'You can always enter your license again later.', 'capsule' ),
 					icon: 'warning',
 					showCancelButton: true,
 					confirmButtonColor: '#c3640f',
 					cancelButtonColor: '#721c24',
-					confirmButtonText: __( 'Revoke License', 'edd-software-licensing-example' ),
+					confirmButtonText: __( 'Revoke License', 'capsule' ),
 				}).then((result) => {
 					if (result.value) {
 						Capsule.revokeLicense();

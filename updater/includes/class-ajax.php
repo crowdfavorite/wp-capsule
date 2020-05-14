@@ -139,7 +139,7 @@ class Ajax
 		wp_send_json_success(
 			[
 				'html' => ob_get_clean(),
-				'message' => __('Your license is now deactivated.', 'capsule'),
+				'message' => esc_html__('Your license is now deactivated.', 'capsule'),
 			]
 		);
 	}
@@ -180,7 +180,7 @@ class Ajax
 		wp_send_json_success(
 			[
 				'html' => ob_get_clean(),
-				'message' => __('Your license is now active.', 'capsule'),
+				'message' => esc_html__('Your license is now active.', 'capsule'),
 			]
 		);
 	}
@@ -223,7 +223,7 @@ class Ajax
 			wp_send_json_error(
 				new \WP_Error(
 					'capsule_sl_invalid_license',
-					__('The license field cannot be empty.', 'capsule')
+					esc_html__('The license field cannot be empty.', 'capsule')
 				)
 			);
 		}
@@ -248,7 +248,7 @@ class Ajax
 			wp_send_json_error(
 				new \WP_Error(
 					'capsule_sl_invalid_code',
-					__('We could not communicate with the update server. Please try again later.', 'capsule')
+					esc_html__('We could not communicate with the update server. Please try again later.', 'capsule')
 				)
 			);
 		}

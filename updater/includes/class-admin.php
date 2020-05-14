@@ -279,20 +279,15 @@ class Admin
 	 */
 	public static function getRenewalLink()
 	{
-		// If a renewal link was passed in the config, use that.
-		if (WP_CAPSULE_UPDATER_RENEWAL_URL !== '') {
-			return WP_CAPSULE_UPDATER_RENEWAL_URL;
-		}
-
 		$options = Options::get();
 
 		// If download_id was passed in the config, a renewal link can be constructed.
-		if (WP_CAPSULE_UPDATER_DOWNLOAD_ID !== '' && $options['license']) {
+		if ($options['license']) {
 			return sprintf(
 				'%1$s/checkout/?edd_license_key=%2$s&download_id=%3$s',
 				WP_CAPSULE_UPDATER_REMOTE_API_URL,
 				$options['license'],
-				WP_CAPSULE_UPDATER_DOWNLOAD_ID
+				WP_CAPSULE_UPDATER_ITEM_ID
 			);
 		}
 
